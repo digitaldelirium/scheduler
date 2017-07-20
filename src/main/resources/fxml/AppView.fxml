@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.AppViewController">
+   <center>
+      <VBox fx:id="vbAppView">
+          <children>
+              <TabPane fx:id="tpAppPane" tabClosingPolicy="UNAVAILABLE">
+                  <tabs>
+                      <Tab fx:id="tabCustomers" closable="false" text="Customers">
+                          <content>
+                              <ScrollPane fx:id="spCustomerEditor" fitToHeight="true" fitToWidth="true" prefWidth="1000.0" />
+                          </content>
+                      </Tab>
+                      <Tab fx:id="tabAppointments" closable="false" text="Appointments">
+                          <content>
+                              <ScrollPane fx:id="spAppointmentEditor" fitToHeight="true" fitToWidth="true" />
+                          </content>
+                      </Tab>
+                  </tabs>
+              </TabPane>
+              <TabPane fx:id="tpViewPane" prefHeight="241.0" prefWidth="1000.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+                  <tabs>
+                      <Tab fx:id="tabListView" closable="false" text="List View">
+                          <content>
+                              <VBox fx:id="vbListView" prefHeight="200.0" prefWidth="100.0">
+                                  <children>
+                                      <Label fx:id="lblListView" text="List View Label" />
+                                      <ScrollPane fx:id="spListScroller" fitToHeight="true" fitToWidth="true">
+                                          <content>
+                                              <ListView fx:id="lvList" />
+                                          </content>
+                                      </ScrollPane>
+                                  </children>
+                              </VBox>
+                          </content>
+                      </Tab>
+                      <Tab fx:id="tabTableView" closable="false" text="Table View">
+                          <content>
+                              <VBox fx:id="vbTableView" prefHeight="200.0" prefWidth="100.0">
+                                  <children>
+                                      <Label fx:id="lblTableView" text="Table View Label" />
+                                      <ScrollPane fx:id="sbTableScroller" prefViewportHeight="142.0" prefViewportWidth="600.0">
+                                          <content>
+                                              <TableView fx:id="tvTable" prefHeight="200.0" prefWidth="200.0" />
+                                          </content>
+                                      </ScrollPane>
+                                  </children>
+                              </VBox>
+                          </content>
+                      </Tab>
+                  </tabs>
+              </TabPane>
+          </children>
+      </VBox>
+   </center>
+</BorderPane>
