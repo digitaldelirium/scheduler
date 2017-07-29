@@ -36,15 +36,15 @@ public class Reminder {
     @NotNull
     private SimpleIntegerProperty snoozeIncrementTypeId;
 
-    public Reminder(int reminderId, int appointmentId, String createdBy, LocalDate createdDate, ZonedDateTime reminderDate, String remindercol, SimpleIntegerProperty snoozeIncrement, SimpleIntegerProperty snoozeIncrementTypeId) {
+    public Reminder(int reminderId, int appointmentId, String createdBy, LocalDate createdDate, ZonedDateTime reminderDate, String remindercol, int snoozeIncrement, int snoozeIncrementTypeId) {
         this.reminderId = reminderId;
         this.appointmentId = appointmentId;
         this.createdBy.setValue(createdBy);
         this.createdDate = createdDate;
         this.reminderDate.set(reminderDate);
         this.remindercol.set(remindercol);
-        this.snoozeIncrement = snoozeIncrement;
-        this.snoozeIncrementTypeId = snoozeIncrementTypeId;
+        this.snoozeIncrement.set(snoozeIncrement);
+        this.snoozeIncrementTypeId.set(snoozeIncrementTypeId);
     }
 
     public Reminder(int appointmentId, String createdBy, LocalDate createdDate, ZonedDateTime reminderDate, int snoozeIncrement, int snoozeIncrementTypeId) {

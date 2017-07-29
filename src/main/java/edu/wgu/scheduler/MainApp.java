@@ -30,7 +30,7 @@ public class MainApp extends Application {
 
     static Properties config = new Properties();
     static Locale locale = Locale.getDefault();
-    static User user;
+    public static User user;
     public static BasicDataSource dataSource;
 
     private Stage primaryStage;
@@ -79,7 +79,7 @@ public class MainApp extends Application {
             dataSource.setPoolPreparedStatements(true);
             dataSource.setMaxOpenPreparedStatements(10);
 
-            this.dataSource = dataSource;
+            MainApp.dataSource = dataSource;
         }
         catch (Exception ex){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -94,7 +94,7 @@ public class MainApp extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));
             AppViewController controller = loader.getController();
-            rootPane = (BorderPane) loader.load();
+            rootPane = loader.load();
 
             Scene scene = new Scene(rootPane);
             scene.getStylesheets().add("/styles/Styles.css");

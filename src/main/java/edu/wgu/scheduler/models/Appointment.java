@@ -39,6 +39,23 @@ public class Appointment {
     private StringProperty title;
     private StringProperty url;
 
+    /**
+     * Use this method for getting list of existing appointments
+     *
+     * @param createDate
+     * @param appointmentId
+     * @param contact
+     * @param createdBy
+     * @param customerId
+     * @param description
+     * @param end
+     * @param lateUpdate
+     * @param lastUpdateBy
+     * @param location
+     * @param start
+     * @param title
+     * @param url
+     */
     public Appointment(ZonedDateTime createDate, int appointmentId, String contact, String createdBy, int customerId, String description, String end, Timestamp lateUpdate, String lastUpdateBy, String location, String start, String title, String url) {
         this.createDate = createDate;
         this.appointmentId = appointmentId;
@@ -54,10 +71,30 @@ public class Appointment {
         this.title.set(title);
         this.url.set(url);
     }
+
+    /**
+     * @param createdBy
+     * @param customerId
+     * @param description
+     * @param end
+     * @param location
+     * @param start
+     * @param title
+     */
     public Appointment(String createdBy, int customerId, String description, ZonedDateTime end, String location, ZonedDateTime start, String title) {
         this(createdBy, customerId, description, end, location, start, title, null);
     }
 
+    /**
+     * @param createdBy
+     * @param customerId
+     * @param description
+     * @param end
+     * @param location
+     * @param start
+     * @param title
+     * @param url
+     */
     public Appointment(String createdBy, int customerId, String description, ZonedDateTime end, String location, ZonedDateTime start, String title, String url) {
         this.createdBy.setValue(createdBy);
         this.createDate = ZonedDateTime.now(ZoneId.of("UTC"));

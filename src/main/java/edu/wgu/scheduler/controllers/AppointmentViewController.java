@@ -6,18 +6,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.print.DocFlavor;
+import javax.xml.soap.Text;
 import java.net.URL;
 import java.sql.*;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static edu.wgu.scheduler.MainApp.dataSource;
@@ -36,7 +39,11 @@ public class AppointmentViewController implements Initializable {
     @FXML
     private VBox vbAppointmentEditor;
     @FXML
+    private HBox hbEditorBar;
+    @FXML
     private ToggleButton tbAppointmentEditor;
+    @FXML
+    private Button btnNewAppointment;
     @FXML
     private GridPane gpAppointmentEditor;
     @FXML
@@ -86,7 +93,7 @@ public class AppointmentViewController implements Initializable {
     @FXML
     private ButtonBar btnbarAppointmentEditor;
     @FXML
-    private Button btnAppointmentOk;
+    private Button btnAppointmentSave;
     @FXML
     private Button btnAppointmentCancel;
     private TableView<IAppointmentView> tvAppointments = new TableView<>();
@@ -115,6 +122,8 @@ public class AppointmentViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         this.apAppointmentView = new AnchorPane();
         this.vbAppointmentEditor = new VBox();
+        this.hbEditorBar = new HBox();
+        this.btnNewAppointment = new Button();
         this.tbAppointmentEditor = new ToggleButton();
         this.gpAppointmentEditor = new GridPane();
         this.lblTitle = new Label();
@@ -140,7 +149,7 @@ public class AppointmentViewController implements Initializable {
         this.txtCreatedBy = new TextField();
         this.txtLastUpdated = new TextField();
         this.btnbarAppointmentEditor = new ButtonBar();
-        this.btnAppointmentOk = new Button();
+        this.btnAppointmentSave = new Button();
         this.btnAppointmentCancel = new Button();
 
         this.lblTitle.setLabelFor(this.txtTitle);
@@ -155,7 +164,10 @@ public class AppointmentViewController implements Initializable {
         this.lblCreatedBy.setLabelFor(this.txtCreatedBy);
         this.lblLastUpdated.setLabelFor(this.txtLastUpdated);
 
-        btnbarAppointmentEditor.getButtons().addAll(btnAppointmentOk, btnAppointmentCancel);
+        this.tbAppointmentEditor.setText("Enable Edit Mode");
+        this.tbAppointmentEditor.setSelected(false);
+
+        btnbarAppointmentEditor.getButtons().addAll(btnAppointmentSave, btnAppointmentCancel);
 
         this.vbAppointmentEditor.getChildren().addAll(
                 this.gpAppointmentEditor,
@@ -211,21 +223,7 @@ public class AppointmentViewController implements Initializable {
     private void getAppointments(){
         try(Connection connection = dataSource.getConnection()){
             // Get Views first
-            PreparedStatement statement = connection.prepareStatement("  SELECT\n" +
-                    "    `ap`.`title`        AS `title`,\n" +
-                    "    `ap`.`description`  AS `description`,\n" +
-                    "    `ap`.`location`     AS `location`,\n" +
-                    "    `ap`.`contact`      AS `contact`,\n" +
-                    "    `ap`.`url`          AS `url`,\n" +
-                    "    `cu`.`customerName` AS `customerName`,\n" +
-                    "    `ap`.`start`        AS `start`,\n" +
-                    "    `ap`.`end`          AS `end`,\n" +
-                    "    `ap`.`createDate`   AS `createDate`,\n" +
-                    "    `ap`.`createdBy`    AS `createdBy`,\n" +
-                    "    `ap`.`lastUpdate`   AS `lastUpdate`\n" +
-                    "  FROM (`U01gMV`.`appointment` `ap` LEFT JOIN `U01gMV`.`customer` `cu` ON ((\n" +
-                    "    (`ap`.`customerId` = `cu`.`customerId`) AND (`ap`.`createDate` = `cu`.`createDate`) AND\n" +
-                    "    (`ap`.`createdBy` = `cu`.`createdBy`) AND (`ap`.`lastUpdate` = `cu`.`lastUpdate`))));");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments");
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 AppointmentView app = new AppointmentView(rs.getString("title"),
@@ -287,10 +285,10 @@ public class AppointmentViewController implements Initializable {
                         rs.getInt("appointmentId"),
                         rs.getString("createdBy"),
                         rs.getDate("createdDate").toLocalDate(),
-                        rs.getDate("reminderDate").getTime(),
+                        ZonedDateTime.ofInstant(rs.getDate("reminderDate").toInstant(), ZoneId.systemDefault()),
                         rs.getString("remindercol"),
-                        rs.getString("snoozeIncrement"),
-                        rs.getString("snoozeIncrementTypeId"));
+                        rs.getInt("snoozeIncrement"),
+                        rs.getInt("snoozeIncrementTypeId"));
                 reminders.add(re);
             }
 
@@ -299,6 +297,93 @@ public class AppointmentViewController implements Initializable {
         }
     }
 
+    /**
+     * Add a new appointment
+     *
+     * @return whether call was successful or not.
+     */
+    private boolean addAppointment() {
+        throw new NotImplementedException();
+    }
+
+    private void createNewAppointment() {
+        // Enable controls and empty them out
+        setTextEditable();
+
+        this.btnAppointmentSave.setDisable(false);
+        this.btnAppointmentCancel.setDisable(false);
+    }
+
+    /**
+     * Update appointment
+     *
+     * @return whether call was successful or not
+     */
+    private boolean updateAppointment() {
+        throw new NotImplementedException();
+    }
+
+    private void toggleEditable() {
+        if (this.tbAppointmentEditor.isSelected()) {
+            setTextEditable();
+        } else {
+            this.vbAppointmentEditor.getChildren().filtered(node -> {
+                if (node instanceof TextField) {
+                    ((TextField) node).setEditable(false);
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
+    private void setTextEditable() {
+        this.vbAppointmentEditor.getChildren().filtered(node -> {
+            if (node instanceof TextField) {
+                ((TextField) node).setEditable(true);
+                this.txtCreatedBy.setText(MainApp.user.getUsername());
+                this.txtCreatedDate.setText(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * @return
+     */
+    private boolean saveAppointment() {
+        int customerId = 0;
+        for (Customer customer : customers) {
+            if (customer.getCustomerName().equals(txtCustomerName.getText())) {
+                customerId = customer.getCustomerId();
+                break;
+            }
+        }
+
+        Appointment app = new Appointment(txtCreatedBy.getText(),
+                customerId,
+                txtDescription.getText(),
+                ZonedDateTime.of(LocalDateTime.parse(txtEnd.getText()), ZoneId.systemDefault()),
+                txtLocation.getText(),
+                ZonedDateTime.of(LocalDateTime.parse(txtStart.getText()), ZoneId.systemDefault()),
+                txtTitle.getText(),
+                txtUrl.getText());
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("UPDATE appointment\n" +
+                    "SET title = ?, description = ?, location = ?, contact = ?, url = ?, start = ?, lastUpdatedBy = ?, end = ? \n" +
+                    "WHERE appointmentId = ?");
+            statement.setString(1, app.getTitle());
+            statement.setString(2, app.getDescription());
+            statement.setString(3, app.getLocation());
+            statement.setString(4, app.getContact());
+            statement.setString(5, app.getUrl());
+            statement.setTime(6, app.getStart());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     private class AppointmentView implements IAppointmentView {
 
         // Interface needs these components
