@@ -1,8 +1,6 @@
 package edu.wgu.scheduler.models;
 
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.time.LocalDate;
 
@@ -49,7 +47,11 @@ public class AddressProperty extends SimpleObjectProperty<Address> {
             return;
         }
 
-        getValue().getAddress()
+        get().addressProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().address2Property().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().phoneProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().postalCodeProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().lastUpdateByProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
     }
 
     public String getAddress() {

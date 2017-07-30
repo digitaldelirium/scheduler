@@ -2,6 +2,8 @@ package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
@@ -496,63 +498,93 @@ public class AppointmentViewController implements Initializable {
     private class AppointmentView implements IAppointmentView {
 
         // Interface needs these components
-        private String title;
-        private String description;
-        private String location;
-        private String contact;
-        private String url;
-        private String customerName;
-        private Date start;
-        private Date end;
+        private StringProperty title;
+        private StringProperty description;
+        private StringProperty location;
+        private StringProperty contact;
+        private StringProperty url;
+        private StringProperty customerName;
+        private ObjectProperty<Date> start;
+        private ObjectProperty<Date> end;
         private Date createdDate;
         private String createdBy;
-        private Timestamp lastUpdated;
+        private ObjectProperty<Timestamp> lastUpdated;
 
         public AppointmentView(String title, String description, String location, String contact, String url, String customerName, Date start, Date end, Date createdDate, String createdBy, Timestamp lastUpdated) {
-            this.title = title;
-            this.description = description;
-            this.location = location;
-            this.contact = contact;
-            this.url = url;
-            this.customerName = customerName;
-            this.start = start;
-            this.end = end;
-            this.createdDate = createdDate;
+            this.title.setValue(title);
+            this.description.setValue(description);
+            this.location.setValue(location);
+            this.contact.setValue(contact);
+            this.url.setValue(url);
+            this.customerName.setValue(customerName);
+            this.start.setValue(start);
+            this.end.setValue(end);
+            this.createdDate.setTime(createdDate.toInstant().getEpochSecond());
             this.createdBy = createdBy;
-            this.lastUpdated = lastUpdated;
+            this.lastUpdated.setValue(lastUpdated);
         }
 
-
-
         public String getTitle() {
+            return title.getValue();
+        }
+
+        public StringProperty titleProperty() {
             return title;
         }
 
         public String getDescription() {
+            return description.getValue();
+        }
+
+        public StringProperty descriptionProperty() {
             return description;
         }
 
         public String getLocation() {
+            return location.getValue();
+        }
+
+        public StringProperty locationProperty() {
             return location;
         }
 
         public String getContact() {
+            return contact.getValue();
+        }
+
+        public StringProperty contactProperty() {
             return contact;
         }
 
         public String getUrl() {
+            return url.getValueSafe();
+        }
+
+        public StringProperty urlProperty() {
             return url;
         }
 
         public String getCustomerName() {
+            return customerName.getValue();
+        }
+
+        public StringProperty customerNameProperty() {
             return customerName;
         }
 
         public Date getStart() {
+            return start.getValue();
+        }
+
+        public ObjectProperty<Date> startProperty() {
             return start;
         }
 
         public Date getEnd() {
+            return end.getValue();
+        }
+
+        public ObjectProperty<Date> endProperty() {
             return end;
         }
 
@@ -565,6 +597,10 @@ public class AppointmentViewController implements Initializable {
         }
 
         public Timestamp getLastUpdate() {
+            return lastUpdated.getValue();
+        }
+
+        public ObjectProperty<Timestamp> lastUpdatedProperty() {
             return lastUpdated;
         }
     }

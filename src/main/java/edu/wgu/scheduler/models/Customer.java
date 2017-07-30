@@ -120,4 +120,21 @@ public class Customer {
         this.lastUpdateBy.setValue(lastUpdateBy);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        return null;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+
+        return false;
+    }
 }

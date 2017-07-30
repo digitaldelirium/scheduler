@@ -63,7 +63,10 @@ public class Address {
         return postalCode.getValueSafe();
     }
 
-    
+    public StringProperty postalCodeProperty() {
+        return postalCode;
+    }
+
     public void setPostalCode(String postalCode) {
         this.postalCode.setValue(postalCode);
     }
@@ -73,7 +76,10 @@ public class Address {
         return phone.getValueSafe();
     }
 
-    
+    public StringProperty phoneProperty() {
+        return phone;
+    }
+
     public void setPhone(String phone) {
         this.phone.setValue(phone);
     }
@@ -83,7 +89,10 @@ public class Address {
         return lastUpdateBy.getValueSafe();
     }
 
-    
+    public StringProperty lastUpdateByProperty() {
+        return lastUpdateBy;
+    }
+
     public void setLastUpdateBy(String lastUpdateBy) {
         this.lastUpdateBy.setValue(lastUpdateBy);
     }
@@ -92,7 +101,6 @@ public class Address {
     public LocalDate getCreatedDate() {
         return createdDate;
     }
-
     
     public String getCreatedBy() {
         return createdBy.getValueSafe();
@@ -103,7 +111,10 @@ public class Address {
         return address.getValue();
     }
 
-    
+    public StringProperty addressProperty() {
+        return address;
+    }
+
     public void setAddress(String address) {
         this.address.setValue(address);
     }
@@ -113,7 +124,10 @@ public class Address {
         return address2.getValueSafe();
     }
 
-    
+    public StringProperty address2Property() {
+        return address2;
+    }
+
     public void setAddress2(String address2) {
         this.address2.setValue(address2);
     }
@@ -121,5 +135,23 @@ public class Address {
     
     public int getAddressId() {
         return addressId;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        return null;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+
+        return false;
     }
 }
