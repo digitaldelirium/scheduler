@@ -101,4 +101,16 @@ public class AddressProperty extends SimpleObjectProperty<Address> {
         get().postalCodeProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
         get().lastUpdateByProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
     }
+
+    @Override
+    public void set(Address address){
+        super.set(address);
+        init();
+    }
+
+    @Override
+    public void setValue(Address v) {
+        super.setValue(v);
+        init();
+    }
 }
