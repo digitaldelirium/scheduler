@@ -14,7 +14,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="AnchorPane" fx:id="apCustomerView" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.CustomerViewController">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" fx:id="apCustomerView" prefHeight="400.0" prefWidth="600.0"
+         type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.112"
+         fx:controller="edu.wgu.scheduler.controllers.CustomerViewController">
     <VBox fx:id="vbCustomerEditor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="986.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
         <children>
             <ToggleButton fx:id="tbCustomerEditMode" mnemonicParsing="false" text="Edit Mode">
@@ -56,7 +58,8 @@
                             <Button fx:id="btnCustomerCancel" cancelButton="true" mnemonicParsing="false" text="Cancel" />
                         </buttons>
                     </ButtonBar>
-                    <CheckBox mnemonicParsing="false" text="Active" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                    <CheckBox fx:id="cbActive" mnemonicParsing="false" text="Active" GridPane.columnIndex="1"
+                              GridPane.rowIndex="9"/>
                     <TextField fx:id="txtCustomerName" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                     <TextField fx:id="txtAddress" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                     <TextField fx:id="txtAddress2" GridPane.columnIndex="1" GridPane.rowIndex="2" />

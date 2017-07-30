@@ -15,19 +15,21 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
          minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="AnchorPane"
-         xmlns="http://javafx.com/javafx/8.0.121"
+         xmlns="http://javafx.com/javafx/8.0.112"
          fx:controller="edu.wgu.scheduler.controllers.AppointmentViewController">
    <children>
       <VBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
              <HBox fx:id="hbEditorBar">
                  <children>
-                     <ToggleButton fx:id="tbAppointmentEditor" mnemonicParsing="false" text="Enable Edit Mode">
+                     <ToggleButton fx:id="tbAppointmentEditor" mnemonicParsing="false" onAction="#toggleEditable"
+                                   text="Enable Edit Mode">
                          <HBox.margin>
                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                          </HBox.margin>
                      </ToggleButton>
-                     <Button fx:id="btnNewAppointment" mnemonicParsing="false" text="New Appointment">
+                     <Button fx:id="btnNewAppointment" mnemonicParsing="false" onAction="#createNewAppointment"
+                             text="New Appointment">
                          <HBox.margin>
                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                          </HBox.margin>
@@ -69,22 +71,24 @@
                   <Label fx:id="lblCreatedDate" text="Created Date" GridPane.rowIndex="8" />
                   <Label fx:id="lblCreatedBy" text="Created By" GridPane.rowIndex="9" />
                   <Label fx:id="lblLastUpdated" text="Last Updated" GridPane.rowIndex="10" />
-                  <TextField GridPane.columnIndex="1" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                   <TextField fx:id="txtTitle" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                   <TextField fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                   <TextField fx:id="txtLocation" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                   <TextField fx:id="txtContact" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                   <TextField fx:id="txtUrl" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                   <TextField fx:id="txtStart" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                   <TextField fx:id="txtEnd" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                   <TextField fx:id="txtCustomerName" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="10" />
-                  <ButtonBar fx:id="btnbarAppointmentEditor" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="12">
+                   <TextField fx:id="txtCreatedDate" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                   <TextField fx:id="txtCreatedBy" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                   <TextField fx:id="txtLastUpdated" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                   <ButtonBar fx:id="buttonbarAppointmentEditor" prefHeight="40.0" prefWidth="200.0"
+                              GridPane.columnIndex="1" GridPane.rowIndex="12">
                     <buttons>
                         <Button fx:id="btnAppointmentSave" defaultButton="true" disable="true" mnemonicParsing="false"
                                 onAction="#saveAppointment" text="Save"/>
-                        <Button fx:id="btnAppointmentCancel" cancelButton="true" disable="true" mnemonicParsing="false" text="Reset" />
+                        <Button fx:id="btnAppointmentReset" cancelButton="true" disable="true" mnemonicParsing="false"
+                                onAction="#clearForm" text="Reset"/>
                     </buttons>
                       <GridPane.margin>
                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>

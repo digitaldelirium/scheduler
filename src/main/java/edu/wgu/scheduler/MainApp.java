@@ -3,37 +3,45 @@ package edu.wgu.scheduler;
 import edu.wgu.scheduler.controllers.AppViewController;
 import edu.wgu.scheduler.controllers.AppointmentViewController;
 import edu.wgu.scheduler.controllers.CustomerViewController;
+import edu.wgu.scheduler.controllers.LoginController;
 import edu.wgu.scheduler.models.*;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Dialog;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.sql.SQLException;
+import java.util.*;
+
+import static edu.wgu.scheduler.controllers.LoginController.*;
 
 
 public class MainApp extends Application {
 
     public static BorderPane rootPane;
-
-    static Properties config = new Properties();
-    static Locale locale = Locale.getDefault();
     public static User user;
     public static BasicDataSource dataSource;
+    public static Stage primaryStage;
 
-    private Stage primaryStage;
+    public static Properties config = new Properties();
+    static Locale locale = Locale.getDefault();
+
+
     private ObservableMap<Integer, Customer> customers = FXCollections.emptyObservableMap();
     private ObservableMap<Integer, Address> addresses = FXCollections.emptyObservableMap();
     private ObservableMap<Integer, City> cities = FXCollections.emptyObservableMap();
@@ -45,12 +53,12 @@ public class MainApp extends Application {
     private CustomerViewController customerView;
 
     @Override
-    public void start(Stage stage) throws Exception {
-        this.primaryStage = stage;
-        this.primaryStage.setTitle("Welcome to C195 scheduler!");
+    public void start(Stage stage) throws IOException, SQLException {
+        primaryStage = stage;
+        primaryStage.setTitle("Welcome to C195 scheduler!");
         bundle = ResourceBundle.getBundle("Scheduler", locale);
 
-        try (FileInputStream inputStream = new FileInputStream("config.properties")) {
+        try (FileInputStream inputStream = new FileInputStream("/config.properties")) {
             config.load(inputStream);
             System.out.println("Configuration loaded");
         } catch (IOException ex) {
@@ -59,10 +67,59 @@ public class MainApp extends Application {
         }
 
         getDataSourceConnection();
+        LoginController loginController = new LoginController();
+        loginController.loggedIn = showLoginDialog(loginController);
 
         initLayout();
 
 
+    }
+
+    private boolean showLoginDialog(LoginController loginController) {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle(bundle.getString("Login"));
+        dialog.getDialogPane().getButtonTypes().addAll(btnLogin, btnRegister);
+
+        Node loginButton = dialog.getDialogPane().lookupButton(btnLogin);
+        loginButton.setDisable(true);
+
+        Node registerButton = dialog.getDialogPane().lookupButton(btnRegister);
+
+
+        txtUsername.textProperty().addListener(((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            username = txtUsername.getText();
+        }));
+
+        txtPassword.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            password = txtPassword.getText();
+            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null) && (userCount > 0)) {
+                loginButton.setDisable(false);
+            } else {
+                loginButton.setDisable(true);
+            }
+        });
+
+        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> handleLoginButtonAction(event));
+
+        registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleRegisterButtonAction(event));
+
+        dialog.getDialogPane().setContent(apLogin);
+        Platform.runLater(() -> txtUsername.requestFocus());
+
+        dialog.setResultConverter(button -> {
+            if (button == btnLogin) {
+                return new Pair<>(username, password);
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        result.ifPresent((Pair<String, String> usernamePassword) -> {
+            loggedIn = true;
+        });
+
+        return loggedIn;
     }
 
     private void getDataSourceConnection() {
@@ -74,7 +131,7 @@ public class MainApp extends Application {
             dataSource.setDriverClassLoader(getClass().getClassLoader());
             dataSource.setDriverClassName("com.mysql.jdbc.Driver");
             dataSource.setUrl(config.getProperty("dsn"));
-            dataSource.setUsername(config.getProperty("username"));
+            dataSource.setUsername(config.getProperty("dbUser"));
             dataSource.setPassword(password);
             dataSource.setPoolPreparedStatements(true);
             dataSource.setMaxOpenPreparedStatements(10);

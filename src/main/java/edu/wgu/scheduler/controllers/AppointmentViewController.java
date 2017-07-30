@@ -5,8 +5,9 @@ import edu.wgu.scheduler.models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -14,8 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.print.DocFlavor;
-import javax.xml.soap.Text;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.sql.Date;
@@ -23,7 +23,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static edu.wgu.scheduler.MainApp.dataSource;
+import static edu.wgu.scheduler.MainApp.*;
 import static edu.wgu.scheduler.controllers.AppViewController.lblTableView;
 import static edu.wgu.scheduler.controllers.AppViewController.tvTableView;
 
@@ -90,12 +90,10 @@ public class AppointmentViewController implements Initializable {
     private TextField txtCreatedBy;
     @FXML
     private TextField txtLastUpdated;
-    @FXML
-    private ButtonBar btnbarAppointmentEditor;
+    ObservableSet<AppointmentView> appointmentViews;
     @FXML
     private Button btnAppointmentSave;
-    @FXML
-    private Button btnAppointmentCancel;
+    ObservableSet<Customer> customers;
     private TableView<IAppointmentView> tvAppointments = new TableView<>();
     private TableColumn<IAppointmentView, String> tcTitle = new TableColumn<>();
     private TableColumn<IAppointmentView, String> tcDescription = new TableColumn<>();
@@ -109,14 +107,15 @@ public class AppointmentViewController implements Initializable {
     private TableColumn<IAppointmentView, String> tcCreatedBy = new TableColumn<>();
     private TableColumn<IAppointmentView, Timestamp> tcLastUpdate = new TableColumn<>();
     private MainApp mainApp;
-    private ObservableSet<AppointmentView> appointmentViews = FXCollections.emptyObservableSet();
-    private ObservableSet<Customer> customers = FXCollections.emptyObservableSet();
+    @FXML
+    private ButtonBar buttonbarAppointmentEditor;
+    @FXML
+    private Button btnAppointmentReset;
 
 
 
     protected static ObservableSet<Appointment> appointments = FXCollections.emptyObservableSet();
     protected static ObservableSet<Reminder> reminders = FXCollections.emptyObservableSet();
-
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -148,9 +147,9 @@ public class AppointmentViewController implements Initializable {
         this.txtCreatedDate = new TextField();
         this.txtCreatedBy = new TextField();
         this.txtLastUpdated = new TextField();
-        this.btnbarAppointmentEditor = new ButtonBar();
+        this.buttonbarAppointmentEditor = new ButtonBar();
         this.btnAppointmentSave = new Button();
-        this.btnAppointmentCancel = new Button();
+        this.btnAppointmentReset = new Button();
 
         this.lblTitle.setLabelFor(this.txtTitle);
         this.lblDescription.setLabelFor(this.txtDescription);
@@ -167,7 +166,7 @@ public class AppointmentViewController implements Initializable {
         this.tbAppointmentEditor.setText("Enable Edit Mode");
         this.tbAppointmentEditor.setSelected(false);
 
-        btnbarAppointmentEditor.getButtons().addAll(btnAppointmentSave, btnAppointmentCancel);
+        buttonbarAppointmentEditor.getButtons().addAll(btnAppointmentSave, btnAppointmentReset);
 
         this.vbAppointmentEditor.getChildren().addAll(
                 this.gpAppointmentEditor,
@@ -193,7 +192,7 @@ public class AppointmentViewController implements Initializable {
                 this.txtCreatedBy,
                 this.lblLastUpdated,
                 this.txtLastUpdated,
-                this.btnbarAppointmentEditor
+                this.buttonbarAppointmentEditor
         );
 
         this.tvAppointments.getColumns().addAll(this.tcTitle,
@@ -209,6 +208,7 @@ public class AppointmentViewController implements Initializable {
                 this.tcLastUpdate);
         tvTableView = this.tvAppointments;
         lblTableView.setText("Appointments");
+
 
         getAppointments();
     }
@@ -297,21 +297,60 @@ public class AppointmentViewController implements Initializable {
         }
     }
 
-    /**
-     * Add a new appointment
-     *
-     * @return whether call was successful or not.
-     */
-    private boolean addAppointment() {
-        throw new NotImplementedException();
-    }
-
+    @FXML
     private void createNewAppointment() {
         // Enable controls and empty them out
         setTextEditable();
 
-        this.btnAppointmentSave.setDisable(false);
-        this.btnAppointmentCancel.setDisable(false);
+        this.btnAppointmentSave.setDisable(true);
+        this.btnAppointmentReset.setDisable(true);
+
+        createListeners();
+    }
+
+    /**
+     * Creates listeners to enable the reset and save buttons
+     */
+    private void createListeners() {
+        txtCustomerName.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.trim().length() < 5) {
+                btnAppointmentSave.setDisable(true);
+            } else {
+                btnAppointmentSave.setDisable(false);
+                btnAppointmentReset.setDisable(false);
+            }
+        });
+
+        txtDescription.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.trim().length() < 10) {
+                btnAppointmentSave.setDisable(true);
+            } else {
+                btnAppointmentSave.setDisable(false);
+                btnAppointmentReset.setDisable(false);
+            }
+        });
+
+        txtTitle.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.trim().length() < 4) {
+                btnAppointmentSave.setDisable(true);
+            } else {
+                btnAppointmentReset.setDisable(false);
+                if (txtDescription.getText().trim().length() >= 10) {
+                    if (txtStart.getText().trim().isEmpty() == false) {
+
+                    }
+                }
+            }
+        });
+
+        txtStart.textProperty().addListener((observable, oldValue, newValue) -> {
+
+        });
+
+        txtEnd.textProperty().addListener((observable, oldValue, newValue) -> {
+
+        });
+
     }
 
     /**
@@ -323,6 +362,7 @@ public class AppointmentViewController implements Initializable {
         throw new NotImplementedException();
     }
 
+    @FXML
     private void toggleEditable() {
         if (this.tbAppointmentEditor.isSelected()) {
             setTextEditable();
@@ -337,28 +377,62 @@ public class AppointmentViewController implements Initializable {
         }
     }
 
+    /**
+     *
+     */
     private void setTextEditable() {
         this.vbAppointmentEditor.getChildren().filtered(node -> {
             if (node instanceof TextField) {
                 ((TextField) node).setEditable(true);
-                this.txtCreatedBy.setText(MainApp.user.getUsername());
-                this.txtCreatedDate.setText(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
                 return true;
             }
             return false;
         });
+
+        this.txtCreatedBy.setText(MainApp.user.getUsername());
+        this.txtCreatedBy.setEditable(false);
+        this.txtCreatedDate.setText(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+        this.txtCreatedDate.setEditable(false);
     }
 
     /**
      * @return
      */
+    @FXML
     private boolean saveAppointment() {
         int customerId = 0;
+        int x = 0;
         for (Customer customer : customers) {
             if (customer.getCustomerName().equals(txtCustomerName.getText())) {
                 customerId = customer.getCustomerId();
                 break;
             }
+            x++;
+        }
+
+        if (x >= customers.size()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Customer does not exist!");
+            alert.setContentText("The customer you're trying to create an appointment for does not exist! You will now be switched to Customer View to create this customer!");
+            alert.getButtonTypes().add(ButtonType.OK);
+            alert.showAndWait()
+                    .ifPresent(response -> {
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(MainApp.class.getResource("/fxml/CustomerView.fxml"));
+                        CustomerViewController controller = loader.getController();
+                        try {
+                            rootPane = loader.load();
+                        } catch (IOException e) {
+                            e.getLocalizedMessage();
+                        }
+
+                        Scene scene = new Scene(rootPane);
+                        scene.getStylesheets().add("/styles/Styles.css");
+
+                        this.setMainApp(this.mainApp);
+                        primaryStage.setScene(scene);
+                        primaryStage.show();
+                    });
         }
 
         Appointment app = new Appointment(txtCreatedBy.getText(),
@@ -379,11 +453,46 @@ public class AppointmentViewController implements Initializable {
             statement.setString(3, app.getLocation());
             statement.setString(4, app.getContact());
             statement.setString(5, app.getUrl());
-            statement.setTime(6, app.getStart());
+            statement.setTime(6, new Time(app.getStart().toEpochSecond()));
+            statement.setString(7, user.getUsername());
+            statement.setTime(8, new Time(app.getEnd().toEpochSecond()));
+            statement.setInt(9, app.getAppointmentId());
+
+            switch (statement.executeUpdate()) {
+                case 1: {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Update Succeeded");
+                    alert.setContentText("Appointment was updated successfully!");
+                    alert.show();
+                    return true;
+                }
+                case 0: {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Appointment Unchanged");
+                    alert.setContentText("There were no changes to the appointment");
+                    alert.show();
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
+
+    @FXML
+    private void clearForm() {
+        this.vbAppointmentEditor.getChildren().filtered(node -> {
+            if (node instanceof TextField) {
+                ((TextField) node).setText(null);
+                return true;
+            }
+            return false;
+        });
+
+        this.btnAppointmentSave.setDisable(true);
+        this.btnAppointmentReset.setDisable(true);
+    }
+
     private class AppointmentView implements IAppointmentView {
 
         // Interface needs these components
