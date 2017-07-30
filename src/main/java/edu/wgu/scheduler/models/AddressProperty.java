@@ -42,18 +42,6 @@ public class AddressProperty extends SimpleObjectProperty<Address> {
         init();
     }
 
-    private void init() {
-        if (get() == null) {
-            return;
-        }
-
-        get().addressProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().address2Property().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().phoneProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().postalCodeProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().lastUpdateByProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-    }
-
     public String getAddress() {
         return getValue().getAddress();
     }
@@ -100,5 +88,17 @@ public class AddressProperty extends SimpleObjectProperty<Address> {
 
     public String getCreatedBy() {
         return getValue().getCreatedBy();
+    }
+
+    private void init() {
+        if (get() == null) {
+            return;
+        }
+
+        get().addressProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().address2Property().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().phoneProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().postalCodeProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().lastUpdateByProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
     }
 }
