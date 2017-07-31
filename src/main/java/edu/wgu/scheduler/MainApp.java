@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -44,10 +43,10 @@ public class MainApp extends Application {
 
     private ObservableMap<Integer, Customer> customers = FXCollections.emptyObservableMap();
     private ObservableMap<Integer, Address> addresses = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, City> cities = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, ICity> cities = FXCollections.emptyObservableMap();
     private ObservableMap<Integer, Appointment> appointments = FXCollections.emptyObservableMap();
     private ObservableMap<Integer, Country> countries = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, Reminder> reminders = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, IReminder> reminders = FXCollections.emptyObservableMap();
     private ResourceBundle bundle;
     private AppointmentViewController appointmentView;
     private CustomerViewController customerView;
@@ -68,7 +67,7 @@ public class MainApp extends Application {
 
         getDataSourceConnection();
         LoginController loginController = new LoginController();
-        loginController.loggedIn = showLoginDialog(loginController);
+        loggedIn = showLoginDialog(loginController);
 
         initLayout();
 
@@ -158,7 +157,7 @@ public class MainApp extends Application {
 
 //            controller.setMainApp(this);
             primaryStage.setScene(scene);
-            this.primaryStage.show();
+            primaryStage.show();
         }
         catch (IOException e) {
         e.printStackTrace();

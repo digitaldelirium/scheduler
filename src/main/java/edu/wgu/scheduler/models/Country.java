@@ -14,7 +14,7 @@ import java.time.ZoneId;
  * <p>
  * Student ID: 000292065
  */
-public class Country {
+public class Country implements ICountry {
     @NotNull
     private final LocalDate createdDate;
     private int countryId;
@@ -35,30 +35,37 @@ public class Country {
         this.createdDate = LocalDate.now(ZoneId.of("UTC"));
     }
 
+    @Override
     public int getCountryId() {
         return countryId;
     }
 
+    @Override
     public String getCountry() {
         return country.getValue();
     }
 
+    @Override
     public void setCountry(String country) {
         this.country.setValue(country);
     }
 
+    @Override
     public String getCreatedBy() {
         return createdBy.getValueSafe();
     }
 
+    @Override
     public LocalDate getCreatedDate() {
         return createdDate;
     }
 
+    @Override
     public String getLastUpdateBy() {
         return lastUpdateBy.getValueSafe();
     }
 
+    @Override
     public void setLastUpdateBy(String lastUpdateBy) {
         this.lastUpdateBy.setValue(lastUpdateBy);
     }

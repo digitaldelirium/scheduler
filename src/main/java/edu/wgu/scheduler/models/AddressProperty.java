@@ -10,7 +10,7 @@ import java.time.LocalDate;
  * <p>
  * Student ID: 000292065
  */
-public class AddressProperty extends SimpleObjectProperty<Address> {
+public class AddressProperty extends SimpleObjectProperty<Address> implements IAddress {
 
     public AddressProperty(int cityId, String address) {
         super(new Address(cityId, address));
@@ -56,6 +56,10 @@ public class AddressProperty extends SimpleObjectProperty<Address> {
 
     public void setAddress2(String address2) {
         getValue().setAddress2(address2);
+    }
+
+    public int getAddressId() {
+        return getValue().getAddressId();
     }
 
     public String getPostalCode() {

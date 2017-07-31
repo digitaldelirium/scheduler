@@ -2,8 +2,9 @@ package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,7 +19,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.sql.Date;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -90,10 +90,8 @@ public class AppointmentViewController implements Initializable {
     private TextField txtCreatedBy;
     @FXML
     private TextField txtLastUpdated;
-    ObservableSet<edu.wgu.scheduler.models.AppointmentView> appointmentViews;
     @FXML
     private Button btnAppointmentSave;
-    ObservableSet<Customer> customers;
     private TableView<IAppointmentView> tvAppointments = new TableView<>();
     private TableColumn<IAppointmentView, String> tcTitle = new TableColumn<>();
     private TableColumn<IAppointmentView, String> tcDescription = new TableColumn<>();
@@ -112,10 +110,10 @@ public class AppointmentViewController implements Initializable {
     @FXML
     private Button btnAppointmentReset;
 
-
-
-    protected static ObservableSet<Appointment> appointments = FXCollections.emptyObservableSet();
-    protected static ObservableSet<Reminder> reminders = FXCollections.emptyObservableSet();
+    protected static ObservableList<CustomerProperty> customers;
+    protected static ObservableList<AppointmentProperty> appointments;
+    protected static ObservableList<AppointmentViewProperty> appointmentViews;
+    protected static ObservableList<ReminderProperty> reminders;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -209,7 +207,20 @@ public class AppointmentViewController implements Initializable {
         tvTableView = this.tvAppointments;
         lblTableView.setText("Appointments");
 
+        appointments = FXCollections.observableList(new LinkedList<>(), (AppointmentProperty ap) -> new Observable[]{
+                ap.title(),
+                ap.description(),
+                ap.location(),
+                ap.contact(),
+                ap.url(),
+                ap.start(),
+                ap.end(),
+                ap.customerId()
+        });
 
+        reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
+
+        });
         getAppointments();
     }
 
@@ -232,12 +243,12 @@ public class AppointmentViewController implements Initializable {
                         rs.getString("contact"),
                         rs.getString("url"),
                         rs.getString("customerName"),
-                        rs.getDate("start"),
-                        rs.getDate("end"),
+                        rs.getTimestamp("start"),
+                        rs.getTimestamp("end"),
                         rs.getDate("createDate"),
                         rs.getString("createdBy"),
                         rs.getTimestamp("lastUpdate"));
-                appointmentViews.add(app);
+                appointmentViews.add(new AppointmentViewProperty(app));
             }
 
             statement = connection.prepareStatement("SELECT * FROM customer");
@@ -253,14 +264,14 @@ public class AppointmentViewController implements Initializable {
                         rs.getString("lastUpdatedBy"),
                         rs.getTimestamp("lastUpdate")
                 );
-                customers.add(cu);
+                customers.add(new CustomerProperty(cu));
             }
 
             statement = connection.prepareStatement("SELECT * FROM appointment");
             rs = statement.executeQuery();
             while (rs.next()){
                 Appointment ap = new Appointment(
-                        rs.getDate("createDate").toLocalDate().atStartOfDay(ZoneId.of("UTC")),
+                        rs.getDate("createDate").toLocalDate(),
                         rs.getInt("appointmentId"),
                         rs.getString("contact"),
                         rs.getString("createdBy"),
@@ -274,7 +285,7 @@ public class AppointmentViewController implements Initializable {
                         rs.getString("title"),
                         rs.getString("url")
                 );
-                appointments.add(ap);
+                boolean add = appointments.add(new AppointmentProperty(ap));
             }
 
             statement = connection.prepareStatement("SELECT * FROM reminder");
@@ -289,7 +300,7 @@ public class AppointmentViewController implements Initializable {
                         rs.getString("remindercol"),
                         rs.getInt("snoozeIncrement"),
                         rs.getInt("snoozeIncrementTypeId"));
-                reminders.add(re);
+                reminders.add(new ReminderProperty(re));
             }
 
         } catch (SQLException e) {
@@ -353,6 +364,7 @@ public class AppointmentViewController implements Initializable {
 
     }
 
+    // TODO: Implement Update Appointment method
     /**
      * Update appointment
      *
@@ -402,7 +414,7 @@ public class AppointmentViewController implements Initializable {
     private boolean saveAppointment() {
         int customerId = 0;
         int x = 0;
-        for (Customer customer : customers) {
+        for (CustomerProperty customer : customers) {
             if (customer.getCustomerName().equals(txtCustomerName.getText())) {
                 customerId = customer.getCustomerId();
                 break;
@@ -491,23 +503,5 @@ public class AppointmentViewController implements Initializable {
 
         this.btnAppointmentSave.setDisable(true);
         this.btnAppointmentReset.setDisable(true);
-    }
-
-    private class AppointmentView extends edu.wgu.scheduler.models.AppointmentView {
-
-        public AppointmentView(String title, String description, String location, String contact, String url, String customerName, Date start, Date end, Date createdDate, String createdBy, Timestamp lastUpdated) {
-            super(createdBy);
-            this.title.setValue(title);
-            this.description.setValue(description);
-            this.location.setValue(location);
-            this.contact.setValue(contact);
-            this.url.setValue(url);
-            this.customerName.setValue(customerName);
-            this.start.setValue(start);
-            this.end.setValue(end);
-            this.createdDate.setTime(createdDate.toInstant().getEpochSecond());
-            this.lastUpdated.setValue(lastUpdated);
-        }
-
     }
 }

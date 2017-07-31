@@ -1,10 +1,13 @@
 package edu.wgu.scheduler.models;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/30/2017 at 00:43.
@@ -13,28 +16,37 @@ import java.sql.Timestamp;
  * Student ID: 000292065
  */
 public class AppointmentView implements IAppointmentView {
+    private final Date createdDate;
+    private final String createdBy;
     // Interface needs these components
-    protected StringProperty title;
-    protected StringProperty description;
-    protected StringProperty location;
-    protected StringProperty contact;
-    protected StringProperty url;
-    protected StringProperty customerName;
-    protected ObjectProperty<Date> start;
-    protected ObjectProperty<Date> end;
-    protected Date createdDate;
-    protected String createdBy;
-    protected ObjectProperty<Timestamp> lastUpdated;
+    private ReadOnlyStringWrapper title;
+    private ReadOnlyStringWrapper description;
+    private ReadOnlyStringWrapper location;
+    private ReadOnlyStringWrapper contact;
+    private ReadOnlyStringWrapper url;
+    private ReadOnlyStringWrapper customerName;
+    private ReadOnlyObjectWrapper<Timestamp> start;
+    private ReadOnlyObjectWrapper<Timestamp> end;
+    private ReadOnlyProperty<Timestamp> lastUpdated;
 
-    public AppointmentView(String createdBy) {
+    public AppointmentView(String title, String description, String location, String contact, String url, String customerName, Timestamp start, Timestamp end, Date createDate, String createdBy, Timestamp lastUpdate) {
+        this.title.setValue(title);
+        this.description.setValue(description);
+        this.location.setValue(location);
+        this.contact.setValue(contact);
+        this.customerName.setValue(customerName);
+        this.start.setValue(start);
+        this.end.setValue(end);
+        this.createdDate = createDate;
         this.createdBy = createdBy;
+
     }
 
     public String getTitle() {
         return title.getValue();
     }
 
-    public StringProperty titleProperty() {
+    ReadOnlyStringProperty titleProperty() {
         return title;
     }
 
@@ -42,7 +54,7 @@ public class AppointmentView implements IAppointmentView {
         return description.getValue();
     }
 
-    public StringProperty descriptionProperty() {
+    ReadOnlyStringProperty descriptionProperty() {
         return description;
     }
 
@@ -50,7 +62,7 @@ public class AppointmentView implements IAppointmentView {
         return location.getValue();
     }
 
-    public StringProperty locationProperty() {
+    ReadOnlyStringProperty locationProperty() {
         return location;
     }
 
@@ -58,7 +70,7 @@ public class AppointmentView implements IAppointmentView {
         return contact.getValue();
     }
 
-    public StringProperty contactProperty() {
+    ReadOnlyStringProperty contactProperty() {
         return contact;
     }
 
@@ -66,7 +78,7 @@ public class AppointmentView implements IAppointmentView {
         return url.getValueSafe();
     }
 
-    public StringProperty urlProperty() {
+    ReadOnlyStringProperty urlProperty() {
         return url;
     }
 
@@ -74,39 +86,59 @@ public class AppointmentView implements IAppointmentView {
         return customerName.getValue();
     }
 
-    public StringProperty customerNameProperty() {
+    ReadOnlyStringProperty customerNameProperty() {
         return customerName;
     }
 
-    public Date getStart() {
-        return start.getValue();
+    public ZonedDateTime getStart() {
+        return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.of("UTC"));
     }
 
-    public ObjectProperty<Date> startProperty() {
+    ReadOnlyProperty<Timestamp> startProperty() {
         return start;
     }
 
-    public Date getEnd() {
-        return end.getValue();
+    public ZonedDateTime getEnd() {
+        return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.of("UTC"));
     }
 
-    public ObjectProperty<Date> endProperty() {
+    ReadOnlyProperty<Timestamp> endProperty() {
         return end;
     }
 
-    public Date getCreateDate() {
-        return createdDate;
+    public LocalDate getCreateDate() {
+        return createdDate.toLocalDate();
     }
 
     public String getCreatedBy() {
         return createdBy;
     }
 
-    public Timestamp getLastUpdate() {
-        return lastUpdated.getValue();
+    public ZonedDateTime getLastUpdate() {
+        return ZonedDateTime.ofInstant(lastUpdated.getValue().toInstant(), ZoneId.of("UTC"));
     }
 
-    public ObjectProperty<Timestamp> lastUpdatedProperty() {
+    ReadOnlyProperty<Timestamp> lastUpdatedProperty() {
         return lastUpdated;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        ZonedDateTime startTime = ZonedDateTime.ofInstant(getStart().toInstant(), ZoneId.of("UTC"));
+        ZonedDateTime endTime = ZonedDateTime.ofInstant(getEnd().toInstant(), ZoneId.of("UTC"));
+        ZonedDateTime lastUpdatedTime = ZonedDateTime.ofInstant(getLastUpdate().toInstant(), ZoneId.of("UTC"));
+        builder.append(String.format("Appointment Title:\t%s\n", getTitle()));
+        builder.append(String.format("Description:\t%s\n", getDescription()));
+        builder.append(String.format("Location:\t%s\n", getLocation()));
+        builder.append(String.format("Start:\t%s\n", startTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
+        builder.append(String.format("End:\t%s\n", endTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
+        builder.append(String.format("URL:\t%s\n", getUrl()));
+        builder.append(String.format("Contact:\t%s\n", getContact()));
+        builder.append(String.format("Customer Name:\t%s\n", getCustomerName()));
+        builder.append(String.format("Appointment Created:\t%s\n", getCreateDate().toString()));
+        builder.append(String.format("Created By:\t%s\n", getCreatedBy()));
+        builder.append(String.format("Last Updated:\t%s\n", lastUpdatedTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
+        return builder.toString();
     }
 }

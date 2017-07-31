@@ -8,7 +8,6 @@ import javafx.beans.property.StringProperty;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 6/25/17.
@@ -16,7 +15,7 @@ import java.time.ZonedDateTime;
  * <p>
  * Student ID: 000292065
  */
-public class Address {
+public class Address implements IAddress {
     @NotNull
     private final LocalDate createdDate;
     private int addressId;
@@ -58,7 +57,8 @@ public class Address {
         this.createdDate = LocalDate.now(ZoneId.of("UTC"));
     }
 
-    
+
+    @Override
     public String getPostalCode() {
         return postalCode.getValueSafe();
     }
@@ -67,11 +67,13 @@ public class Address {
         return postalCode;
     }
 
+    @Override
     public void setPostalCode(String postalCode) {
         this.postalCode.setValue(postalCode);
     }
 
-    
+
+    @Override
     public String getPhone() {
         return phone.getValueSafe();
     }
@@ -80,11 +82,13 @@ public class Address {
         return phone;
     }
 
+    @Override
     public void setPhone(String phone) {
         this.phone.setValue(phone);
     }
 
-    
+
+    @Override
     public String getLastUpdateBy() {
         return lastUpdateBy.getValueSafe();
     }
@@ -93,20 +97,24 @@ public class Address {
         return lastUpdateBy;
     }
 
+    @Override
     public void setLastUpdateBy(String lastUpdateBy) {
         this.lastUpdateBy.setValue(lastUpdateBy);
     }
 
-    
+
+    @Override
     public LocalDate getCreatedDate() {
         return createdDate;
     }
-    
+
+    @Override
     public String getCreatedBy() {
         return createdBy.getValueSafe();
     }
 
-    
+
+    @Override
     public String getAddress() {
         return address.getValue();
     }
@@ -115,11 +123,13 @@ public class Address {
         return address;
     }
 
+    @Override
     public void setAddress(String address) {
         this.address.setValue(address);
     }
 
-    
+
+    @Override
     public String getAddress2() {
         return address2.getValueSafe();
     }
@@ -128,11 +138,13 @@ public class Address {
         return address2;
     }
 
+    @Override
     public void setAddress2(String address2) {
         this.address2.setValue(address2);
     }
 
-    
+
+    @Override
     public int getAddressId() {
         return addressId;
     }

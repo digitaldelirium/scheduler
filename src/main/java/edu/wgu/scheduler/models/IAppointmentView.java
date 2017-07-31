@@ -1,10 +1,7 @@
 package edu.wgu.scheduler.models;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 /**
@@ -27,13 +24,13 @@ public interface IAppointmentView {
 
     String getCustomerName();
 
-    Date getStart();
+    ZonedDateTime getStart();
 
-    Date getEnd();
+    ZonedDateTime getEnd();
 
-    Date getCreateDate();
+    LocalDate getCreateDate();
 
     String getCreatedBy();
 
-    Timestamp getLastUpdate();
+    ZonedDateTime getLastUpdate();
 }

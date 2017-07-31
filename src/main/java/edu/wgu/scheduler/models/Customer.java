@@ -17,13 +17,13 @@ import java.time.ZoneId;
  * <p>
  * Student ID: 000292065
  */
-public class Customer {
+public class Customer implements ICustomer {
     private final LocalDate createDate;
     private int customerId;
     @NotNull
     private ObjectProperty<Byte> active;
     private SimpleIntegerProperty addressId;
-    private StringProperty createdBy;
+    private final String createdBy;
     private StringProperty customerName;
     private StringProperty lastUpdateBy;
     private ObjectProperty<Timestamp> lastUpdate;
@@ -39,6 +39,7 @@ public class Customer {
         this.active.setValue(Byte.valueOf("1"));
         this.lastUpdateBy.setValue(createdBy);
         this.lastUpdate.setValue(Timestamp.valueOf(LocalDateTime.now()));
+        this.createdBy = createdBy;
     }
 
     public Customer(LocalDate createDate, int customerId, Byte active, int addressId, String createdBy, String customerName, String lastUpdateBy, Timestamp lastUpdate) {
@@ -53,17 +54,19 @@ public class Customer {
                 break;
         }
         this.addressId = new SimpleIntegerProperty(addressId);
-        this.createdBy.setValue(createdBy);
+        this.createdBy = createdBy;
         this.customerName.setValue(customerName);
         this.lastUpdateBy.setValue(lastUpdateBy);
         this.lastUpdate.setValue(lastUpdate);
     }
 
+    @Override
     public int getCustomerId() {
         return customerId;
     }
 
-    
+
+    @Override
     public boolean isActive() {
         Byte val = active.get();
         switch (val.intValue()){
@@ -74,48 +77,55 @@ public class Customer {
         }
     }
 
-    
+
+    @Override
     public void setActive(boolean active) {
         if(active){
             this.active.setValue(Byte.valueOf("1"));
-        }
-        else {
+        } else {
             this.active.setValue(Byte.valueOf("0"));
         }
         return;
     }
 
-    
+
+    @Override
     public int getAddressId() {
         return addressId.get();
     }
 
-    
+
+    @Override
     public LocalDate getCreateDate() {
         return createDate;
     }
 
-    
+
+    @Override
     public String getCreatedBy() {
-        return createdBy.getValueSafe();
+        return createdBy;
     }
 
-    
+
+    @Override
     public String getCustomerName() {
         return customerName.getValue();
     }
 
-    
+
+    @Override
     public void setCustomerName(String customerName) {
         this.customerName.set(customerName);
     }
 
-    
+
+    @Override
     public String getLastUpdateBy() {
         return lastUpdateBy.getValueSafe();
     }
 
-    
+
+    @Override
     public void setLastUpdateBy(String lastUpdateBy) {
         this.lastUpdateBy.setValue(lastUpdateBy);
     }
@@ -123,18 +133,21 @@ public class Customer {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        return null;
+        return builder.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Customer customer = (Customer) o;
+
+        return getCustomerId() == customer.getCustomerId();
     }
 
     @Override
     public int hashCode() {
-
-        return 0;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-
-        return false;
+        return getCustomerId();
     }
 }
