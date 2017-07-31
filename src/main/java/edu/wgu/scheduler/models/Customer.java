@@ -132,8 +132,17 @@ public class Customer implements ICustomer {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        return builder.toString();
+        final StringBuilder sb = new StringBuilder("Customer{");
+        sb.append("createDate=").append(createDate);
+        sb.append(", customerId=").append(customerId);
+        sb.append(", active=").append(active);
+        sb.append(", addressId=").append(addressId);
+        sb.append(", createdBy='").append(createdBy).append('\'');
+        sb.append(", customerName=").append(customerName);
+        sb.append(", lastUpdateBy=").append(lastUpdateBy);
+        sb.append(", lastUpdate=").append(lastUpdate);
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override

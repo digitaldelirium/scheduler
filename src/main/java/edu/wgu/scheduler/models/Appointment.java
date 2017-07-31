@@ -262,14 +262,17 @@ public class Appointment implements IAppointment {
     }
 
     @Override
-    public int hashCode() {
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return 0;
+        Appointment that = (Appointment) o;
+
+        return getAppointmentId() == that.getAppointmentId();
     }
 
     @Override
-    public boolean equals(Object object) {
-
-        return false;
+    public int hashCode() {
+        return getAppointmentId();
     }
 }

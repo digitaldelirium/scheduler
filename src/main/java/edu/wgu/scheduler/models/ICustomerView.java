@@ -1,6 +1,7 @@
 package edu.wgu.scheduler.models;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/18/2017 at 22:12.
@@ -24,6 +25,8 @@ public interface ICustomerView {
 
     String getAddress();
 
+    String getAddress2();
+
     String getCity();
 
     String getCountry();
@@ -31,4 +34,6 @@ public interface ICustomerView {
     String getPhone();
 
     String getPostalCode();
+
+    ZonedDateTime getLastUpdate();
 }

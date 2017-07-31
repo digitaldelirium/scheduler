@@ -117,19 +117,30 @@ public class City implements ICity {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        return null;
+        final StringBuilder sb = new StringBuilder("City{");
+        sb.append("createDate=").append(createDate);
+        sb.append(", cityId=").append(cityId);
+        sb.append(", city=").append(city);
+        sb.append(", countryId=").append(countryId);
+        sb.append(", createdBy='").append(createdBy).append('\'');
+        sb.append(", lastUpdate=").append(lastUpdate);
+        sb.append(", lastUpdateBy=").append(lastUpdateBy);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        City city = (City) o;
+
+        return getCityId() == city.getCityId();
     }
 
     @Override
     public int hashCode() {
-
-        return 0;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-
-        return false;
+        return getCityId();
     }
 }

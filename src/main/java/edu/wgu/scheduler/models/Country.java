@@ -72,19 +72,29 @@ public class Country implements ICountry {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        return null;
+        return "Country{" +
+                "createdDate=" + createdDate +
+                ", countryId=" + countryId +
+                ", country=" + country +
+                ", createdBy=" + createdBy +
+                ", lastUpdate=" + lastUpdate +
+                ", lastUpdateBy=" + lastUpdateBy +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Country country1 = (Country) o;
+
+        if (getCountryId() != country1.getCountryId()) return false;
+        return getCountry().equals(country1.getCountry());
     }
 
     @Override
     public int hashCode() {
-
-        return 0;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-
-        return false;
+        return getCountryId();
     }
 }

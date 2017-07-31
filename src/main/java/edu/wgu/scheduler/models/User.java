@@ -79,4 +79,19 @@ public class User {
     public String getUsername() {
         return this.username;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return getUserId() == user.getUserId();
+    }
+
+    @Override
+    public int hashCode() {
+        return getUserId();
+    }
 }

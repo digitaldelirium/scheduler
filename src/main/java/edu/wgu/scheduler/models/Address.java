@@ -156,14 +156,18 @@ public class Address implements IAddress {
     }
 
     @Override
-    public int hashCode() {
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return 0;
+        Address address = (Address) o;
+
+        if (getAddressId() != address.getAddressId()) return false;
+        return cityId.equals(address.cityId);
     }
 
     @Override
-    public boolean equals(Object object) {
-
-        return false;
+    public int hashCode() {
+        return getAddressId();
     }
 }

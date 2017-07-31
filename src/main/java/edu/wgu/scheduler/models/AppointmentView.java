@@ -124,21 +124,19 @@ public class AppointmentView implements IAppointmentView {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        ZonedDateTime startTime = ZonedDateTime.ofInstant(getStart().toInstant(), ZoneId.of("UTC"));
-        ZonedDateTime endTime = ZonedDateTime.ofInstant(getEnd().toInstant(), ZoneId.of("UTC"));
-        ZonedDateTime lastUpdatedTime = ZonedDateTime.ofInstant(getLastUpdate().toInstant(), ZoneId.of("UTC"));
-        builder.append(String.format("Appointment Title:\t%s\n", getTitle()));
-        builder.append(String.format("Description:\t%s\n", getDescription()));
-        builder.append(String.format("Location:\t%s\n", getLocation()));
-        builder.append(String.format("Start:\t%s\n", startTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
-        builder.append(String.format("End:\t%s\n", endTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
-        builder.append(String.format("URL:\t%s\n", getUrl()));
-        builder.append(String.format("Contact:\t%s\n", getContact()));
-        builder.append(String.format("Customer Name:\t%s\n", getCustomerName()));
-        builder.append(String.format("Appointment Created:\t%s\n", getCreateDate().toString()));
-        builder.append(String.format("Created By:\t%s\n", getCreatedBy()));
-        builder.append(String.format("Last Updated:\t%s\n", lastUpdatedTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
-        return builder.toString();
+        final StringBuffer sb = new StringBuffer("AppointmentView{");
+        sb.append("createdDate=").append(createdDate);
+        sb.append(", createdBy='").append(createdBy).append('\'');
+        sb.append(", title=").append(title);
+        sb.append(", description=").append(description);
+        sb.append(", location=").append(location);
+        sb.append(", contact=").append(contact);
+        sb.append(", url=").append(url);
+        sb.append(", customerName=").append(customerName);
+        sb.append(", start=").append(start);
+        sb.append(", end=").append(end);
+        sb.append(", lastUpdated=").append(lastUpdated);
+        sb.append('}');
+        return sb.toString();
     }
 }
