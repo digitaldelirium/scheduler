@@ -41,6 +41,7 @@ hs_err_pid*
 # IntelliJ project files
 .idea
 *.iml
+*.eml
 out
 gen### Example user template template
 ### Example user template
@@ -114,3 +115,6 @@ local.properties
 .scala_dependencies
 .worksheet
 /scheduler.userlibraries
+
+# vscode files
+.vscode/
