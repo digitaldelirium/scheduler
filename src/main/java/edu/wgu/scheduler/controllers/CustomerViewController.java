@@ -3,6 +3,9 @@ package edu.wgu.scheduler.controllers;
 import com.sun.corba.se.impl.orb.ParserTable;
 import com.sun.org.apache.xml.internal.security.Init;
 import edu.wgu.scheduler.MainApp;
+import edu.wgu.scheduler.models.Customer;
+import edu.wgu.scheduler.models.CustomerViewProperty;
+import edu.wgu.scheduler.models.ICustomerView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -13,6 +16,8 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static edu.wgu.scheduler.controllers.AppViewController.*;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 21:21.
@@ -78,6 +83,15 @@ public class CustomerViewController implements Initializable {
     @FXML
     private CheckBox cbActive;
     private MainApp mainApp;
+    private TableView<ICustomerView> tvCustomerView = new TableView<>();
+    private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>();
+    private TableColumn<ICustomerView, String> tcAddress = new TableColumn<>();
+    private TableColumn<ICustomerView, String> tcAddress2 = new TableColumn<>();
+    private TableColumn<ICustomerView, String> tcCity = new TableColumn<>();
+    private TableColumn<ICustomerView, String> tcPostalCode = new TableColumn<>();
+    private TableColumn<ICustomerView, String> tcCountry = new TableColumn<>();
+    private TableColumn<ICustomerView, String> tcPhone = new TableColumn<>();
+    private TableColumn<ICustomerView, Byte> tcActive = new TableColumn<>();
 
     /**
      * Called to initialize a controller after its root element has been
@@ -94,6 +108,7 @@ public class CustomerViewController implements Initializable {
         this.apCustomerView = new AnchorPane();
         this.gpCustomerEditor = new GridPane();
         this.tbCustomerEditMode = new ToggleButton();
+        this.tbCustomerEditMode.setSelected(false);
         this.lblCustomerName = new Label();
         this.lblAddress = new Label();
         this.lblAddress2 = new Label();
@@ -105,6 +120,7 @@ public class CustomerViewController implements Initializable {
         this.lblCustomerSince = new Label();
         this.lblCustomerCreatedDate = new Label();
         this.cbActive = new CheckBox();
+        this.cbActive.setSelected(false);
         this.lblPrefix = new Label();
         this.txtCustomerName = new TextField();
         this.txtAddress = new TextField();
@@ -117,7 +133,25 @@ public class CustomerViewController implements Initializable {
         this.hbPhone = new HBox(5.0, lblPrefix, txtPhone);
         this.btnbarCustomerEditor = new ButtonBar();
         this.btnCustomerCancel = new Button();
+        this.btnCustomerCancel.setCancelButton(true);
         this.btnCustomerOk = new Button();
+        this.btnCustomerOk.setDefaultButton(true);
+        lblListView.setText("Customer List View");
+        lblTableView.setText("Customer Table View");
+        lvListView = new ListView<ICustomerView>();
+
+        tvCustomerView.getColumns().addAll(
+                tcCustomerName,
+                tcAddress,
+                tcAddress2,
+                tcCity,
+                tcPostalCode,
+                tcCountry,
+                tcPhone,
+                tcActive
+        );
+        tvTableView = this.tvCustomerView;
+
     }
 
     public void setMainApp(MainApp mainApp) {

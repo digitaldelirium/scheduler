@@ -224,7 +224,7 @@ public class AppointmentViewController implements Initializable {
         getAppointments();
     }
 
-    public void setMainApp(MainApp mainApp){
+    private void setMainApp(MainApp mainApp){
         this.mainApp = mainApp;
     }
 

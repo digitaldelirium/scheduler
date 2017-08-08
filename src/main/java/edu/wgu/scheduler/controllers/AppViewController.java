@@ -52,7 +52,7 @@ public class AppViewController implements Initializable {
     @FXML
     private ScrollPane spListScroller;
     @FXML
-    ListView<?> lvListView;
+    static ListView<?> lvListView;
     @FXML
     private VBox vbTableView;
     @FXML
@@ -92,17 +92,22 @@ public class AppViewController implements Initializable {
         this.spAppointmentEditor = new ScrollPane();
         this.tabListView = new Tab();
         this.vbListView = new VBox();
-        this.lblListView = new Label();
+        lblListView = new Label();
         this.spListScroller = new ScrollPane();
-        this.lvListView = new ListView<>();
+        lvListView = new ListView<>();
         this.vbTableView = new VBox();
-        this.lblTableView = new Label();
+        lblTableView = new Label();
         this.spTableScroller = new ScrollPane();
-        this.tvTableView = new TableView<>();
+        tvTableView = new TableView<>();
 
+
+
+        this.setMainApp(this.mainApp);
     }
 
-    public void setMainApp(MainApp mainApp){
+
+
+    private void setMainApp(MainApp mainApp){
         this.mainApp = mainApp;
     }
 }
