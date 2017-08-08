@@ -4,11 +4,16 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import edu.wgu.scheduler.MainApp;
+import edu.wgu.scheduler.models.ApplicationView;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+
+import static edu.wgu.scheduler.models.ApplicationView.APPOINTMENT;
+import static edu.wgu.scheduler.models.ApplicationView.CUSTOMER;
 
 public class AppViewController implements Initializable {
     @FXML
@@ -100,11 +105,56 @@ public class AppViewController implements Initializable {
         this.spTableScroller = new ScrollPane();
         tvTableView = new TableView<>();
 
+        this.tabAppointments.setContent(spAppointmentEditor);
+        this.tabCustomers.setContent(spCustomerEditor);
+        this.tpAppPane.getTabs().addAll(tabAppointments, tabCustomers);
 
+        this.spListScroller.setContent(lvListView);
+        this.vbListView.getChildren().addAll(lblListView, this.spListScroller);
+
+        this.spTableScroller.setContent(tvTableView);
+        this.vbTableView.getChildren().addAll(lblTableView, spTableScroller);
+
+        this.tabTableView.setContent(vbTableView);
+        this.tabListView.setContent(vbListView);
+        this.tpViewPane.getTabs().addAll(tabListView, tabTableView);
+
+        vbAppView.getChildren().addAll(tpAppPane, tpViewPane);
+
+        setupEventHandlers(this);
 
         this.setMainApp(this.mainApp);
     }
 
+    private void setupEventHandlers(AppViewController appViewController) {
+        
+        this.tabCustomers.setOnSelectionChanged((event -> {
+            if (tabCustomers.isSelected()) {
+                // Change to Customer View
+                setApplicationView(CUSTOMER);
+            }
+        }));
+
+        this.tabAppointments.setOnSelectionChanged(event -> {
+            if (tabAppointments.isSelected()) {
+                setApplicationView(APPOINTMENT);
+            }
+        });
+    }
+
+    protected void setApplicationView(Enum<ApplicationView> view) {
+        // TODO: Setup FXML Loader
+
+        switch (view.name()) {
+            case "APPOINTMENT":
+
+                break;
+            case "CUSTOMER":
+                break;
+            default:
+                // TODO: See if user is logged in and call Login if not
+        }
+    }
 
 
     private void setMainApp(MainApp mainApp){

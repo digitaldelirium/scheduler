@@ -92,6 +92,14 @@ public class AppointmentViewController implements Initializable {
     private TextField txtLastUpdated;
     @FXML
     private Button btnAppointmentSave;
+    @FXML
+    private Label lblViewScope;
+    @FXML
+    private HBox hbViewScope;
+    @FXML
+    private RadioButton rdoWeekly;
+    @FXML
+    private RadioButton rdoMonthly;
     private TableView<IAppointmentView> tvAppointments = new TableView<>();
     private TableColumn<IAppointmentView, String> tcTitle = new TableColumn<>();
     private TableColumn<IAppointmentView, String> tcDescription = new TableColumn<>();
@@ -123,17 +131,18 @@ public class AppointmentViewController implements Initializable {
         this.btnNewAppointment = new Button();
         this.tbAppointmentEditor = new ToggleButton();
         this.gpAppointmentEditor = new GridPane();
-        this.lblTitle = new Label();
-        this.lblDescription = new Label();
-        this.lblLocation = new Label();
-        this.lblContact = new Label();
-        this.lblUrl = new Label();
-        this.lblCustomerName = new Label();
-        this.lblStart = new Label();
-        this.lblEnd = new Label();
-        this.lblCreatedDate = new Label();
-        this.lblCreatedBy = new Label();
-        this.lblLastUpdated = new Label();
+        this.lblViewScope = new Label("Choose View:");
+        this.lblTitle = new Label("Title:");
+        this.lblDescription = new Label("Description:");
+        this.lblLocation = new Label("Location:");
+        this.lblContact = new Label("Contact:");
+        this.lblUrl = new Label("Url:");
+        this.lblCustomerName = new Label("Customer Name:");
+        this.lblStart = new Label("Start Time:");
+        this.lblEnd = new Label("End Time:");
+        this.lblCreatedDate = new Label("Created Date:");
+        this.lblCreatedBy = new Label("Created By:");
+        this.lblLastUpdated = new Label("Last Updated:");
         this.txtTitle = new TextField();
         this.txtDescription = new TextField();
         this.txtLocation = new TextField();
