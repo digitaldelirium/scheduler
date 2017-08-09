@@ -22,7 +22,9 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.apache.commons.dbcp2.BasicDataSource;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -57,7 +59,16 @@ public class MainApp extends Application {
         primaryStage.setTitle("Welcome to C195 scheduler!");
         bundle = ResourceBundle.getBundle("Scheduler", locale);
 
-        try (FileInputStream inputStream = new FileInputStream("/config.properties")) {
+ /*       File configFile = new File("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties");
+        if(configFile.exists()){
+            System.out.println("File Exists");
+        }
+        else {
+            System.out.println("File Not Found");
+        }
+*/
+
+        try (FileInputStream inputStream = new FileInputStream("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties")) {
             config.load(inputStream);
             System.out.println("Configuration loaded");
         } catch (IOException ex) {

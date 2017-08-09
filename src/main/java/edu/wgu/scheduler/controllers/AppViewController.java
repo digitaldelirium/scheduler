@@ -127,7 +127,7 @@ public class AppViewController implements Initializable {
     }
 
     private void setupEventHandlers(AppViewController appViewController) {
-        
+
         this.tabCustomers.setOnSelectionChanged((event -> {
             if (tabCustomers.isSelected()) {
                 // Change to Customer View
