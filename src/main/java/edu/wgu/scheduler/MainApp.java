@@ -59,8 +59,8 @@ public class MainApp extends Application {
         primaryStage.setTitle("Welcome to C195 scheduler!");
         bundle = ResourceBundle.getBundle("Scheduler", locale);
 
- /*       File configFile = new File("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties");
-        if(configFile.exists()){
+        File configFile = new File("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties");
+/*        if(configFile.exists()){
             System.out.println("File Exists");
         }
         else {
@@ -68,7 +68,7 @@ public class MainApp extends Application {
         }
 */
 
-        try (FileInputStream inputStream = new FileInputStream("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties")) {
+        try (FileInputStream inputStream = new FileInputStream(configFile)) {
             config.load(inputStream);
             System.out.println("Configuration loaded");
         } catch (IOException ex) {
