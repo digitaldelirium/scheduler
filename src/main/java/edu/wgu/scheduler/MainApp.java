@@ -24,7 +24,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -52,6 +51,7 @@ public class MainApp extends Application {
     private ResourceBundle bundle;
     private AppointmentViewController appointmentView;
     private CustomerViewController customerView;
+    private MainApp mainApp;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
@@ -78,14 +78,14 @@ public class MainApp extends Application {
 
         getDataSourceConnection();
         LoginController loginController = new LoginController();
-        loggedIn = showLoginDialog(loginController);
+        loggedIn = showLoginDialog();
 
         initLayout();
 
 
     }
 
-    private boolean showLoginDialog(LoginController loginController) {
+    private boolean showLoginDialog() {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle(bundle.getString("Login"));
         dialog.getDialogPane().getButtonTypes().addAll(btnLogin, btnRegister);
@@ -102,7 +102,7 @@ public class MainApp extends Application {
 
         txtPassword.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             password = txtPassword.getText();
-            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null) && (userCount > 0)) {
+            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null)) {
                 loginButton.setDisable(false);
             } else {
                 loginButton.setDisable(true);
@@ -113,7 +113,7 @@ public class MainApp extends Application {
 
         registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleRegisterButtonAction(event));
 
-        dialog.getDialogPane().setContent(apLogin);
+        dialog.getDialogPane().setContent(gpLogin);
         Platform.runLater(() -> txtUsername.requestFocus());
 
         dialog.setResultConverter(button -> {
@@ -125,9 +125,7 @@ public class MainApp extends Application {
 
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
-        result.ifPresent((Pair<String, String> usernamePassword) -> {
-            loggedIn = true;
-        });
+        result.ifPresent((Pair<String, String> usernamePassword) -> loggedIn = true);
 
         return loggedIn;
     }
@@ -161,18 +159,25 @@ public class MainApp extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));
             AppViewController controller = loader.getController();
+            loader.setRoot(this);
             rootPane = loader.load();
 
             Scene scene = new Scene(rootPane);
             scene.getStylesheets().add("/styles/Styles.css");
 
-//            controller.setMainApp(this);
+            this.setMainApp(this.mainApp);
+
             primaryStage.setScene(scene);
             primaryStage.show();
+
         }
         catch (IOException e) {
         e.printStackTrace();
     }
+    }
+
+    private void setMainApp(MainApp mainApp){
+        this.mainApp = mainApp;
     }
 
     /**

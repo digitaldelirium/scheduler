@@ -42,8 +42,6 @@ public class LoginController implements Initializable {
     public static int userCount;
     public static boolean loggedIn;
     @FXML
-    public static AnchorPane apLogin;
-    @FXML
     public static TextField txtUsername;
     @FXML
     public static PasswordField txtPassword;
@@ -51,7 +49,7 @@ public class LoginController implements Initializable {
     public static ButtonType btnRegister;
     public static boolean canAddUser;
     @FXML
-    private GridPane gpLogin;
+    public static GridPane gpLogin;
     @FXML
     private Label lblWelcome;
     @FXML
@@ -66,13 +64,10 @@ public class LoginController implements Initializable {
 
     public LoginController() throws SQLException, IOException {
         Locale locale = Locale.getDefault();
-        try (FileInputStream inputStream = new FileInputStream("config.properties")) {
+        try (FileInputStream inputStream = new FileInputStream("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties")) {
             config.load(inputStream);
 
-            getUserCount();
-            userMap = getUserMap();
-
-            bundle = ResourceBundle.getBundle("scheduler.Scheduler", locale);
+            bundle = ResourceBundle.getBundle("Scheduler", locale);
         } catch (IOException e) {
             System.out.println("Could not load application config file!");
             e.printStackTrace();
@@ -85,27 +80,44 @@ public class LoginController implements Initializable {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         ZonedDateTime dateTime = ZonedDateTime.now();
         log.trace(String.format("[%s]\tAttempting login for user %s ...", formatter.format(dateTime), username));
-        try {
-            Function<Pair<String, String>, Boolean> loginUser = (cred) -> {
-                if ((userMap.containsKey(cred.getKey())) && (userMap.get(cred.getKey()).equals(cred.getValue()))) {
-                    log.trace(String.format("[%s]\tUser:\t%s Logged in successfully!", formatter.format(ZonedDateTime.now()), username));
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(bundle.getString("LoginSuccessTitle"));
-                    alert.setContentText(bundle.getString("LoginSuccessMessage"));
-                    alert.show();
-                    return true;
+        try (Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM user WHERE userName = ? AND password = ?");
+            statement.setString(1, credentials.getKey());
+            statement.setString(2, credentials.getValue());
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                if(rs.getString("userName") != null && rs.getString("password") != null) {
+                    Function<Pair<String, String>, Boolean> loginUser = (cred) -> {
+                        try {
+                            if ((rs.getString("userName") == cred.getKey() && (rs.getString("password")).equals(cred.getValue()))) {
+                                log.trace(String.format("[%s]\tUser:\t%s Logged in successfully!", formatter.format(ZonedDateTime.now()), username));
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle(bundle.getString("LoginSuccessTitle"));
+                                alert.setContentText(bundle.getString("LoginSuccessMessage"));
+                                alert.show();
+                                return true;
+                            }
+                            return false;
+                        }
+                        catch (SQLException ex){
+                            System.out.println(ex.getMessage());
+                        }
+                        return false;
+                    };
+                    if (loginUser.apply(credentials)) {
+                        return true;
+                    }
+                    throw new FailedLoginException();
                 }
-                return false;
-            };
-            if (loginUser.apply(credentials)) {
-                return true;
             }
-            throw new FailedLoginException();
         } catch (FailedLoginException e) {
             log.trace(String.format("[%s]\tUser:\t%s login failed!", formatter.format(ZonedDateTime.now()), username));
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("LoginFailed"));
             alert.setContentText(bundle.getString("LoginFailedMessage"));
+        }
+        catch (SQLException ex){
+            System.out.println(ex.getMessage());
         }
         return false;
     }
@@ -216,7 +228,6 @@ public class LoginController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        apLogin = new AnchorPane();
         this.gpLogin = new GridPane();
         this.lblWelcome = new Label();
         this.lblUsername = new Label();
@@ -225,36 +236,49 @@ public class LoginController implements Initializable {
         txtPassword = new PasswordField();
         btnLogin = new ButtonType(resources.getString("Login"), ButtonBar.ButtonData.OK_DONE);
         btnRegister = new ButtonType(resources.getString("Register"));
-        this.gpLogin.getChildren().addAll(this.lblWelcome, this.lblUsername, this.lblPassword, txtUsername, txtPassword);
+        this.gpLogin.add(this.lblWelcome, 0, 0, 2, 1);
+        this.gpLogin.add(this.lblUsername, 0, 1);
+        this.gpLogin.add(this.txtUsername, 1, 1);
+        this.gpLogin.add(this.lblPassword, 0, 2);
+        this.gpLogin.add(this.txtPassword, 1, 2);
+        this.setMainApp(mainApp);
     }
 
     private ObservableMap<String, String> getUserMap() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("SELECT * FROM User");
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM user");
             ResultSet rs = statement.executeQuery();
 
+            rs.getRow();
+            rs.first();
+
             while (rs.next()) {
-                userMap.put(rs.getString(8), rs.getString(7));
+                userMap.put(rs.getString("userName"), rs.getString("password"));
             }
         }
 
         return userMap;
     }
 
+    /*
     private void getUserCount() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM User");
+            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM user");
             ResultSet users = statement.executeQuery();
             while (users.next()) {
                 userCount = users.getInt(1);
             }
 
-            statement = connection.prepareStatement("SELECT DISTINCT userName FROM User");
+            statement = connection.prepareStatement("SELECT userName FROM user");
             users = statement.executeQuery();
             while (users.next()) {
-                userList.add(users.getString(1));
+                userList.add(users.getString("userName"));
             }
         }
+    }
+*/
+    private void setMainApp(MainApp mainApp){
+        this.mainApp = mainApp;
     }
 
     private static class InvalidPasswordException extends IllegalArgumentException {

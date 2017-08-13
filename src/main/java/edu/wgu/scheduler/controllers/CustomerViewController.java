@@ -27,7 +27,7 @@ import static edu.wgu.scheduler.controllers.AppViewController.*;
  */
 public class CustomerViewController implements Initializable {
     @FXML
-    private AnchorPane apCustomerView;
+    protected AnchorPane apCustomerView;
     @FXML
     private VBox vbCustomerEditor;
     @FXML

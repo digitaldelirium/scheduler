@@ -17,12 +17,16 @@
                   <tabs>
                       <Tab fx:id="tabCustomers" closable="false" text="Customers">
                           <content>
-                              <ScrollPane fx:id="spCustomerEditor" fitToHeight="true" fitToWidth="true" prefWidth="1000.0" />
+                              <ScrollPane fx:id="spCustomerEditor" fitToHeight="true" fitToWidth="true" prefWidth="1000.0" >
+                                      <fx:include source="CustomerView.fxml" fx:id="customerView" />
+                              </ScrollPane>
                           </content>
                       </Tab>
                       <Tab fx:id="tabAppointments" closable="false" text="Appointments">
                           <content>
-                              <ScrollPane fx:id="spAppointmentEditor" fitToHeight="true" fitToWidth="true" />
+                              <ScrollPane fx:id="spAppointmentEditor" fitToHeight="true" fitToWidth="true">
+                                  <fx:include source="AppointmentView.fxml" fx:id="appointmentView" />
+                              </ScrollPane>
                           </content>
                       </Tab>
                   </tabs>

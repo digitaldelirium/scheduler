@@ -34,8 +34,9 @@ import static edu.wgu.scheduler.controllers.AppViewController.tvTableView;
  * Student ID: 000292065
  */
 public class AppointmentViewController implements Initializable {
+    private final Locale locale;
     @FXML
-    private AnchorPane apAppointmentView;
+    public AnchorPane apAppointmentView;
     @FXML
     private VBox vbAppointmentEditor;
     @FXML
@@ -117,11 +118,18 @@ public class AppointmentViewController implements Initializable {
     private ButtonBar buttonbarAppointmentEditor;
     @FXML
     private Button btnAppointmentReset;
+    private static ResourceBundle bundle;
 
     protected static ObservableList<CustomerProperty> customers;
     protected static ObservableList<AppointmentProperty> appointments;
     protected static ObservableList<AppointmentViewProperty> appointmentViews;
     protected static ObservableList<ReminderProperty> reminders;
+
+    public AppointmentViewController() {
+        locale = Locale.getDefault();
+        bundle = ResourceBundle.getBundle("Scheduler", locale);
+        initialize(MainApp.class.getResource("/fxml/AppointmentView.fxml"), bundle);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -231,6 +239,7 @@ public class AppointmentViewController implements Initializable {
 
         });
         getAppointments();
+        this.setMainApp(mainApp);
     }
 
     private void setMainApp(MainApp mainApp){
