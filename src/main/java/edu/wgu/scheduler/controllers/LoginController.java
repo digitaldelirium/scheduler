@@ -62,7 +62,7 @@ public class LoginController implements Initializable {
     private static ObservableList<String> userList;
     private static ObservableMap<String, String> userMap;
     private static MainApp mainApp;
-    private static Logger log = Logger.getLogger(LoginController.class.getName());
+    private static Logger log;
 
     public LoginController() throws SQLException, IOException {
         Locale locale = Locale.getDefault();
@@ -77,7 +77,7 @@ public class LoginController implements Initializable {
             System.out.println("Could not load application config file!");
             e.printStackTrace();
         }
-
+        log  = Logger.getLogger(LoginController.class.getName());
         initialize(MainApp.class.getResource("/fxml/Login.fxml"), bundle);
     }
 

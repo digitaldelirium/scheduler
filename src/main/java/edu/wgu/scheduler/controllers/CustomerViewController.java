@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.controllers.AppViewController.*;
+import static edu.wgu.scheduler.MainApp.*;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 21:21.
@@ -92,6 +93,18 @@ public class CustomerViewController implements Initializable {
     private TableColumn<ICustomerView, String> tcCountry = new TableColumn<>();
     private TableColumn<ICustomerView, String> tcPhone = new TableColumn<>();
     private TableColumn<ICustomerView, Byte> tcActive = new TableColumn<>();
+    private ObservableMap<LocalDateTime, ICustomerView> omCustomerView;
+    private Map<Integer, ICustomer> customerMap = new HashMap<>();
+
+    public CustomerViewController() {
+        omCustomerView = getOmCustomerView();
+        customers = getCustomers();
+        initialize("/fxml/CustomerView.fxml", null);
+    }
+
+    private Map<Integer, Customer> getCustomers() {
+        try(Connection connection = dataSource.getConnection())
+    }
 
     /**
      * Called to initialize a controller after its root element has been
@@ -152,6 +165,17 @@ public class CustomerViewController implements Initializable {
         );
         tvTableView = this.tvCustomerView;
 
+    }
+
+    private ObservableMap<LocalDateTime, ICustomerView> getOmCustomerView() throws SQLException {
+        Map<Integer, ICustomerView> customerView = new HashMap<>();
+        try(Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * from Customers");
+            ResultSet resultSet = statement.execute();
+            if(rs.next()){
+                rs.get
+            }
+        }
     }
 
     public void setMainApp(MainApp mainApp) {

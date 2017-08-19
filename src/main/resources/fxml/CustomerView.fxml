@@ -14,7 +14,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root fx:id="apCustomerView" prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.CustomerViewController">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" fx:id="apCustomerView" maxHeight="-Infinity"
+         maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" type="AnchorPane"
+         xmlns="http://javafx.com/javafx/8.0.121" fx:controller="edu.wgu.scheduler.controllers.CustomerViewController">
     <VBox fx:id="vbCustomerEditor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="986.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
         <children>
             <ToggleButton fx:id="tbCustomerEditMode" mnemonicParsing="false" text="Edit Mode">

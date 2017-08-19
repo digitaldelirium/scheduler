@@ -123,6 +123,10 @@ public class AppointmentViewController implements Initializable {
     protected static ObservableList<AppointmentViewProperty> appointmentViews;
     protected static ObservableList<ReminderProperty> reminders;
 
+    public AppointmentViewController() {
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.apAppointmentView = new AnchorPane();

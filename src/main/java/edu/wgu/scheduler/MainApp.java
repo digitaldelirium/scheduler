@@ -43,13 +43,14 @@ public class MainApp extends Application {
     static Locale locale = Locale.getDefault();
 
 
-    private ObservableMap<Integer, Customer> customers = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, Address> addresses = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, ICity> cities = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, Appointment> appointments = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, Country> countries = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, IReminder> reminders = FXCollections.emptyObservableMap();
+    protected static ObservableMap<Integer, ICustomer> customers = FXCollections.emptyObservableMap();
+    protected static ObservableMap<Integer, IAddress> addresses = FXCollections.emptyObservableMap();
+    protected static ObservableMap<Integer, ICity> cities = FXCollections.emptyObservableMap();
+    protected static ObservableMap<Integer, IAppointment> appointments = FXCollections.emptyObservableMap();
+    protected static ObservableMap<Integer, ICountry> countries = FXCollections.emptyObservableMap();
+    protected static ObservableMap<Integer, IReminder> reminders = FXCollections.emptyObservableMap();
     private ResourceBundle bundle;
+    private AppViewController appView;
     private AppointmentViewController appointmentView;
     private CustomerViewController customerView;
 
@@ -68,7 +69,7 @@ public class MainApp extends Application {
         }
 */
 
-        try (FileInputStream inputStream = new FileInputStream("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties")) {
+        try (FileInputStream inputStream = new FileInputStream("config.properties")) {
             config.load(inputStream);
             System.out.println("Configuration loaded");
         } catch (IOException ex) {
@@ -160,7 +161,7 @@ public class MainApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));
-            AppViewController controller = loader.getController();
+            appView = loader.getController();
             rootPane = loader.load();
 
             Scene scene = new Scene(rootPane);
