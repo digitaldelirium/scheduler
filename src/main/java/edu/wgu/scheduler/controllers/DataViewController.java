@@ -29,17 +29,17 @@ public class DataViewController implements Initializable {
     @FXML
     private VBox vbTableView;
     @FXML
-    Label lblListView;
+    private Label lblListView;
     @FXML
-    Label lblTableView;
+    private Label lblTableView;
     @FXML
     protected ScrollPane spListView;
     @FXML
     protected ScrollPane spTableView;
     @FXML
-    protected ListView<?> listView;
+    private ListView<?> listView;
     @FXML
-    protected TableView<?> tableView;
+    private TableView<?> tableView;
 
     public DataViewController() {
         initialize(MainApp.class.getResource("fxml/DataView.fxml"), null);
@@ -79,5 +79,37 @@ public class DataViewController implements Initializable {
         this.tabTableView.setContent(vbTableView);
 
         this.tabPane.getTabs().setAll(tabListView, tabTableView);
+    }
+
+    public Label getLblListView() {
+        return lblListView;
+    }
+
+    public void setLblListView(Label lblListView) {
+        this.lblListView = lblListView;
+    }
+
+    public Label getLblTableView() {
+        return lblTableView;
+    }
+
+    public void setLblTableView(Label lblTableView) {
+        this.lblTableView = lblTableView;
+    }
+
+    public ListView<?> getListView() {
+        return listView;
+    }
+
+    public void setListView(ListView<?> listView) {
+        this.listView = listView;
+    }
+
+    public TableView<?> getTableView() {
+        return tableView;
+    }
+
+    public void setTableView(TableView<?> tableView) {
+        this.tableView = tableView;
     }
 }

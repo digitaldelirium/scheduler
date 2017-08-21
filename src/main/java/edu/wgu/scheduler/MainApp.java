@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -43,16 +44,15 @@ public class MainApp extends Application {
     static Locale locale = Locale.getDefault();
 
 
-    protected static ObservableMap<Integer, ICustomer> customers = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, IAddress> addresses = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, ICity> cities = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, IAppointment> appointments = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, ICountry> countries = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, IReminder> reminders = FXCollections.emptyObservableMap();
+    private static ObservableMap<Integer, ICustomer> customers = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, IAddress> addresses = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, ICity> cities = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, IAppointment> appointments = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, ICountry> countries = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, IReminder> reminders = FXCollections.observableHashMap();
+    private static ObservableList<ICustomerView> customerList;
     private ResourceBundle bundle;
     private AppViewController appView;
-    private AppointmentViewController appointmentView;
-    private CustomerViewController customerView;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
@@ -174,6 +174,62 @@ public class MainApp extends Application {
         catch (IOException e) {
         e.printStackTrace();
     }
+    }
+
+    public static ObservableMap<Integer, ICustomer> getCustomers() {
+        return customers;
+    }
+
+    public static void setCustomers(HashMap<Integer, ICustomer> customers) {
+        MainApp.customers.putAll(customers);
+    }
+
+    public static ObservableMap<Integer, IAddress> getAddresses() {
+        return addresses;
+    }
+
+    public static void setAddresses(HashMap<Integer, IAddress> addresses) {
+        MainApp.addresses.putAll(addresses);
+    }
+
+    public static ObservableMap<Integer, ICity> getCities() {
+        return cities;
+    }
+
+    public static void setCities(ObservableMap<Integer, ICity> cities) {
+        MainApp.cities = cities;
+    }
+
+    public static ObservableMap<Integer, IAppointment> getAppointments() {
+        return appointments;
+    }
+
+    public static void setAppointments(ObservableMap<Integer, IAppointment> appointments) {
+        MainApp.appointments = appointments;
+    }
+
+    public static ObservableMap<Integer, ICountry> getCountries() {
+        return countries;
+    }
+
+    public static void setCountries(ObservableMap<Integer, ICountry> countries) {
+        MainApp.countries = countries;
+    }
+
+    public static ObservableMap<Integer, IReminder> getReminders() {
+        return reminders;
+    }
+
+    public static void setReminders(ObservableMap<Integer, IReminder> reminders) {
+        MainApp.reminders = reminders;
+    }
+
+    public static ObservableList<ICustomerView> getCustomerList() {
+        return customerList;
+    }
+
+    public static void setCustomerList(ObservableList<ICustomerView> customerList) {
+        MainApp.customerList = customerList;
     }
 
     /**

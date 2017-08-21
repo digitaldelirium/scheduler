@@ -1,11 +1,12 @@
 package edu.wgu.scheduler.controllers;
 
 import com.sun.corba.se.impl.orb.ParserTable;
+import com.sun.org.apache.bcel.internal.generic.IADD;
 import com.sun.org.apache.xml.internal.security.Init;
 import edu.wgu.scheduler.MainApp;
-import edu.wgu.scheduler.models.Customer;
-import edu.wgu.scheduler.models.CustomerViewProperty;
-import edu.wgu.scheduler.models.ICustomerView;
+import edu.wgu.scheduler.models.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -15,6 +16,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.controllers.AppViewController.*;
@@ -28,7 +39,7 @@ import static edu.wgu.scheduler.MainApp.*;
  */
 public class CustomerViewController implements Initializable {
     @FXML
-    private AnchorPane apCustomerView;
+    AnchorPane apCustomerView;
     @FXML
     private VBox vbCustomerEditor;
     @FXML
@@ -95,15 +106,11 @@ public class CustomerViewController implements Initializable {
     private TableColumn<ICustomerView, Byte> tcActive = new TableColumn<>();
     private ObservableMap<LocalDateTime, ICustomerView> omCustomerView;
     private Map<Integer, ICustomer> customerMap = new HashMap<>();
+    private DataViewController dataView;
 
     public CustomerViewController() {
-        omCustomerView = getOmCustomerView();
-        customers = getCustomers();
-        initialize("/fxml/CustomerView.fxml", null);
-    }
-
-    private Map<Integer, Customer> getCustomers() {
-        try(Connection connection = dataSource.getConnection())
+        dataView = new DataViewController();
+        initialize(MainApp.class.getResource("/fxml/CustomerView.fxml"), null);
     }
 
     /**
@@ -149,9 +156,10 @@ public class CustomerViewController implements Initializable {
         this.btnCustomerCancel.setCancelButton(true);
         this.btnCustomerOk = new Button();
         this.btnCustomerOk.setDefaultButton(true);
-        lblListView.setText("Customer List View");
-        lblTableView.setText("Customer Table View");
-        lvListView = new ListView<ICustomerView>();
+
+        dataView.setLblListView(new Label("Customer List View"));
+        dataView.setLblTableView(new Label("Customer Table View"));
+        dataView.setListView(new ListView<ICustomerView>());
 
         tvCustomerView.getColumns().addAll(
                 tcCustomerName,
@@ -163,20 +171,133 @@ public class CustomerViewController implements Initializable {
                 tcPhone,
                 tcActive
         );
-        tvTableView = this.tvCustomerView;
+
+        dataView.setTableView(this.tvCustomerView);
+
+        try {
+            getCustomerData();
+        } catch (SQLException e) {
+            System.out.println("Could not get customer data due to SQL error!");
+            e.printStackTrace();
+        }
+
+        try {
+            getAddressData();
+        }
+        catch (SQLException e){
+            System.out.println("Could not obtain address data!");
+            e.getLocalizedMessage();
+        }
+
+        try {
+            getCityData();
+        }
+        catch (SQLException e){
+            System.out.println("Could not get city data!");
+            e.getLocalizedMessage();
+        }
+
+        try {
+            getCountryData();
+        }
+        catch (SQLException e){
+            System.out.println("Could not get country data!");
+        }
 
     }
 
-    private ObservableMap<LocalDateTime, ICustomerView> getOmCustomerView() throws SQLException {
-        Map<Integer, ICustomerView> customerView = new HashMap<>();
-        try(Connection connection = dataSource.getConnection()){
-            PreparedStatement statement = connection.prepareStatement("SELECT * from Customers");
-            ResultSet resultSet = statement.execute();
-            if(rs.next()){
-                rs.get
+    private void getCountryData() throws  SQLException {
+        HashMap<Integer, ICountry> countryHashMap = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM country");
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                CountryProperty country = new CountryProperty(
+                    rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getDate(4).toInstant(),
+                        rs.getTimestamp(5),
+                        rs.getString(6)
+                );
+
+                countryHashMap.put(country.getCountryId(), country);
             }
+            setCountries(FXCollections.observableMap(countryHashMap));
         }
     }
+
+    private void getCityData() throws SQLException {
+        HashMap<Integer, ICity> cityHashMap = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM city");
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()){
+                CityProperty city = new CityProperty(
+                        rs.getInt("cityId"),
+                        rs.getString("city"),
+                        rs.getInt("countryId"),
+                        rs.getString("createdBy"),
+                        rs.getTimestamp("lastUpdate"),
+                        rs.getString("lastUpdatedBy"),
+                        ZonedDateTime.ofInstant(rs.getDate("createDate").toInstant(), ZoneId.systemDefault())
+                );
+
+                cityHashMap.put(city.getCityId(), city);
+            }
+            setCities(FXCollections.observableMap(cityHashMap));
+        }
+
+    }
+
+    private void getAddressData() throws SQLException {
+        HashMap<Integer, IAddress> addressHashMap = new HashMap<>();
+        try(Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM address");
+            ResultSet rs = statement.executeQuery();
+
+            while(rs.next()){
+                AddressProperty address = new AddressProperty(
+                        rs.getInt("cityId"),
+                        rs.getString("address"),
+                        rs.getString("address2"),
+                        rs.getString("postalCode"),
+                        rs.getString("phone"),
+                        rs.getString("createdBy")
+                );
+                addressHashMap.put(address.getAddressId(), address);
+            }
+            setAddresses(addressHashMap);
+
+        }
+    }
+
+    private void getCustomerData() throws SQLException {
+        HashMap<Integer, ICustomer> customerHashMap = new HashMap<>();
+        LinkedList<ICustomer> customerViews = new LinkedList<>();
+        try(Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * from customer");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                CustomerProperty customer = new CustomerProperty(
+                        resultSet.getDate("createDate").toLocalDate(),
+                        resultSet.getInt("customerId"),
+                        resultSet.getByte("active"),
+                        resultSet.getInt("addressId"),
+                        resultSet.getString("createdBy"),
+                        resultSet.getString("customerName"),
+                        resultSet.getString("lastUpdateBy"),
+                        resultSet.getTimestamp("lastUpdate")
+                );
+
+                customerHashMap.put(resultSet.getInt("customerId"), customer);
+                customerViews.add(customer);
+            }
+            setCustomers(customerHashMap);
+        }
+    }
+
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;

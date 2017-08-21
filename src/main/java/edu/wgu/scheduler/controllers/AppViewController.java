@@ -18,7 +18,7 @@ import static edu.wgu.scheduler.models.ApplicationView.CUSTOMER;
 public class AppViewController implements Initializable {
     @FXML
     private BorderPane rootPane;
-/*    @FXML
+    @FXML
     private MenuBar menuBar;
     @FXML
     private Menu fileMenu;
@@ -31,7 +31,7 @@ public class AppViewController implements Initializable {
     @FXML
     private MenuItem copyMenuItem;
     @FXML
-    private MenuItem aboutMenuItem; */
+    private MenuItem aboutMenuItem;
     @FXML
     private VBox vbAppView;
     @FXML
@@ -45,29 +45,17 @@ public class AppViewController implements Initializable {
     @FXML
     private ScrollPane spAppointmentEditor;
     @FXML
-    private TabPane tpViewPane;
+    protected static AppointmentViewController appointmentView = new AppointmentViewController();
     @FXML
-    private Tab tabListView;
+    protected static CustomerViewController customerView = new CustomerViewController();
     @FXML
-    private Tab tabTableView;
-    @FXML
-    private VBox vbListView;
-    @FXML
-    static Label lblListView;
-    @FXML
-    private ScrollPane spListScroller;
-    @FXML
-    static ListView<?> lvListView;
-    @FXML
-    private VBox vbTableView;
-    @FXML
-    static Label lblTableView;
-    @FXML
-    private ScrollPane spTableScroller;
-    @FXML
-    static TableView<?> tvTableView;
+    protected static DataViewController dataView = new DataViewController();
 
     private MainApp mainApp;
+
+    public AppViewController() {
+        initialize(MainApp.class.getResource("fxml/AppView.fxml"), null);
+    }
 
     /**
      * Called to initialize a controller after its root element has been
@@ -82,44 +70,45 @@ public class AppViewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.rootPane = MainApp.rootPane;
-/*        this.menuBar = new MenuBar();
+        this.menuBar = new MenuBar();
         this.fileMenu = new Menu();
         this.editMenu = new Menu();
         this.helpMenu = new Menu();
         this.closeMenuItem = new MenuItem();
         this.copyMenuItem = new MenuItem();
-        this.aboutMenuItem = new MenuItem(); */
+        this.aboutMenuItem = new MenuItem();
         this.vbAppView = new VBox();
         this.tpAppPane = new TabPane();
         this.tabCustomers = new Tab();
         this.spCustomerEditor = new ScrollPane();
         this.tabAppointments = new Tab();
         this.spAppointmentEditor = new ScrollPane();
-        this.tabListView = new Tab();
-        this.vbListView = new VBox();
-        lblListView = new Label();
-        this.spListScroller = new ScrollPane();
-        lvListView = new ListView<>();
-        this.vbTableView = new VBox();
-        lblTableView = new Label();
-        this.spTableScroller = new ScrollPane();
-        tvTableView = new TableView<>();
+
+
+        // populate menus and menuBar and add them to top pane
+
+        this.fileMenu.getItems().setAll(closeMenuItem);
+        this.editMenu.getItems().setAll(copyMenuItem);
+        this.helpMenu.getItems().setAll(aboutMenuItem);
+
+        this.menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
+        this.rootPane.setTop(menuBar);
+
+        // populate scroll panes with included views
+        this.spAppointmentEditor.setContent(appointmentView.apAppointmentView);
+        this.spCustomerEditor.setContent(customerView.apCustomerView);
+
+        // populate tab panes and controllers and add them to the center pane
 
         this.tabAppointments.setContent(spAppointmentEditor);
         this.tabCustomers.setContent(spCustomerEditor);
         this.tpAppPane.getTabs().addAll(tabAppointments, tabCustomers);
 
-        this.spListScroller.setContent(lvListView);
-        this.vbListView.getChildren().addAll(lblListView, this.spListScroller);
+        vbAppView.getChildren().addAll(tpAppPane);
+        this.rootPane.setCenter(vbAppView);
 
-        this.spTableScroller.setContent(tvTableView);
-        this.vbTableView.getChildren().addAll(lblTableView, spTableScroller);
-
-        this.tabTableView.setContent(vbTableView);
-        this.tabListView.setContent(vbListView);
-        this.tpViewPane.getTabs().addAll(tabListView, tabTableView);
-
-        vbAppView.getChildren().addAll(tpAppPane, tpViewPane);
+        // add data view to bottom pane
+        this.rootPane.setBottom(dataView.tabPane);
 
         setupEventHandlers(this);
 

@@ -24,8 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static edu.wgu.scheduler.MainApp.*;
-import static edu.wgu.scheduler.controllers.AppViewController.lblTableView;
-import static edu.wgu.scheduler.controllers.AppViewController.tvTableView;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 21:20.
@@ -35,7 +33,7 @@ import static edu.wgu.scheduler.controllers.AppViewController.tvTableView;
  */
 public class AppointmentViewController implements Initializable {
     @FXML
-    private AnchorPane apAppointmentView;
+    AnchorPane apAppointmentView;
     @FXML
     private VBox vbAppointmentEditor;
     @FXML
@@ -100,6 +98,11 @@ public class AppointmentViewController implements Initializable {
     private RadioButton rdoWeekly;
     @FXML
     private RadioButton rdoMonthly;
+    @FXML
+    private ButtonBar buttonbarAppointmentEditor;
+    @FXML
+    private Button btnAppointmentReset;
+    private final ToggleGroup toggleGroup = new ToggleGroup();
     private TableView<IAppointmentView> tvAppointments = new TableView<>();
     private TableColumn<IAppointmentView, String> tcTitle = new TableColumn<>();
     private TableColumn<IAppointmentView, String> tcDescription = new TableColumn<>();
@@ -113,10 +116,7 @@ public class AppointmentViewController implements Initializable {
     private TableColumn<IAppointmentView, String> tcCreatedBy = new TableColumn<>();
     private TableColumn<IAppointmentView, Timestamp> tcLastUpdate = new TableColumn<>();
     private MainApp mainApp;
-    @FXML
-    private ButtonBar buttonbarAppointmentEditor;
-    @FXML
-    private Button btnAppointmentReset;
+    private DataViewController dataView;
 
     protected static ObservableList<CustomerProperty> customers;
     protected static ObservableList<AppointmentProperty> appointments;
@@ -124,7 +124,8 @@ public class AppointmentViewController implements Initializable {
     protected static ObservableList<ReminderProperty> reminders;
 
     public AppointmentViewController() {
-
+        dataView = new DataViewController();
+        initialize(MainApp.class.getResource("fxml/AppointmentView.fxml"), null);
     }
 
     @Override
@@ -217,8 +218,8 @@ public class AppointmentViewController implements Initializable {
                 this.tcCreateDate,
                 this.tcCreatedBy,
                 this.tcLastUpdate);
-        tvTableView = this.tvAppointments;
-        lblTableView.setText("Appointments");
+        dataView.setTableView(this.tvAppointments);
+        dataView.setLblListView(new Label("Appointments"));
 
         appointments = FXCollections.observableList(new LinkedList<>(), (AppointmentProperty ap) -> new Observable[]{
                 ap.title(),
@@ -234,7 +235,10 @@ public class AppointmentViewController implements Initializable {
         reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
 
         });
-        getAppointments();
+
+        rdoMonthly.setToggleGroup(toggleGroup);
+        rdoWeekly.setToggleGroup(toggleGroup);
+
     }
 
     private void setMainApp(MainApp mainApp){
