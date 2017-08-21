@@ -21,15 +21,6 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         init();
     }
 
-    public AppointmentProperty(String createdBy, int customerId, String description, ZonedDateTime end, String location, ZonedDateTime start, String title, String url) {
-        super(new Appointment(createdBy, customerId, description, end, location, start, title, url));
-        init();
-    }
-
-    public AppointmentProperty(String createdBy, int customerId, String description, ZonedDateTime end, String location, ZonedDateTime start, String title) {
-        super(new Appointment(createdBy, customerId, description, end, location, start, title));
-        init();
-    }
 
     public AppointmentProperty(Appointment ap) {
         super(ap);

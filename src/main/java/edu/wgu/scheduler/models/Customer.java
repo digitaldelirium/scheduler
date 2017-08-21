@@ -7,9 +7,7 @@ import javafx.beans.property.StringProperty;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 6/25/17.
@@ -26,7 +24,7 @@ public class Customer implements ICustomer {
     private final String createdBy;
     private StringProperty customerName;
     private StringProperty lastUpdateBy;
-    private ObjectProperty<Timestamp> lastUpdate;
+    private ObjectProperty<ZonedDateTime> lastUpdate;
 
     public Customer(int addressId, String customerName) {
         this(addressId, customerName, null);
@@ -38,7 +36,7 @@ public class Customer implements ICustomer {
         this.createDate = LocalDate.now(ZoneId.of("UTC"));
         this.active.setValue(Byte.valueOf("1"));
         this.lastUpdateBy.setValue(createdBy);
-        this.lastUpdate.setValue(Timestamp.valueOf(LocalDateTime.now()));
+        this.lastUpdate.setValue(ZonedDateTime.now(ZoneId.of("UTC")));
         this.createdBy = createdBy;
     }
 
@@ -57,7 +55,7 @@ public class Customer implements ICustomer {
         this.createdBy = createdBy;
         this.customerName.setValue(customerName);
         this.lastUpdateBy.setValue(lastUpdateBy);
-        this.lastUpdate.setValue(lastUpdate);
+        this.lastUpdate.setValue(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
     }
 
     @Override

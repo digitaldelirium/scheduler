@@ -14,23 +14,19 @@ import java.time.LocalDate;
 public class CustomerProperty extends SimpleObjectProperty<Customer> implements ICustomer {
     public CustomerProperty(LocalDate createDate, int customerId, Byte active, int addressId, String createdBy, String customerName, String lastUpdateBy, Timestamp lastUpdate) {
         super(new Customer(createDate, customerId, active, addressId, createdBy, customerName, lastUpdateBy, lastUpdate));
-        init();
     }
 
     public CustomerProperty(int addressId, String customerName, String createdBy) {
         super(new Customer(addressId, customerName, createdBy));
-        init();
     }
 
     public CustomerProperty(int addressId, String customerName) {
         super(new Customer(addressId, customerName));
-        init();
     }
 
 
     public CustomerProperty(Customer customer) {
         super(customer);
-        init();
     }
 
     public int getCustomerId() {
@@ -71,9 +67,5 @@ public class CustomerProperty extends SimpleObjectProperty<Customer> implements 
 
     public void setLastUpdateBy(String lastUpdateBy) {
         getValue().setLastUpdateBy(lastUpdateBy);
-    }
-
-    public void init() {
-
     }
 }

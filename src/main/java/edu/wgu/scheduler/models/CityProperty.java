@@ -84,7 +84,7 @@ public class CityProperty extends SimpleObjectProperty<City> implements ICity {
         return getValue().lastUpdateByProperty();
     }
 
-    public Timestamp getLastUpdate() {
+    public ZonedDateTime getLastUpdate() {
         return getValue().getLastUpdate();
     }
 
@@ -92,7 +92,7 @@ public class CityProperty extends SimpleObjectProperty<City> implements ICity {
         getValue().setLastUpdate(lastUpdate);
     }
 
-    public ObjectProperty<Timestamp> lastUpdateProperty() {
+    public ObjectProperty<ZonedDateTime> lastUpdateProperty() {
         return getValue().lastUpdateProperty();
     }
 

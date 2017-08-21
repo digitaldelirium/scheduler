@@ -24,7 +24,7 @@ public class City implements ICity {
     @NotNull
     private SimpleIntegerProperty countryId;
     private String createdBy;
-    private ObjectProperty<Timestamp> lastUpdate;
+    private ObjectProperty<ZonedDateTime> lastUpdate;
     private StringProperty lastUpdateBy;
 
     public City(String city, int countryId) {
@@ -44,7 +44,7 @@ public class City implements ICity {
         this.city.setValue(city);
         this.countryId.setValue(countryId);
         this.createdBy = createdBy;
-        this.lastUpdate.setValue(lastUpdate);
+        this.lastUpdate.setValue(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
         this.lastUpdateBy.setValue(lastUpdateBy);
         this.createDate = createDate;
     }
@@ -102,16 +102,16 @@ public class City implements ICity {
     }
 
     @Override
-    public Timestamp getLastUpdate() {
+    public ZonedDateTime getLastUpdate() {
         return lastUpdate.get();
     }
 
     @Override
     public void setLastUpdate(Timestamp lastUpdate) {
-        this.lastUpdate.set(lastUpdate);
+        this.lastUpdate.set(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
     }
 
-    public ObjectProperty<Timestamp> lastUpdateProperty() {
+    public ObjectProperty<ZonedDateTime> lastUpdateProperty() {
         return lastUpdate;
     }
 
