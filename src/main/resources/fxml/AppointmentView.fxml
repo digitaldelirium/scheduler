@@ -14,48 +14,50 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml/1" fx:id="apAppointmentView" maxHeight="-Infinity" maxWidth="-Infinity"
-         minHeight="-Infinity" minWidth="-Infinity" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.121"
-         fx:controller="edu.wgu.scheduler.controllers.AppointmentViewController">
+<fx:root fx:id="apAppointmentView" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="675.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.AppointmentViewController">
    <children>
-      <VBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox AnchorPane.bottomAnchor="-140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-             <Label fx:id="lblViewScope" text="Choose View:"/>
-             <HBox fx:id="hbViewScope" prefHeight="100.0" prefWidth="200.0">
+             <Label fx:id="lblViewScope" text="Choose View:" />
+             <HBox fx:id="hbViewScope" prefHeight="37.0" prefWidth="708.0">
                  <VBox.margin>
-                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                  </VBox.margin>
                  <padding>
-                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                  </padding>
                  <children>
-                     <RadioButton fx:id="rdoWeekly" mnemonicParsing="false" text="Weekly">
+                     <RadioButton fx:id="rdoWeekly" mnemonicParsing="false" selected="true" text="Weekly">
                          <HBox.margin>
-                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                          </HBox.margin>
                      </RadioButton>
                      <RadioButton fx:id="rdoMonthly" mnemonicParsing="false" text="Monthly">
                          <HBox.margin>
-                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                          </HBox.margin>
                      </RadioButton>
                  </children>
              </HBox>
              <HBox fx:id="hbEditorBar">
                  <children>
-                     <ToggleButton fx:id="tbAppointmentEditor" mnemonicParsing="false" onAction="#toggleEditable"
-                                   text="Enable Edit Mode">
+                     <ToggleButton fx:id="tbAppointmentEditor" mnemonicParsing="false" onAction="#toggleEditable" text="Enable Edit Mode">
                          <HBox.margin>
-                             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                             <Insets left="10.0" right="10.0" />
                          </HBox.margin>
                      </ToggleButton>
-                     <Button fx:id="btnNewAppointment" mnemonicParsing="false" onAction="#createNewAppointment"
-                             text="New Appointment">
+                     <Button fx:id="btnNewAppointment" mnemonicParsing="false" onAction="#createNewAppointment" text="New Appointment">
                          <HBox.margin>
-                             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                             <Insets left="10.0" right="10.0" />
                          </HBox.margin>
                      </Button>
                  </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
              </HBox>
             <GridPane hgap="10.0" vgap="10.0">
               <columnConstraints>
@@ -78,7 +80,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <padding>
-                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
                <children>
                   <Label fx:id="lblTitle" text="Title" />
@@ -92,27 +94,24 @@
                   <Label fx:id="lblCreatedDate" text="Created Date" GridPane.rowIndex="8" />
                   <Label fx:id="lblCreatedBy" text="Created By" GridPane.rowIndex="9" />
                   <Label fx:id="lblLastUpdated" text="Last Updated" GridPane.rowIndex="10" />
-                   <TextField fx:id="txtTitle" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                   <TextField fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                   <TextField fx:id="txtLocation" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                   <TextField fx:id="txtContact" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                   <TextField fx:id="txtUrl" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                   <TextField fx:id="txtStart" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                   <TextField fx:id="txtEnd" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                   <TextField fx:id="txtTitle" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                   <TextField fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                   <TextField fx:id="txtLocation" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                   <TextField fx:id="txtContact" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                   <TextField fx:id="txtUrl" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                   <TextField fx:id="txtStart" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                   <TextField fx:id="txtEnd" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   <TextField fx:id="txtCustomerName" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                   <TextField fx:id="txtCreatedDate" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
-                   <TextField fx:id="txtCreatedBy" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
-                   <TextField fx:id="txtLastUpdated" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
-                   <ButtonBar fx:id="buttonbarAppointmentEditor" prefHeight="40.0" prefWidth="200.0"
-                              GridPane.columnIndex="1" GridPane.rowIndex="12">
+                   <TextField fx:id="txtCreatedDate" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                   <TextField fx:id="txtCreatedBy" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                   <TextField fx:id="txtLastUpdated" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                   <ButtonBar fx:id="buttonbarAppointmentEditor" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="12">
                     <buttons>
-                        <Button fx:id="btnAppointmentSave" defaultButton="true" disable="true" mnemonicParsing="false"
-                                onAction="#saveAppointment" text="Save"/>
-                        <Button fx:id="btnAppointmentReset" cancelButton="true" disable="true" mnemonicParsing="false"
-                                onAction="#clearForm" text="Reset"/>
+                        <Button fx:id="btnAppointmentSave" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#saveAppointment" text="Save" />
+                        <Button fx:id="btnAppointmentReset" cancelButton="true" disable="true" mnemonicParsing="false" onAction="#clearForm" text="Reset" />
                     </buttons>
                       <GridPane.margin>
-                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                       </GridPane.margin>
                   </ButtonBar>
                </children>
