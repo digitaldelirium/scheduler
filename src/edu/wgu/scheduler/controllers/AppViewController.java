@@ -8,7 +8,6 @@ import edu.wgu.scheduler.models.ApplicationView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -18,8 +17,8 @@ import static edu.wgu.scheduler.models.ApplicationView.CUSTOMER;
 
 public class AppViewController implements Initializable {
     @FXML
-    private BorderPane rootPane;
-/*    @FXML
+    protected static CustomerViewController customerViewController = new CustomerViewController();
+    @FXML
     private MenuBar menuBar;
     @FXML
     private Menu fileMenu;
@@ -32,7 +31,7 @@ public class AppViewController implements Initializable {
     @FXML
     private MenuItem copyMenuItem;
     @FXML
-    private MenuItem aboutMenuItem; */
+    private MenuItem aboutMenuItem;
     @FXML
     private VBox vbAppView;
     @FXML
@@ -46,29 +45,17 @@ public class AppViewController implements Initializable {
     @FXML
     private ScrollPane spAppointmentEditor;
     @FXML
-    private TabPane tpViewPane;
+    protected static DataViewController dataViewController = new DataViewController();
     @FXML
-    private Tab tabListView;
+    private static AppointmentViewController appointmentViewController = new AppointmentViewController();
     @FXML
-    private Tab tabTableView;
-    @FXML
-    private VBox vbListView;
-    @FXML
-    static Label lblListView;
-    @FXML
-    private ScrollPane spListScroller;
-    @FXML
-    static ListView<?> lvListView;
-    @FXML
-    private VBox vbTableView;
-    @FXML
-    static Label lblTableView;
-    @FXML
-    private ScrollPane spTableScroller;
-    @FXML
-    static TableView<?> tvTableView;
+    protected BorderPane rootPane;
 
     private MainApp mainApp;
+
+    public AppViewController() {
+        initialize(MainApp.class.getResource("fxml/AppView.fxml"), null);
+    }
 
     /**
      * Called to initialize a controller after its root element has been
@@ -82,45 +69,47 @@ public class AppViewController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.rootPane = MainApp.rootPane;
-/*        this.menuBar = new MenuBar();
+        this.rootPane = new BorderPane();
+        MainApp.rootPane = this.rootPane;
+        this.menuBar = new MenuBar();
         this.fileMenu = new Menu();
         this.editMenu = new Menu();
         this.helpMenu = new Menu();
         this.closeMenuItem = new MenuItem();
         this.copyMenuItem = new MenuItem();
-        this.aboutMenuItem = new MenuItem(); */
+        this.aboutMenuItem = new MenuItem();
         this.vbAppView = new VBox();
         this.tpAppPane = new TabPane();
         this.tabCustomers = new Tab();
         this.spCustomerEditor = new ScrollPane();
         this.tabAppointments = new Tab();
         this.spAppointmentEditor = new ScrollPane();
-        this.tabListView = new Tab();
-        this.vbListView = new VBox();
-        lblListView = new Label();
-        this.spListScroller = new ScrollPane();
-        lvListView = new ListView<>();
-        this.vbTableView = new VBox();
-        lblTableView = new Label();
-        this.spTableScroller = new ScrollPane();
-        tvTableView = new TableView<>();
+
+
+        // populate menus and menuBar and add them to top pane
+
+        this.fileMenu.getItems().setAll(closeMenuItem);
+        this.editMenu.getItems().setAll(copyMenuItem);
+        this.helpMenu.getItems().setAll(aboutMenuItem);
+
+        this.menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
+        this.rootPane.setTop(menuBar);
+
+        // populate scroll panes with included views
+        this.spAppointmentEditor.setContent(appointmentViewController.apAppointmentView);
+        this.spCustomerEditor.setContent(customerViewController.apCustomerView);
+
+        // populate tab panes and controllers and add them to the center pane
 
         this.tabAppointments.setContent(spAppointmentEditor);
         this.tabCustomers.setContent(spCustomerEditor);
         this.tpAppPane.getTabs().addAll(tabAppointments, tabCustomers);
 
-        this.spListScroller.setContent(lvListView);
-        this.vbListView.getChildren().addAll(lblListView, this.spListScroller);
+        vbAppView.getChildren().addAll(tpAppPane);
+        this.rootPane.setCenter(vbAppView);
 
-        this.spTableScroller.setContent(tvTableView);
-        this.vbTableView.getChildren().addAll(lblTableView, spTableScroller);
-
-        this.tabTableView.setContent(vbTableView);
-        this.tabListView.setContent(vbListView);
-        this.tpViewPane.getTabs().addAll(tabListView, tabTableView);
-
-        vbAppView.getChildren().addAll(tpAppPane, tpViewPane);
+        // add data view to bottom pane
+        this.rootPane.setBottom(dataViewController.tabPane);
 
         setupEventHandlers(this);
 
@@ -144,20 +133,12 @@ public class AppViewController implements Initializable {
     }
 
     protected void setApplicationView(Enum<ApplicationView> view) {
-        // TODO: Setup FXML Loader
-        FXMLLoader loader = new FXMLLoader();
-
 
         switch (view.name()) {
             case "APPOINTMENT":
-                loader.setLocation(MainApp.class.getResource("/fxml/AppointmentView.fxml"));
-                AppointmentViewController appController = loader.getController();
-                spAppointmentEditor.setContent(appController.apAppointmentView);
+
                 break;
             case "CUSTOMER":
-                loader.setLocation(MainApp.class.getResource("/fxml/CustomerView.fxml"));
-                CustomerViewController controller = loader.getController();
-                spCustomerEditor.setContent(controller.apCustomerView);
                 break;
             default:
                 // TODO: See if user is logged in and call Login if not

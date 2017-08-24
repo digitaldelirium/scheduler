@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.AppViewController">
+   <center>
+      <VBox fx:id="vbAppView">
+          <children>
+              <TabPane fx:id="tpAppPane" tabClosingPolicy="UNAVAILABLE">
+                  <tabs>
+                      <Tab fx:id="tabCustomers" closable="false" text="Customers">
+                          <content>
+                              <ScrollPane fx:id="spCustomerEditor" fitToHeight="true" fitToWidth="true" prefWidth="1000.0">
+                                  <fx:include fx:id="custView" source="CustomerView.fxml"/>
+                              </ScrollPane>
+                          </content>
+                      </Tab>
+                      <Tab fx:id="tabAppointments" closable="false" onSelectionChanged="#setAppointmentView"
+                           text="Appointments">
+                          <content>
+                              <ScrollPane fx:id="spAppointmentEditor" fitToHeight="true" fitToWidth="true">
+                                  <fx:include fx:id="appointmentView" source="AppointmentView.fxml" />
+                              </ScrollPane>
+                          </content>
+                      </Tab>
+                  </tabs>
+              </TabPane>
+          </children>
+      </VBox>
+   </center>
+   <top>
+      <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu fx:id="fileMenu" text="_File">
+            <items>
+              <MenuItem fx:id="closeMenuItem" mnemonicParsing="true" text="_Close">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            </items>
+               <accelerator>
+                  <KeyCodeCombination alt="DOWN" code="F" control="UP" meta="UP" shift="UP" shortcut="UP" />
+               </accelerator>
+          </Menu>
+          <Menu fx:id="editMenu" text="_Edit">
+            <items>
+              <MenuItem fx:id="copyMenuItem" mnemonicParsing="true" text="_Copy">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            </items>
+               <accelerator>
+                  <KeyCodeCombination alt="DOWN" code="E" control="UP" meta="UP" shift="UP" shortcut="UP" />
+               </accelerator>
+          </Menu>
+          <Menu fx:id="helpMenu" text="_Help">
+            <items>
+              <MenuItem fx:id="aboutMenuItem" mnemonicParsing="true" text="_About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+    <bottom>
+        <fx:include fx:id="dataView" source="DataView.fxml" />
+    </bottom>
+</BorderPane>

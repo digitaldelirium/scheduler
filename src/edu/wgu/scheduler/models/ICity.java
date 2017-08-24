@@ -26,7 +26,7 @@ public interface ICity {
 
     void setLastUpdateBy(String lastUpdateBy);
 
-    Timestamp getLastUpdate();
+    ZonedDateTime getLastUpdate();
 
     void setLastUpdate(Timestamp lastUpdate);
 }

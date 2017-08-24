@@ -1,9 +1,8 @@
 package edu.wgu.scheduler.models;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
@@ -14,6 +13,10 @@ import java.time.ZonedDateTime;
  * Student ID: 000292065
  */
 public class CustomerViewProperty extends SimpleObjectProperty<CustomerView> implements ICustomerView {
+
+    public CustomerViewProperty(CustomerView customerView){
+        super(customerView);
+    }
 
     @Override
     public boolean isActive() {
@@ -94,7 +97,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerView> imp
 
     @Override
     public String getPhone() {
-        return null;
+        return getValue().getPhone();
     }
 
     public StringProperty phone(){
@@ -103,7 +106,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerView> imp
 
     @Override
     public String getPostalCode() {
-        return null;
+        return getValue().getPostalCode();
     }
 
     public StringProperty postalCode(){
@@ -112,6 +115,13 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerView> imp
 
     @Override
     public ZonedDateTime getLastUpdate() {
-        return null;
+        return getValue().getLastUpdate();
     }
+
+    @Override
+    public int getCustomerId() {
+        return getValue().getCustomerId();
+    }
+
+
 }

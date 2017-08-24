@@ -15,6 +15,8 @@ public interface ICustomerView {
 
     int getAddressId();
 
+    int getCustomerId();
+
     LocalDate getCreateDate();
 
     String getCreatedBy();

@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -24,7 +25,10 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -39,34 +43,38 @@ public class MainApp extends Application {
     public static Stage primaryStage;
 
     public static Properties config = new Properties();
-    static Locale locale = Locale.getDefault();
+    public static Locale locale = Locale.getDefault();
+    public static ResourceBundle bundle;
 
+    private static ObservableMap<Integer, ICustomer> customers = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, IAddress> addresses = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, ICity> cities = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, IAppointment> appointments = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, ICountry> countries = FXCollections.observableHashMap();
+    private static ObservableMap<Integer, IReminder> reminders = FXCollections.observableHashMap();
+    private static ObservableList<ICustomerView> customerList;
 
-    private ObservableMap<Integer, Customer> customers = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, Address> addresses = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, ICity> cities = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, Appointment> appointments = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, Country> countries = FXCollections.emptyObservableMap();
-    private ObservableMap<Integer, IReminder> reminders = FXCollections.emptyObservableMap();
-    private ResourceBundle bundle;
-    private AppointmentViewController appointmentView;
-    private CustomerViewController customerView;
-    private MainApp mainApp;
+    private AppViewController appView;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
         primaryStage = stage;
         primaryStage.setTitle("Welcome to C195 scheduler!");
+
+        if(locale.getCountry().equals("US")){
+            if(locale.getLanguage().equals("en")) {
+                locale = new Locale("en");
+            }
+        }
+
         bundle = ResourceBundle.getBundle("Scheduler", locale);
 
-        File configFile = new File("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties");
-/*        if(configFile.exists()){
-            System.out.println("File Exists");
+        File configFile = null;
+        try {
+            configFile = new File(getClass().getClassLoader().getResource("resources/config.properties").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
-        else {
-            System.out.println("File Not Found");
-        }
-*/
 
         try (FileInputStream inputStream = new FileInputStream(configFile)) {
             config.load(inputStream);
@@ -78,16 +86,18 @@ public class MainApp extends Application {
 
         getDataSourceConnection();
         LoginController loginController = new LoginController();
-        loggedIn = showLoginDialog();
+        loggedIn = showLoginDialog(loginController);
 
         initLayout();
 
 
     }
 
-    private boolean showLoginDialog() {
+    private boolean showLoginDialog(LoginController loginController) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle(bundle.getString("Login"));
+        dialog.setHeaderText(bundle.getString("Welcome"));
+
         dialog.getDialogPane().getButtonTypes().addAll(btnLogin, btnRegister);
 
         Node loginButton = dialog.getDialogPane().lookupButton(btnLogin);
@@ -95,25 +105,29 @@ public class MainApp extends Application {
 
         Node registerButton = dialog.getDialogPane().lookupButton(btnRegister);
 
-
         txtUsername.textProperty().addListener(((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             username = txtUsername.getText();
+            if ((txtPassword.textProperty().getValue().trim() != null) && (!username.trim().isEmpty()) && (userCount > 0)) {
+                loginButton.setDisable(false);
+            } else {
+                loginButton.setDisable(true);
+            }
         }));
 
         txtPassword.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             password = txtPassword.getText();
-            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null)) {
+            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null) && (userCount > 0)) {
                 loginButton.setDisable(false);
             } else {
                 loginButton.setDisable(true);
             }
         });
 
-        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> handleLoginButtonAction(event));
+        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleLoginButtonAction);
 
-        registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleRegisterButtonAction(event));
+        registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleRegisterButtonAction);
 
-        dialog.getDialogPane().setContent(gpLogin);
+        dialog.getDialogPane().setContent(apLogin);
         Platform.runLater(() -> txtUsername.requestFocus());
 
         dialog.setResultConverter(button -> {
@@ -125,7 +139,9 @@ public class MainApp extends Application {
 
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
-        result.ifPresent((Pair<String, String> usernamePassword) -> loggedIn = true);
+        result.ifPresent((Pair<String, String> usernamePassword) -> {
+            loggedIn = true;
+        });
 
         return loggedIn;
     }
@@ -155,29 +171,80 @@ public class MainApp extends Application {
     }
 
     private void initLayout() {
+        rootPane = new BorderPane();
+
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));
-            AppViewController controller = loader.getController();
-            loader.setRoot(this);
+            appView = loader.getController();
             rootPane = loader.load();
 
             Scene scene = new Scene(rootPane);
             scene.getStylesheets().add("/styles/Styles.css");
 
-            this.setMainApp(this.mainApp);
-
+//            controller.setMainApp(this);
             primaryStage.setScene(scene);
             primaryStage.show();
-
         }
         catch (IOException e) {
-        e.printStackTrace();
-    }
+            e.printStackTrace();
+        }
     }
 
-    private void setMainApp(MainApp mainApp){
-        this.mainApp = mainApp;
+    public static ObservableMap<Integer, ICustomer> getCustomers() {
+        return customers;
+    }
+
+    public static void setCustomers(HashMap<Integer, ICustomer> customers) {
+        MainApp.customers.putAll(customers);
+    }
+
+    public static ObservableMap<Integer, IAddress> getAddresses() {
+        return addresses;
+    }
+
+    public static void setAddresses(HashMap<Integer, IAddress> addresses) {
+        MainApp.addresses.putAll(addresses);
+    }
+
+    public static ObservableMap<Integer, ICity> getCities() {
+        return cities;
+    }
+
+    public static void setCities(ObservableMap<Integer, ICity> cities) {
+        MainApp.cities = cities;
+    }
+
+    public static ObservableMap<Integer, IAppointment> getAppointments() {
+        return appointments;
+    }
+
+    public static void setAppointments(ObservableMap<Integer, IAppointment> appointments) {
+        MainApp.appointments = appointments;
+    }
+
+    public static ObservableMap<Integer, ICountry> getCountries() {
+        return countries;
+    }
+
+    public static void setCountries(ObservableMap<Integer, ICountry> countries) {
+        MainApp.countries = countries;
+    }
+
+    public static ObservableMap<Integer, IReminder> getReminders() {
+        return reminders;
+    }
+
+    public static void setReminders(ObservableMap<Integer, IReminder> reminders) {
+        MainApp.reminders = reminders;
+    }
+
+    public static ObservableList<ICustomerView> getCustomerList() {
+        return customerList;
+    }
+
+    public static void setCustomerList(ObservableList<ICustomerView> customerList) {
+        MainApp.customerList = customerList;
     }
 
     /**
