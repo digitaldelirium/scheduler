@@ -26,8 +26,8 @@ buildNumber.properties
 .mtj.tmp/
 
 # Package Files #
-!libraries/*.jar
-*.jar
+#!libraries/*.jar
+#*.jar
 *.war
 *.ear
 *.zip
