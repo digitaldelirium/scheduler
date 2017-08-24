@@ -24,7 +24,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -43,16 +42,16 @@ public class MainApp extends Application {
     static Locale locale = Locale.getDefault();
 
 
-    protected static ObservableMap<Integer, ICustomer> customers = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, IAddress> addresses = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, ICity> cities = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, IAppointment> appointments = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, ICountry> countries = FXCollections.emptyObservableMap();
-    protected static ObservableMap<Integer, IReminder> reminders = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, Customer> customers = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, Address> addresses = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, ICity> cities = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, Appointment> appointments = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, Country> countries = FXCollections.emptyObservableMap();
+    private ObservableMap<Integer, IReminder> reminders = FXCollections.emptyObservableMap();
     private ResourceBundle bundle;
-    private AppViewController appView;
     private AppointmentViewController appointmentView;
     private CustomerViewController customerView;
+    private MainApp mainApp;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
@@ -60,8 +59,8 @@ public class MainApp extends Application {
         primaryStage.setTitle("Welcome to C195 scheduler!");
         bundle = ResourceBundle.getBundle("Scheduler", locale);
 
- /*       File configFile = new File("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties");
-        if(configFile.exists()){
+        File configFile = new File("C:\\Users\\maste\\Documents\\NetBeansProjects\\scheduler\\src\\main\\resources\\config.properties");
+/*        if(configFile.exists()){
             System.out.println("File Exists");
         }
         else {
@@ -69,7 +68,7 @@ public class MainApp extends Application {
         }
 */
 
-        try (FileInputStream inputStream = new FileInputStream("config.properties")) {
+        try (FileInputStream inputStream = new FileInputStream(configFile)) {
             config.load(inputStream);
             System.out.println("Configuration loaded");
         } catch (IOException ex) {
@@ -79,14 +78,14 @@ public class MainApp extends Application {
 
         getDataSourceConnection();
         LoginController loginController = new LoginController();
-        loggedIn = showLoginDialog(loginController);
+        loggedIn = showLoginDialog();
 
         initLayout();
 
 
     }
 
-    private boolean showLoginDialog(LoginController loginController) {
+    private boolean showLoginDialog() {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle(bundle.getString("Login"));
         dialog.getDialogPane().getButtonTypes().addAll(btnLogin, btnRegister);
@@ -103,7 +102,7 @@ public class MainApp extends Application {
 
         txtPassword.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             password = txtPassword.getText();
-            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null) && (userCount > 0)) {
+            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null)) {
                 loginButton.setDisable(false);
             } else {
                 loginButton.setDisable(true);
@@ -114,7 +113,7 @@ public class MainApp extends Application {
 
         registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleRegisterButtonAction(event));
 
-        dialog.getDialogPane().setContent(apLogin);
+        dialog.getDialogPane().setContent(gpLogin);
         Platform.runLater(() -> txtUsername.requestFocus());
 
         dialog.setResultConverter(button -> {
@@ -126,9 +125,7 @@ public class MainApp extends Application {
 
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
-        result.ifPresent((Pair<String, String> usernamePassword) -> {
-            loggedIn = true;
-        });
+        result.ifPresent((Pair<String, String> usernamePassword) -> loggedIn = true);
 
         return loggedIn;
     }
@@ -161,19 +158,26 @@ public class MainApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));
-            appView = loader.getController();
+            AppViewController controller = loader.getController();
+            loader.setRoot(this);
             rootPane = loader.load();
 
             Scene scene = new Scene(rootPane);
             scene.getStylesheets().add("/styles/Styles.css");
 
-//            controller.setMainApp(this);
+            this.setMainApp(this.mainApp);
+
             primaryStage.setScene(scene);
             primaryStage.show();
+
         }
         catch (IOException e) {
         e.printStackTrace();
     }
+    }
+
+    private void setMainApp(MainApp mainApp){
+        this.mainApp = mainApp;
     }
 
     /**

@@ -8,6 +8,7 @@ import edu.wgu.scheduler.models.ApplicationView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -144,12 +145,19 @@ public class AppViewController implements Initializable {
 
     protected void setApplicationView(Enum<ApplicationView> view) {
         // TODO: Setup FXML Loader
+        FXMLLoader loader = new FXMLLoader();
+
 
         switch (view.name()) {
             case "APPOINTMENT":
-
+                loader.setLocation(MainApp.class.getResource("/fxml/AppointmentView.fxml"));
+                AppointmentViewController appController = loader.getController();
+                spAppointmentEditor.setContent(appController.apAppointmentView);
                 break;
             case "CUSTOMER":
+                loader.setLocation(MainApp.class.getResource("/fxml/CustomerView.fxml"));
+                CustomerViewController controller = loader.getController();
+                spCustomerEditor.setContent(controller.apCustomerView);
                 break;
             default:
                 // TODO: See if user is logged in and call Login if not

@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="860.0" prefWidth="1258.0"
-            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="edu.wgu.scheduler.controllers.AppViewController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.AppViewController">
    <center>
       <VBox fx:id="vbAppView">
           <children>
@@ -18,16 +17,15 @@
                   <tabs>
                       <Tab fx:id="tabCustomers" closable="false" text="Customers">
                           <content>
-                              <ScrollPane fx:id="spCustomerEditor" fitToHeight="true" fitToWidth="true"
-                                          prefWidth="1000.0">
-                                  <fx:include fx:id="customerView" source="CustomerView.fxml"/>
+                              <ScrollPane fx:id="spCustomerEditor" fitToHeight="true" fitToWidth="true" prefWidth="1000.0" >
+                                      <fx:include source="CustomerView.fxml" fx:id="customerView" />
                               </ScrollPane>
                           </content>
                       </Tab>
                       <Tab fx:id="tabAppointments" closable="false" text="Appointments">
                           <content>
                               <ScrollPane fx:id="spAppointmentEditor" fitToHeight="true" fitToWidth="true">
-                                  <fx:include fx:id="appointmentView" source="AppointmentView.fxml"/>
+                                  <fx:include source="AppointmentView.fxml" fx:id="appointmentView" />
                               </ScrollPane>
                           </content>
                       </Tab>
