@@ -19,11 +19,12 @@
                       <Tab fx:id="tabCustomers" closable="false" text="Customers">
                           <content>
                               <ScrollPane fx:id="spCustomerEditor" fitToHeight="true" fitToWidth="true" prefWidth="1000.0">
-                                      <fx:include fx:id="customerView" source="CustomerView.fxml" />
+                                  <fx:include fx:id="custView" source="CustomerView.fxml"/>
                               </ScrollPane>
                           </content>
                       </Tab>
-                      <Tab fx:id="tabAppointments" closable="false" text="Appointments">
+                      <Tab fx:id="tabAppointments" closable="false" onSelectionChanged="#setAppointmentView"
+                           text="Appointments">
                           <content>
                               <ScrollPane fx:id="spAppointmentEditor" fitToHeight="true" fitToWidth="true">
                                   <fx:include fx:id="appointmentView" source="AppointmentView.fxml" />

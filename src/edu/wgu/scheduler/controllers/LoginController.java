@@ -2,6 +2,7 @@ package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.User;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -23,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Function;
@@ -58,26 +60,25 @@ public class LoginController implements Initializable {
     private Label lblUsername;
     @FXML
     private Label lblPassword;
-    private static ResourceBundle bundle;
     private static ObservableList<String> userList;
     private static ObservableMap<String, String> userMap;
     private static MainApp mainApp;
     private static Logger log;
 
     public LoginController() throws SQLException, IOException {
-        Locale locale = Locale.getDefault();
-        try (FileInputStream inputStream = new FileInputStream("config.properties")) {
-            config.load(inputStream);
-
+        try {
             getUserCount();
             userMap = getUserMap();
 
-            bundle = ResourceBundle.getBundle("scheduler.Scheduler", locale);
-        } catch (IOException e) {
-            System.out.println("Could not load application config file!");
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            System.out.println("Could not load user data!");
+            ex.getLocalizedMessage();
         }
+
+        bundle = ResourceBundle.getBundle("Scheduler", locale);
         log  = Logger.getLogger(LoginController.class.getName());
+
+        userList = FXCollections.observableArrayList();
         initialize(MainApp.class.getResource("/fxml/Login.fxml"), bundle);
     }
 
@@ -151,7 +152,7 @@ public class LoginController implements Initializable {
         user = new User(username, password, createdBy);
         user.setActive(true);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement insert = connection.prepareStatement("INSERT INTO User (userName, User.password, createdDate, createdBy, active, lastUpdate) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement insert = connection.prepareStatement("INSERT INTO user (userName, user.password, createdDate, createdBy, active, lastUpdate) VALUES (?, ?, ?, ?, ?, ?)");
             insert.setString(1, username);
             insert.setString(2, password);
             insert.setObject(3, user.getCreatedDate());
@@ -218,23 +219,34 @@ public class LoginController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         apLogin = new AnchorPane();
         this.gpLogin = new GridPane();
-        this.lblWelcome = new Label();
-        this.lblUsername = new Label();
-        this.lblPassword = new Label();
+        this.lblWelcome = new Label(resources.getString("Welcome"));
+        this.lblUsername = new Label(resources.getString("Username"));
+        this.lblPassword = new Label(resources.getString("Password"));
         txtUsername = new TextField();
+        txtUsername.setPromptText(resources.getString("Enter Username"));
         txtPassword = new PasswordField();
+        txtPassword.setPromptText(resources.getString("Enter Password"));
+        this.lblUsername.setLabelFor(txtUsername);
+        this.lblPassword.setLabelFor(txtPassword);
         btnLogin = new ButtonType(resources.getString("Login"), ButtonBar.ButtonData.OK_DONE);
         btnRegister = new ButtonType(resources.getString("Register"));
-        this.gpLogin.getChildren().addAll(this.lblWelcome, this.lblUsername, this.lblPassword, txtUsername, txtPassword);
+
+        this.gpLogin.add(lblUsername, 0, 1);
+        this.gpLogin.add(txtUsername, 1, 1);
+        this.gpLogin.add(lblPassword, 0, 2);
+        this.gpLogin.add(txtPassword, 1, 2);
+
+        apLogin.getChildren().add(gpLogin);
     }
 
     private ObservableMap<String, String> getUserMap() throws SQLException {
+        userMap = FXCollections.observableHashMap();
         try (Connection conn = dataSource.getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("SELECT * FROM User");
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM user");
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
-                userMap.put(rs.getString(8), rs.getString(7));
+                userMap.put(rs.getString("userName"), rs.getString("password"));
             }
         }
 
@@ -243,16 +255,10 @@ public class LoginController implements Initializable {
 
     private void getUserCount() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM User");
+            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM user");
             ResultSet users = statement.executeQuery();
             while (users.next()) {
                 userCount = users.getInt(1);
-            }
-
-            statement = connection.prepareStatement("SELECT DISTINCT userName FROM User");
-            users = statement.executeQuery();
-            while (users.next()) {
-                userList.add(users.getString(1));
             }
         }
     }

@@ -14,9 +14,13 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root fx:id="apAppointmentView" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.AppointmentViewController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="apAppointmentView" maxHeight="-Infinity"
+            maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0"
+            xmlns="http://javafx.com/javafx/8.0.111"
+            fx:controller="edu.wgu.scheduler.controllers.AppointmentViewController">
    <children>
-      <VBox prefWidth="985.0" AnchorPane.bottomAnchor="-140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+       <VBox fx:id="vbAppointmentEditor" prefWidth="985.0" AnchorPane.bottomAnchor="-140.0" AnchorPane.leftAnchor="0.0"
+             AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
              <Label fx:id="lblViewScope" text="Choose View:" />
              <HBox fx:id="hbViewScope" prefHeight="37.0" prefWidth="708.0">
@@ -122,4 +126,4 @@
          </padding>
       </VBox>
    </children>
-</fx:root>
+</AnchorPane>

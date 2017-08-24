@@ -43,8 +43,8 @@ public class MainApp extends Application {
     public static Stage primaryStage;
 
     public static Properties config = new Properties();
-    static Locale locale = Locale.getDefault();
-
+    public static Locale locale = Locale.getDefault();
+    public static ResourceBundle bundle;
 
     private static ObservableMap<Integer, ICustomer> customers = FXCollections.observableHashMap();
     private static ObservableMap<Integer, IAddress> addresses = FXCollections.observableHashMap();
@@ -53,7 +53,7 @@ public class MainApp extends Application {
     private static ObservableMap<Integer, ICountry> countries = FXCollections.observableHashMap();
     private static ObservableMap<Integer, IReminder> reminders = FXCollections.observableHashMap();
     private static ObservableList<ICustomerView> customerList;
-    private ResourceBundle bundle;
+
     private AppViewController appView;
 
     @Override
@@ -70,21 +70,13 @@ public class MainApp extends Application {
         bundle = ResourceBundle.getBundle("Scheduler", locale);
 
         File configFile = null;
-/*        try {
-            configFile = new File(MainApp.class.getResource("config.properties").toURI());
+        try {
+            configFile = new File(getClass().getClassLoader().getResource("resources/config.properties").toURI());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
-        if(configFile.exists()){
-            System.out.println("File Exists");
-        }
-        else {
-            System.out.println("File Not Found");
-        }
-*/
-
-        try (FileInputStream inputStream = new FileInputStream("config.properties")) {
+        try (FileInputStream inputStream = new FileInputStream(configFile)) {
             config.load(inputStream);
             System.out.println("Configuration loaded");
         } catch (IOException ex) {
@@ -104,6 +96,8 @@ public class MainApp extends Application {
     private boolean showLoginDialog(LoginController loginController) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle(bundle.getString("Login"));
+        dialog.setHeaderText(bundle.getString("Welcome"));
+
         dialog.getDialogPane().getButtonTypes().addAll(btnLogin, btnRegister);
 
         Node loginButton = dialog.getDialogPane().lookupButton(btnLogin);
@@ -111,9 +105,13 @@ public class MainApp extends Application {
 
         Node registerButton = dialog.getDialogPane().lookupButton(btnRegister);
 
-
         txtUsername.textProperty().addListener(((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             username = txtUsername.getText();
+            if ((txtPassword.textProperty().getValue().trim() != null) && (!username.trim().isEmpty()) && (userCount > 0)) {
+                loginButton.setDisable(false);
+            } else {
+                loginButton.setDisable(true);
+            }
         }));
 
         txtPassword.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
@@ -125,9 +123,9 @@ public class MainApp extends Application {
             }
         });
 
-        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> handleLoginButtonAction(event));
+        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleLoginButtonAction);
 
-        registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleRegisterButtonAction(event));
+        registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleRegisterButtonAction);
 
         dialog.getDialogPane().setContent(apLogin);
         Platform.runLater(() -> txtUsername.requestFocus());
@@ -173,6 +171,8 @@ public class MainApp extends Application {
     }
 
     private void initLayout() {
+        rootPane = new BorderPane();
+
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));

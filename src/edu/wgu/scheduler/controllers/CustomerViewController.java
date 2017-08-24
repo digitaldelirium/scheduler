@@ -87,20 +87,20 @@ public class CustomerViewController implements Initializable {
     @FXML
     private CheckBox cbActive;
     private MainApp mainApp;
-    private TableView<ICustomerView> tvCustomerView = new TableView<>();
-    private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>();
-    private TableColumn<ICustomerView, String> tcAddress = new TableColumn<>();
-    private TableColumn<ICustomerView, String> tcAddress2 = new TableColumn<>();
-    private TableColumn<ICustomerView, String> tcCity = new TableColumn<>();
-    private TableColumn<ICustomerView, String> tcPostalCode = new TableColumn<>();
-    private TableColumn<ICustomerView, String> tcCountry = new TableColumn<>();
-    private TableColumn<ICustomerView, String> tcPhone = new TableColumn<>();
-    private TableColumn<ICustomerView, Byte> tcActive = new TableColumn<>();
+    private TableView<ICustomerView> tvCustomerView;
+    private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>("Customer Name");
+    private TableColumn<ICustomerView, String> tcAddress = new TableColumn<>("Address");
+    private TableColumn<ICustomerView, String> tcAddress2 = new TableColumn<>("Address 2");
+    private TableColumn<ICustomerView, String> tcCity = new TableColumn<>("City");
+    private TableColumn<ICustomerView, String> tcPostalCode = new TableColumn<>("Postal Code");
+    private TableColumn<ICustomerView, String> tcCountry = new TableColumn<>("Country");
+    private TableColumn<ICustomerView, String> tcPhone = new TableColumn<>("Phone");
+    private TableColumn<ICustomerView, Byte> tcActive = new TableColumn<>("Active");
     private ObservableMap<ZonedDateTime, ICustomerView> omCustomerView;
-    private DataViewController dataView;
+    private DataViewController dataViewController;
 
     public CustomerViewController() {
-        dataView = new DataViewController();
+        dataViewController = new DataViewController();
         initialize(MainApp.class.getResource("/fxml/CustomerView.fxml"), null);
     }
 
@@ -117,9 +117,21 @@ public class CustomerViewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.apCustomerView = new AnchorPane();
-        this.gpCustomerEditor = new GridPane();
+        this.vbCustomerEditor = new VBox();
         this.tbCustomerEditMode = new ToggleButton();
         this.tbCustomerEditMode.setSelected(false);
+
+        setupGridPane();
+
+        // Add gpCustomerEditor and add it to vbCustomerEditor and apCustomerEditor to complete view
+        this.vbCustomerEditor.getChildren().addAll(tbCustomerEditMode, gpCustomerEditor);
+        this.apCustomerView.getChildren().add(vbCustomerEditor);
+
+        setupDataView();
+    }
+
+    private void setupGridPane() {
+        this.gpCustomerEditor = new GridPane();
         this.lblCustomerName = new Label();
         this.lblAddress = new Label();
         this.lblAddress2 = new Label();
@@ -148,56 +160,46 @@ public class CustomerViewController implements Initializable {
         this.btnCustomerOk = new Button();
         this.btnCustomerOk.setDefaultButton(true);
 
+        this.lblCustomerName.setLabelFor(txtCustomerName);
+        this.lblAddress.setLabelFor(txtAddress);
+        this.lblAddress2.setLabelFor(txtAddress2);
+        this.lblCity.setLabelFor(txtCity);
+        this.lblState.setLabelFor(txtState);
+        this.lblPostalCode.setLabelFor(txtPostalCode);
+        this.lblCountry.setLabelFor(txtCountry);
+        this.lblPhone.setLabelFor(hbPhone);
+        this.lblPrefix.setLabelFor(txtPhone);
+        this.lblCustomerSince.setLabelFor(lblCustomerCreatedDate);
+
         // Setup child containers of gpCustomerEditor
-        this.hbPhone.getChildren().addAll(lblPrefix, txtPhone);
         this.btnbarCustomerEditor.getButtons().addAll(btnCustomerOk, btnCustomerCancel);
 
-        // Add all children to gpCustomerEditor and add it to vbCustomerEditor and apCustomerEditor to complete view
-        this.gpCustomerEditor.getChildren().addAll(
-            this.lblCustomerName,
-                this.txtCustomerName,
-                this.lblAddress,
-                this.txtAddress,
-                this.lblAddress2,
-                this.txtAddress2,
-                this.lblCity,
-                this.txtCity,
-                this.lblState,
-                this.txtState,
-                this.lblPostalCode,
-                this.txtPostalCode,
-                this.lblCountry,
-                this.txtCountry,
-                this.lblPhone,
-                this.hbPhone,
-                this.lblCustomerSince,
-                this.lblCustomerCreatedDate,
-                this.cbActive,
-                this.btnbarCustomerEditor
-        );
-        this.vbCustomerEditor.getChildren().addAll(tbCustomerEditMode, gpCustomerEditor);
-        this.apCustomerView.getChildren().add(vbCustomerEditor);
-
-        setupDataView();
+        this.gpCustomerEditor.add(lblCustomerName, 0, 0);
+        this.gpCustomerEditor.add(txtCustomerName, 1, 0);
+        this.gpCustomerEditor.add(lblAddress, 0, 1);
+        this.gpCustomerEditor.add(txtAddress, 1, 1);
+        this.gpCustomerEditor.add(lblAddress2, 0, 2);
+        this.gpCustomerEditor.add(txtAddress2, 1, 2);
+        this.gpCustomerEditor.add(lblCity, 0, 3);
+        this.gpCustomerEditor.add(txtCity, 1, 3);
+        this.gpCustomerEditor.add(lblState, 0, 4);
+        this.gpCustomerEditor.add(txtState, 1, 4);
+        this.gpCustomerEditor.add(lblPostalCode, 0, 5);
+        this.gpCustomerEditor.add(txtPostalCode, 1, 5);
+        this.gpCustomerEditor.add(lblCountry, 0, 6);
+        this.gpCustomerEditor.add(txtCountry, 1, 6);
+        this.gpCustomerEditor.add(lblPhone, 0, 7);
+        this.gpCustomerEditor.add(hbPhone, 1, 7);
+        this.gpCustomerEditor.add(lblCustomerSince, 0, 8);
+        this.gpCustomerEditor.add(lblCustomerCreatedDate, 1, 8);
+        this.gpCustomerEditor.add(cbActive, 1, 9);
+        this.gpCustomerEditor.add(btnbarCustomerEditor, 1, 10);
     }
 
     private void setupDataView() {
-        dataView.setLblListView(new Label("Customer List View"));
-        dataView.setLblTableView(new Label("Customer Table View"));
-        dataView.setListView(new ListView<ICustomerView>());
-
-        tvCustomerView.getColumns().addAll(
-                tcCustomerName,
-                tcAddress,
-                tcAddress2,
-                tcCity,
-                tcPostalCode,
-                tcCountry,
-                tcPhone,
-                tcActive
-        );
-
-        dataView.setTableView(this.tvCustomerView);
+        dataViewController.setLblListView(new Label("Customer List View"));
+        dataViewController.setLblTableView(new Label("Customer Table View"));
+        dataViewController.setListView(new ListView<ICustomerView>());
 
         try {
             getCustomerData();
@@ -237,6 +239,21 @@ public class CustomerViewController implements Initializable {
             System.out.println("Could not get customer view information");
             e.getLocalizedMessage();
         }
+
+        this.tvCustomerView = new TableView<>();
+        this.tvCustomerView.setItems(getCustomerList());
+        tvCustomerView.getColumns().addAll(
+                tcCustomerName,
+                tcAddress,
+                tcAddress2,
+                tcCity,
+                tcPostalCode,
+                tcCountry,
+                tcPhone,
+                tcActive
+        );
+
+        dataViewController.setTableView(this.tvCustomerView);
     }
 
     private void getCustomerViewData() throws SQLException {

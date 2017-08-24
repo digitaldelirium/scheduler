@@ -17,7 +17,7 @@ import static edu.wgu.scheduler.models.ApplicationView.CUSTOMER;
 
 public class AppViewController implements Initializable {
     @FXML
-    private BorderPane rootPane;
+    protected static CustomerViewController customerViewController = new CustomerViewController();
     @FXML
     private MenuBar menuBar;
     @FXML
@@ -45,11 +45,11 @@ public class AppViewController implements Initializable {
     @FXML
     private ScrollPane spAppointmentEditor;
     @FXML
-    protected static AppointmentViewController appointmentView = new AppointmentViewController();
+    protected static DataViewController dataViewController = new DataViewController();
     @FXML
-    protected static CustomerViewController customerView = new CustomerViewController();
+    private static AppointmentViewController appointmentViewController = new AppointmentViewController();
     @FXML
-    protected static DataViewController dataView = new DataViewController();
+    protected BorderPane rootPane;
 
     private MainApp mainApp;
 
@@ -69,7 +69,8 @@ public class AppViewController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.rootPane = MainApp.rootPane;
+        this.rootPane = new BorderPane();
+        MainApp.rootPane = this.rootPane;
         this.menuBar = new MenuBar();
         this.fileMenu = new Menu();
         this.editMenu = new Menu();
@@ -95,8 +96,8 @@ public class AppViewController implements Initializable {
         this.rootPane.setTop(menuBar);
 
         // populate scroll panes with included views
-        this.spAppointmentEditor.setContent(appointmentView.apAppointmentView);
-        this.spCustomerEditor.setContent(customerView.apCustomerView);
+        this.spAppointmentEditor.setContent(appointmentViewController.apAppointmentView);
+        this.spCustomerEditor.setContent(customerViewController.apCustomerView);
 
         // populate tab panes and controllers and add them to the center pane
 
@@ -108,7 +109,7 @@ public class AppViewController implements Initializable {
         this.rootPane.setCenter(vbAppView);
 
         // add data view to bottom pane
-        this.rootPane.setBottom(dataView.tabPane);
+        this.rootPane.setBottom(dataViewController.tabPane);
 
         setupEventHandlers(this);
 
@@ -132,7 +133,6 @@ public class AppViewController implements Initializable {
     }
 
     protected void setApplicationView(Enum<ApplicationView> view) {
-        // TODO: Setup FXML Loader
 
         switch (view.name()) {
             case "APPOINTMENT":

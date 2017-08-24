@@ -104,17 +104,17 @@ public class AppointmentViewController implements Initializable {
     private Button btnAppointmentReset;
     private final ToggleGroup toggleGroup = new ToggleGroup();
     private TableView<IAppointmentView> tvAppointments = new TableView<>();
-    private TableColumn<IAppointmentView, String> tcTitle = new TableColumn<>();
-    private TableColumn<IAppointmentView, String> tcDescription = new TableColumn<>();
-    private TableColumn<IAppointmentView, String> tcLocation = new TableColumn<>();
-    private TableColumn<IAppointmentView, String> tcContact = new TableColumn<>();
-    private TableColumn<IAppointmentView, String> tcUrl = new TableColumn<>();
-    private TableColumn<IAppointmentView, String> tcCustomerName = new TableColumn<>();
-    private TableColumn<IAppointmentView, ZonedDateTime> tcStart = new TableColumn<>();
-    private TableColumn<IAppointmentView, ZonedDateTime> tcEnd = new TableColumn<>();
-    private TableColumn<IAppointmentView, ZonedDateTime> tcCreateDate = new TableColumn<>();
-    private TableColumn<IAppointmentView, String> tcCreatedBy = new TableColumn<>();
-    private TableColumn<IAppointmentView, Timestamp> tcLastUpdate = new TableColumn<>();
+    private TableColumn<IAppointmentView, String> tcTitle = new TableColumn<>("Title");
+    private TableColumn<IAppointmentView, String> tcDescription = new TableColumn<>("Description");
+    private TableColumn<IAppointmentView, String> tcLocation = new TableColumn<>("Location");
+    private TableColumn<IAppointmentView, String> tcContact = new TableColumn<>("Contact");
+    private TableColumn<IAppointmentView, String> tcUrl = new TableColumn<>("URL");
+    private TableColumn<IAppointmentView, String> tcCustomerName = new TableColumn<>("Customer Name");
+    private TableColumn<IAppointmentView, ZonedDateTime> tcStart = new TableColumn<>("Start Time");
+    private TableColumn<IAppointmentView, ZonedDateTime> tcEnd = new TableColumn<>("End Time");
+    private TableColumn<IAppointmentView, ZonedDateTime> tcCreateDate = new TableColumn<>("Created Date");
+    private TableColumn<IAppointmentView, String> tcCreatedBy = new TableColumn<>("Created By");
+    private TableColumn<IAppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
     private MainApp mainApp;
     private DataViewController dataView;
 
@@ -132,9 +132,43 @@ public class AppointmentViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         this.apAppointmentView = new AnchorPane();
         this.vbAppointmentEditor = new VBox();
+
+
+        setupGridPane();
+        setupHBox();
+
+        this.vbAppointmentEditor.getChildren().addAll(
+                this.lblViewScope,
+                this.hbViewScope,
+                this.hbEditorBar,
+                this.gpAppointmentEditor
+        );
+
+        this.apAppointmentView.getChildren().add(vbAppointmentEditor);
+
+        rdoMonthly.setToggleGroup(toggleGroup);
+        rdoWeekly.setToggleGroup(toggleGroup);
+
+        setupCollections();
+        setupDataView();
+    }
+
+    private void setupHBox() {
         this.hbEditorBar = new HBox();
+        this.hbViewScope = new HBox();
         this.btnNewAppointment = new Button();
         this.tbAppointmentEditor = new ToggleButton();
+        this.rdoWeekly = new RadioButton();
+        this.rdoMonthly = new RadioButton();
+
+        this.tbAppointmentEditor.setText("Enable Edit Mode");
+        this.tbAppointmentEditor.setSelected(false);
+
+        this.hbViewScope.getChildren().addAll(rdoWeekly, rdoMonthly);
+        this.hbEditorBar.getChildren().addAll(tbAppointmentEditor, btnNewAppointment);
+    }
+
+    private void setupGridPane() {
         this.gpAppointmentEditor = new GridPane();
         this.lblViewScope = new Label("Choose View:");
         this.lblTitle = new Label("Title:");
@@ -175,43 +209,32 @@ public class AppointmentViewController implements Initializable {
         this.lblCreatedBy.setLabelFor(this.txtCreatedBy);
         this.lblLastUpdated.setLabelFor(this.txtLastUpdated);
 
-        this.tbAppointmentEditor.setText("Enable Edit Mode");
-        this.tbAppointmentEditor.setSelected(false);
-
         buttonbarAppointmentEditor.getButtons().addAll(btnAppointmentSave, btnAppointmentReset);
 
-        this.vbAppointmentEditor.getChildren().addAll(
-                this.gpAppointmentEditor,
-                this.lblTitle,
-                this.txtTitle,
-                this.lblContact,
-                this.txtContact,
-                this.lblLocation,
-                this.txtLocation,
-                this.lblDescription,
-                this.txtDescription,
-                this.lblUrl,
-                this.txtUrl,
-                this.lblCustomerName,
-                this.txtCustomerName,
-                this.lblStart,
-                this.txtStart,
-                this.lblEnd,
-                this.txtEnd,
-                this.lblCreatedDate,
-                this.txtCreatedDate,
-                this.lblCreatedBy,
-                this.txtCreatedBy,
-                this.lblLastUpdated,
-                this.txtLastUpdated,
-                this.buttonbarAppointmentEditor
-        );
+        this.gpAppointmentEditor.add(lblTitle, 0, 0);
+        this.gpAppointmentEditor.add(txtTitle, 1, 0);
+        this.gpAppointmentEditor.add(lblDescription, 0, 1);
+        this.gpAppointmentEditor.add(txtDescription, 1, 1);
+        this.gpAppointmentEditor.add(lblLocation, 0, 2);
+        this.gpAppointmentEditor.add(txtLocation, 1, 2);
+        this.gpAppointmentEditor.add(lblContact, 0, 3);
+        this.gpAppointmentEditor.add(txtContact, 1, 3);
+        this.gpAppointmentEditor.add(lblUrl, 0, 4);
+        this.gpAppointmentEditor.add(txtUrl, 1, 4);
+        this.gpAppointmentEditor.add(lblStart, 0, 5);
+        this.gpAppointmentEditor.add(txtStart, 1, 5);
+        this.gpAppointmentEditor.add(lblEnd, 0, 6);
+        this.gpAppointmentEditor.add(txtEnd, 1, 6);
+        this.gpAppointmentEditor.add(lblCustomerName, 0, 7);
+        this.gpAppointmentEditor.add(txtCustomerName, 0, 7);
+        this.gpAppointmentEditor.add(lblCreatedDate, 0, 8);
+        this.gpAppointmentEditor.add(txtCreatedDate, 1, 8);
+        this.gpAppointmentEditor.add(lblCreatedBy, 0, 9);
+        this.gpAppointmentEditor.add(txtCreatedBy, 1, 9);
+        this.gpAppointmentEditor.add(lblLastUpdated, 0, 10);
+        this.gpAppointmentEditor.add(txtLastUpdated, 1, 10);
+        this.gpAppointmentEditor.add(buttonbarAppointmentEditor, 1, 12);
 
-        rdoMonthly.setToggleGroup(toggleGroup);
-        rdoWeekly.setToggleGroup(toggleGroup);
-
-        setupCollections();
-        setupDataView();
     }
 
     private void setupCollections() {
