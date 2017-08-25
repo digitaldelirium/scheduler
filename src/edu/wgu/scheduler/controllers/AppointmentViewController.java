@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.xml.soap.Text;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
@@ -116,7 +117,7 @@ public class AppointmentViewController implements Initializable {
     private TableColumn<IAppointmentView, String> tcCreatedBy = new TableColumn<>("Created By");
     private TableColumn<IAppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
     private MainApp mainApp;
-    private DataViewController dataView;
+    private DataViewController dataViewController;
 
     protected static ObservableList<CustomerProperty> customers;
     protected static ObservableList<AppointmentProperty> appointments;
@@ -124,7 +125,7 @@ public class AppointmentViewController implements Initializable {
     protected static ObservableList<ReminderProperty> reminders;
 
     public AppointmentViewController() {
-        dataView = new DataViewController();
+        dataViewController = new DataViewController();
         initialize(MainApp.class.getResource("fxml/AppointmentView.fxml"), null);
     }
 
@@ -151,6 +152,18 @@ public class AppointmentViewController implements Initializable {
 
         setupCollections();
         setupDataView();
+        disableTextFields();
+    }
+
+    protected void disableTextFields() {
+        this.gpAppointmentEditor.getChildren().filtered(n -> {
+            if(n instanceof TextField){
+                n.setDisable(true);
+                ((TextField) n).setEditable(false);
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupHBox() {
@@ -166,6 +179,15 @@ public class AppointmentViewController implements Initializable {
 
         this.hbViewScope.getChildren().addAll(rdoWeekly, rdoMonthly);
         this.hbEditorBar.getChildren().addAll(tbAppointmentEditor, btnNewAppointment);
+
+        this.tbAppointmentEditor.onMouseClickedProperty().addListener((event)-> {
+            if(tbAppointmentEditor.isSelected()){
+                tbAppointmentEditor.setText("Enable Read Only");
+            }
+            else {
+                tbAppointmentEditor.setText("Enable Edit Mode");
+            }
+        });
     }
 
     private void setupGridPane() {
@@ -233,8 +255,7 @@ public class AppointmentViewController implements Initializable {
         this.gpAppointmentEditor.add(txtCreatedBy, 1, 9);
         this.gpAppointmentEditor.add(lblLastUpdated, 0, 10);
         this.gpAppointmentEditor.add(txtLastUpdated, 1, 10);
-        this.gpAppointmentEditor.add(buttonbarAppointmentEditor, 1, 12);
-
+        this.gpAppointmentEditor.add(buttonbarAppointmentEditor, 1, 11);
     }
 
     private void setupCollections() {
@@ -250,13 +271,15 @@ public class AppointmentViewController implements Initializable {
         });
 
         reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
-
+                re.remindercol(),
+                re.reminderDate(),
+                re.snoozeIncrement(),
+                re.snoozeIncrementTypeId()
         });
-
     }
 
     private void setupDataView() {
-        this.tvAppointments.getColumns().addAll(this.tcTitle,
+/*        this.tvAppointments.getColumns().addAll(this.tcTitle,
                 this.tcDescription,
                 this.tcLocation,
                 this.tcContact,
@@ -266,9 +289,9 @@ public class AppointmentViewController implements Initializable {
                 this.tcEnd,
                 this.tcCreateDate,
                 this.tcCreatedBy,
-                this.tcLastUpdate);
-        dataView.setTableView(this.tvAppointments);
-        dataView.setLblListView(new Label("Appointments"));
+                this.tcLastUpdate); */
+        dataViewController.setTableView(this.tvAppointments);
+        dataViewController.setLblListView(new Label("Appointments"));
     }
 
     private void setMainApp(MainApp mainApp){
@@ -550,5 +573,13 @@ public class AppointmentViewController implements Initializable {
 
         this.btnAppointmentSave.setDisable(true);
         this.btnAppointmentReset.setDisable(true);
+    }
+
+    public DataViewController getDataViewController() {
+        return dataViewController;
+    }
+
+    public void setDataViewController(DataViewController dataViewController) {
+        this.dataViewController = dataViewController;
     }
 }

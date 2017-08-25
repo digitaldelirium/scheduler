@@ -1,23 +1,19 @@
 package edu.wgu.scheduler.controllers;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import edu.wgu.scheduler.MainApp;
-import edu.wgu.scheduler.models.ApplicationView;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import static edu.wgu.scheduler.models.ApplicationView.APPOINTMENT;
-import static edu.wgu.scheduler.models.ApplicationView.CUSTOMER;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class AppViewController implements Initializable {
     @FXML
-    protected static CustomerViewController customerViewController = new CustomerViewController();
+    protected BorderPane rootPane;
     @FXML
     private MenuBar menuBar;
     @FXML
@@ -45,12 +41,11 @@ public class AppViewController implements Initializable {
     @FXML
     private ScrollPane spAppointmentEditor;
     @FXML
-    protected static DataViewController dataViewController = new DataViewController();
+    private DataViewController dataViewController = new DataViewController();
     @FXML
     private static AppointmentViewController appointmentViewController = new AppointmentViewController();
     @FXML
-    protected BorderPane rootPane;
-
+    private static CustomerViewController customerViewController = new CustomerViewController();
     private MainApp mainApp;
 
     public AppViewController() {
@@ -121,28 +116,32 @@ public class AppViewController implements Initializable {
         this.tabCustomers.setOnSelectionChanged((event -> {
             if (tabCustomers.isSelected()) {
                 // Change to Customer View
-                setApplicationView(CUSTOMER);
+                setCustomerView();
+            }
+            else {
+                setAppointmentView();
             }
         }));
 
         this.tabAppointments.setOnSelectionChanged(event -> {
             if (tabAppointments.isSelected()) {
-                setApplicationView(APPOINTMENT);
+                setAppointmentView();
+            }
+            else {
+                setCustomerView();
             }
         });
     }
 
-    protected void setApplicationView(Enum<ApplicationView> view) {
+    @FXML
+    private void setCustomerView() {
+        this.dataViewController = customerViewController.getDataViewController();
+    }
 
-        switch (view.name()) {
-            case "APPOINTMENT":
-
-                break;
-            case "CUSTOMER":
-                break;
-            default:
-                // TODO: See if user is logged in and call Login if not
-        }
+    @FXML
+    private void setAppointmentView() {
+        this.dataViewController = appointmentViewController.getDataViewController();
+        appointmentViewController.disableTextFields();
     }
 
 
