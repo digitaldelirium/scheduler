@@ -92,19 +92,19 @@ public class ReminderProperty extends SimpleObjectProperty<Reminder> implements 
         return getValue().getReminderDate(locale);
     }
 
-    public ObjectProperty<ZonedDateTime> reminderDateProperty() {
+    public ObjectProperty<ZonedDateTime> reminderDate() {
         return getValue().reminderDateProperty();
     }
 
-    public StringProperty remindercolProperty() {
+    public StringProperty remindercol() {
         return getValue().remindercolProperty();
     }
 
-    public SimpleIntegerProperty snoozeIncrementProperty() {
+    public SimpleIntegerProperty snoozeIncrement() {
         return getValue().snoozeIncrementProperty();
     }
 
-    public SimpleIntegerProperty snoozeIncrementTypeIdProperty() {
+    public SimpleIntegerProperty snoozeIncrementTypeId() {
         return getValue().snoozeIncrementTypeIdProperty();
     }
 

@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.*;
 
@@ -27,11 +28,11 @@ public class CountryProperty extends SimpleObjectProperty<CountryProperty.Countr
     /**
      * The constructor of {@code ObjectProperty}
      */
-    public CountryProperty(int countryId, String country, String createBy, Instant createDate, Timestamp lastUpdate, String lastUpdatedBy) {
+    public CountryProperty(int countryId, String country, String createBy, Date createDate, Timestamp lastUpdate, String lastUpdatedBy) {
         this.countryId = countryId;
         this.country.set(country);
         this.createBy = createBy;
-        this.createDate = ZonedDateTime.ofInstant(createDate, ZoneId.systemDefault());
+        this.createDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.systemDefault());
         this.lastUpdate.setValue(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
         this.lastUpdatedBy.set(lastUpdatedBy);
     }
