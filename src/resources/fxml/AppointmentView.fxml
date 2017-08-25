@@ -109,7 +109,7 @@
                    <TextField fx:id="txtCreatedDate" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                    <TextField fx:id="txtCreatedBy" GridPane.columnIndex="1" GridPane.rowIndex="9" />
                    <TextField fx:id="txtLastUpdated" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-                   <ButtonBar fx:id="buttonbarAppointmentEditor" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="12">
+                   <ButtonBar fx:id="buttonbarAppointmentEditor" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
                     <buttons>
                         <Button fx:id="btnAppointmentSave" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#saveAppointment" text="Save" />
                         <Button fx:id="btnAppointmentReset" cancelButton="true" disable="true" mnemonicParsing="false" onAction="#clearForm" text="Reset" />
