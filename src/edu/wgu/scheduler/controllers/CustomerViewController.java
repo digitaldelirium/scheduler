@@ -86,6 +86,10 @@ public class CustomerViewController implements Initializable {
     private HBox hbPhone;
     @FXML
     private CheckBox cbActive;
+    @FXML
+    private HBox hbCustomerEditor;
+    @FXML
+    private Button btnNewCustomer;
     private MainApp mainApp;
     private TableView<ICustomerView> tvCustomerView;
     private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>("Customer Name");
@@ -118,8 +122,10 @@ public class CustomerViewController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.apCustomerView = new AnchorPane();
         this.vbCustomerEditor = new VBox();
+        this.btnNewCustomer = new Button("New Customer");
         this.tbCustomerEditMode = new ToggleButton();
         this.tbCustomerEditMode.setSelected(false);
+        this.hbCustomerEditor = new HBox(this.tbCustomerEditMode, this.btnNewCustomer);
 
         setupGridPane();
 
@@ -304,12 +310,12 @@ public class CustomerViewController implements Initializable {
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 CountryProperty country = new CountryProperty(
-                    rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getDate(4).toInstant(),
-                        rs.getTimestamp(5),
-                        rs.getString(6)
+                    rs.getInt("countryId"),
+                        rs.getString("country"),
+                        rs.getString("createBy"),
+                        rs.getDate("createDate"),
+                        rs.getTimestamp("lastUpdate"),
+                        rs.getString("lastUpdatedBy")
                 );
 
                 countryHashMap.put(country.getCountryId(), country);
@@ -385,6 +391,14 @@ public class CustomerViewController implements Initializable {
             }
             setCustomers(customerHashMap);
         }
+    }
+
+    public DataViewController getDataViewController() {
+        return dataViewController;
+    }
+
+    public void setDataViewController(DataViewController dataViewController) {
+        this.dataViewController = dataViewController;
     }
 
     public Label getLblPrefix() {
