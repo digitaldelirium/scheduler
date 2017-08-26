@@ -86,19 +86,20 @@ public class MainApp extends Application {
 
         getDataSourceConnection();
         LoginController loginController = new LoginController();
+        loggedIn = showLoginDialog(loginController);
 
-        int x = 0;
+        int x = 1;
         while (x < 3) {
             if (loggedIn) {
                 initLayout();
                 break;
             } else {
-                showLoginDialog(loginController);
+                loggedIn = showLoginDialog(loginController);
             }
             x++;
         }
 
-        if(x == 3){
+        if (x == 3) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("LoginExceededTitle"));
             alert.setContentText(bundle.getString("MaxLoginFailures"));
@@ -113,12 +114,12 @@ public class MainApp extends Application {
         dialog.setTitle(bundle.getString("Login"));
         dialog.setHeaderText(bundle.getString("Welcome"));
 
-        dialog.getDialogPane().getButtonTypes().addAll(btnLogin, btnRegister);
+        dialog.getDialogPane().getButtonTypes().add(btnLogin);
+        dialog.getDialogPane().setPrefWidth(350.0);
 
         Node loginButton = dialog.getDialogPane().lookupButton(btnLogin);
         loginButton.setDisable(true);
 
-        Node registerButton = dialog.getDialogPane().lookupButton(btnRegister);
 
         txtUsername.textProperty().addListener(((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             username = txtUsername.getText();
@@ -140,8 +141,6 @@ public class MainApp extends Application {
 
         loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleLoginButtonAction);
 
-        registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleRegisterButtonAction);
-
         dialog.getDialogPane().setContent(apLogin);
         Platform.runLater(() -> txtUsername.requestFocus());
 
@@ -155,7 +154,7 @@ public class MainApp extends Application {
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
         result.ifPresent((Pair<String, String> usernamePassword) -> {
-                login(usernamePassword);
+                loggedIn = login(usernamePassword);
         });
 
         return loggedIn;
