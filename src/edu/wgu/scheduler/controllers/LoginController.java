@@ -82,7 +82,7 @@ public class LoginController implements Initializable {
         initialize(MainApp.class.getResource("/fxml/Login.fxml"), bundle);
     }
 
-    private static boolean login(Pair<String, String> credentials) {
+    public static boolean login(Pair<String, String> credentials) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         ZonedDateTime dateTime = ZonedDateTime.now();
         log.trace(String.format("[%s]\tAttempting login for user %s ...", formatter.format(dateTime), username));
@@ -107,6 +107,7 @@ public class LoginController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("LoginFailed"));
             alert.setContentText(bundle.getString("LoginFailedMessage"));
+            alert.showAndWait();
         }
         return false;
     }

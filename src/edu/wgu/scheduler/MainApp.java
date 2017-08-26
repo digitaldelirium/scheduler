@@ -86,10 +86,25 @@ public class MainApp extends Application {
 
         getDataSourceConnection();
         LoginController loginController = new LoginController();
-        loggedIn = showLoginDialog(loginController);
 
-        initLayout();
+        int x = 0;
+        while (x < 3) {
+            if (loggedIn) {
+                initLayout();
+                break;
+            } else {
+                showLoginDialog(loginController);
+            }
+            x++;
+        }
 
+        if(x == 3){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(bundle.getString("LoginExceededTitle"));
+            alert.setContentText(bundle.getString("MaxLoginFailures"));
+            alert.showAndWait();
+            System.exit(1);
+        }
 
     }
 
@@ -140,7 +155,7 @@ public class MainApp extends Application {
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
         result.ifPresent((Pair<String, String> usernamePassword) -> {
-            loggedIn = true;
+                login(usernamePassword);
         });
 
         return loggedIn;
