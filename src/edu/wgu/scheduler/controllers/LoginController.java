@@ -190,9 +190,9 @@ public class LoginController implements Initializable {
         }
     }
 
-    public static class LoginFailedException extends FailedLoginException {
-        public LoginFailedException() {
-            super(new String("The username or password is invalid, Please check both and try again!"));
+    static class LoginFailedException extends FailedLoginException {
+        LoginFailedException() {
+            super("The username or password is invalid, Please check both and try again!");
         }
     }
 }
