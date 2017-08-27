@@ -315,7 +315,11 @@ public class CustomerViewController implements Initializable {
                 rs.getString("createBy"),
                 rs.getDate("createDate"),
                 rs.getTimestamp("lastUpdate"),
+<<<<<<< HEAD
                 rs.getString("lastUpdatedBy")
+=======
+                rs.getString("lastUpdatedByProperty")
+>>>>>>> 6ebe13fab7dee352cdda9a18ec07cfac6577d485
                 );
 
                 countryHashMap.put(country.getCountryId(), country);
