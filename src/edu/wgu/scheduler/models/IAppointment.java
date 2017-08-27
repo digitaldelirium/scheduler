@@ -36,6 +36,10 @@ public interface IAppointment {
 
     void setLastUpdateBy(String lastUpdateBy);
 
+    ZonedDateTime getLastUpdate();
+
+    void setLastUpdate(ZonedDateTime lastUpdated);
+
     String getLocation();
 
     void setLocation(String location);

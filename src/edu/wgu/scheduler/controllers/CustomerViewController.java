@@ -113,8 +113,8 @@ public class CustomerViewController implements Initializable {
      * completely processed.
      *
      * @param location
-     *         The location used to resolve relative paths for the root object, or
-     *         <tt>null</tt> if the location is not known.
+     *         The locationProperty used to resolve relative paths for the root object, or
+     *         <tt>null</tt> if the locationProperty is not known.
      * @param resources
      *         The resources used to localize the root object, or <tt>null</tt> if
      */
@@ -281,7 +281,7 @@ public class CustomerViewController implements Initializable {
                 }
 
                 CustomerViewProperty view = new CustomerViewProperty(
-                        new CustomerView(
+                        new CustomerViewProperty.CustomerView(
                         rs.getString(1),
                         rs.getString(2),
                         rs.getString(3),
@@ -310,12 +310,12 @@ public class CustomerViewController implements Initializable {
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 CountryProperty country = new CountryProperty(
-                    rs.getInt("countryId"),
-                        rs.getString("country"),
-                        rs.getString("createBy"),
-                        rs.getDate("createDate"),
-                        rs.getTimestamp("lastUpdate"),
-                        rs.getString("lastUpdatedBy")
+                rs.getInt("countryId"),
+                rs.getString("country"),
+                rs.getString("createBy"),
+                rs.getDate("createDate"),
+                rs.getTimestamp("lastUpdate"),
+                rs.getString("lastUpdatedBy")
                 );
 
                 countryHashMap.put(country.getCountryId(), country);
@@ -337,7 +337,7 @@ public class CustomerViewController implements Initializable {
                         rs.getInt("countryId"),
                         rs.getString("createdBy"),
                         rs.getTimestamp("lastUpdate"),
-                        rs.getString("lastUpdatedBy"),
+                        rs.getString("lastUpdatedByProperty"),
                         ZonedDateTime.ofInstant(rs.getDate("createDate").toInstant(), ZoneId.systemDefault())
                 );
 
@@ -378,7 +378,7 @@ public class CustomerViewController implements Initializable {
             while (resultSet.next()){
                 CustomerProperty customer = new CustomerProperty(
                         resultSet.getDate("createDate").toLocalDate(),
-                        resultSet.getInt("customerId"),
+                        resultSet.getInt("customerIdProperty"),
                         resultSet.getByte("active"),
                         resultSet.getInt("addressId"),
                         resultSet.getString("createdBy"),
@@ -387,7 +387,7 @@ public class CustomerViewController implements Initializable {
                         resultSet.getTimestamp("lastUpdate")
                 );
 
-                customerHashMap.put(resultSet.getInt("customerId"), customer);
+                customerHashMap.put(resultSet.getInt("customerIdProperty"), customer);
             }
             setCustomers(customerHashMap);
         }

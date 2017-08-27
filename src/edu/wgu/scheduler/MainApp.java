@@ -85,7 +85,9 @@ public class MainApp extends Application {
         }
 
         getDataSourceConnection();
-        LoginController loginController = new LoginController();
+        // TODO: Re-enable Login class and disable direct init call
+        initLayout();
+/*        LoginController loginController = new LoginController();
         loggedIn = showLoginDialog(loginController);
 
         int x = 1;
@@ -105,7 +107,7 @@ public class MainApp extends Application {
             alert.setContentText(bundle.getString("MaxLoginFailures"));
             alert.showAndWait();
             System.exit(1);
-        }
+        }*/
 
     }
 

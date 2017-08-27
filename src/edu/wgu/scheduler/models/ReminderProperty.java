@@ -96,15 +96,15 @@ public class ReminderProperty extends SimpleObjectProperty<Reminder> implements 
         return getValue().reminderDateProperty();
     }
 
-    public StringProperty remindercol() {
+    public StringProperty remindercolProperty() {
         return getValue().remindercolProperty();
     }
 
-    public SimpleIntegerProperty snoozeIncrement() {
+    public SimpleIntegerProperty snoozeIncrementProperty() {
         return getValue().snoozeIncrementProperty();
     }
 
-    public SimpleIntegerProperty snoozeIncrementTypeId() {
+    public SimpleIntegerProperty snoozeIncrementTypeIdProperty() {
         return getValue().snoozeIncrementTypeIdProperty();
     }
 
