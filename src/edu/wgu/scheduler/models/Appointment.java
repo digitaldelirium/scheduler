@@ -4,6 +4,7 @@ import com.sun.istack.internal.NotNull;
 import javafx.beans.property.*;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -54,18 +55,18 @@ public class Appointment implements IAppointment {
      * @param title
      * @param url
      */
-    public Appointment(LocalDate createDate, int appointmentId, String contact, String createdBy, int customerId, String description, String end, Timestamp lastUpdate, String lastUpdateBy, String location, String start, String title, String url) {
+    public Appointment(LocalDate createDate, int appointmentId, String contact, String createdBy, int customerId, String description, Instant end, Timestamp lastUpdate, String lastUpdateBy, String location, Instant start, String title, String url) {
         this.createDate = createDate;
         this.appointmentId = appointmentId;
         this.contact = new SimpleStringProperty(contact);
         this.createdBy = createdBy;
         this.customerId = new SimpleIntegerProperty(customerId);
         this.description = new SimpleStringProperty(description);
-        this.end = new SimpleObjectProperty<>(ZonedDateTime.from(ZonedDateTime.parse(end)));
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end, ZoneId.systemDefault()));
         this.lastUpdate = new SimpleObjectProperty<>(lastUpdate);
         this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
         this.location = new SimpleStringProperty(location);
-        this.start = new SimpleObjectProperty<>(ZonedDateTime.from(ZonedDateTime.parse(start)));
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start, ZoneId.systemDefault()));
         this.title = new SimpleStringProperty(title);
         this.url = new SimpleStringProperty(url);
     }

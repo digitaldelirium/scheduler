@@ -2,6 +2,7 @@ package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
+import edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -103,18 +104,18 @@ public class AppointmentViewController implements Initializable {
     @FXML
     private Button btnAppointmentReset;
     private final ToggleGroup toggleGroup = new ToggleGroup();
-    private TableView<IAppointmentView> tvAppointments = new TableView<>();
-    private TableColumn<IAppointmentView, String> tcTitle = new TableColumn<>("Title");
-    private TableColumn<IAppointmentView, String> tcDescription = new TableColumn<>("Description");
-    private TableColumn<IAppointmentView, String> tcLocation = new TableColumn<>("Location");
-    private TableColumn<IAppointmentView, String> tcContact = new TableColumn<>("Contact");
-    private TableColumn<IAppointmentView, String> tcUrl = new TableColumn<>("URL");
-    private TableColumn<IAppointmentView, String> tcCustomerName = new TableColumn<>("Customer Name");
-    private TableColumn<IAppointmentView, ZonedDateTime> tcStart = new TableColumn<>("Start Time");
-    private TableColumn<IAppointmentView, ZonedDateTime> tcEnd = new TableColumn<>("End Time");
-    private TableColumn<IAppointmentView, ZonedDateTime> tcCreateDate = new TableColumn<>("Created Date");
-    private TableColumn<IAppointmentView, String> tcCreatedBy = new TableColumn<>("Created By");
-    private TableColumn<IAppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
+    private TableView<AppointmentViewProperty> tvAppointments = new TableView<AppointmentViewProperty>();
+    private TableColumn<AppointmentView, String> tcTitle = new TableColumn<>("Title");
+    private TableColumn<AppointmentView, String> tcDescription = new TableColumn<>("Description");
+    private TableColumn<AppointmentView, String> tcLocation = new TableColumn<>("Location");
+    private TableColumn<AppointmentView, String> tcContact = new TableColumn<>("Contact");
+    private TableColumn<AppointmentView, String> tcUrl = new TableColumn<>("URL");
+    private TableColumn<AppointmentView, String> tcCustomerName = new TableColumn<>("Customer Name");
+    private TableColumn<AppointmentView, ZonedDateTime> tcStart = new TableColumn<>("Start Time");
+    private TableColumn<AppointmentView, ZonedDateTime> tcEnd = new TableColumn<>("End Time");
+    private TableColumn<AppointmentView, ZonedDateTime> tcCreateDate = new TableColumn<>("Created Date");
+    private TableColumn<AppointmentView, String> tcCreatedBy = new TableColumn<>("Created By");
+    private TableColumn<AppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
     private MainApp mainApp;
     private DataViewController dataViewController;
 
@@ -125,6 +126,10 @@ public class AppointmentViewController implements Initializable {
 
     public AppointmentViewController() {
         dataViewController = new DataViewController();
+        appointmentViews = FXCollections.observableArrayList();
+        appointments = FXCollections.observableArrayList();
+        customers = FXCollections.observableArrayList();
+        reminders = FXCollections.observableArrayList();
         initialize(MainApp.class.getResource("fxml/AppointmentView.fxml"), null);
     }
 
@@ -150,8 +155,10 @@ public class AppointmentViewController implements Initializable {
         rdoWeekly.setToggleGroup(toggleGroup);
 
         setupCollections();
+        getAppointments();
         setupDataView();
         disableTextFields();
+
     }
 
     protected void disableTextFields() {
@@ -275,20 +282,11 @@ public class AppointmentViewController implements Initializable {
                 re.snoozeIncrementProperty(),
                 re.snoozeIncrementTypeIdProperty()
         });
+
     }
 
     private void setupDataView() {
-/*        this.tvAppointments.getColumns().addAll(this.tcTitle,
-                this.tcDescription,
-                this.tcLocation,
-                this.tcContact,
-                this.tcUrl,
-                this.tcCustomerName,
-                this.tcStart,
-                this.tcEnd,
-                this.tcCreateDate,
-                this.tcCreatedBy,
-                this.tcLastUpdate); */
+        this.tvAppointments.getItems().addAll(appointmentViews);
         dataViewController.setTableView(this.tvAppointments);
         dataViewController.setLblListView(new Label("Appointments"));
     }
@@ -306,17 +304,18 @@ public class AppointmentViewController implements Initializable {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments");
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
-                AppointmentViewProperty.AppointmentView app = new AppointmentViewProperty.AppointmentView(rs.getString("titleProperty"),
-                                                                                                          rs.getString("descriptionProperty"),
-                                                                                                          rs.getString("locationProperty"),
-                                                                                                          rs.getString("contactProperty"),
-                                                                                                          rs.getString("urlProperty"),
-                                                                                                          rs.getString("customerName"),
-                                                                                                          rs.getTimestamp("startProperty"),
-                                                                                                          rs.getTimestamp("endProperty"),
-                                                                                                          rs.getDate("createDate"),
-                                                                                                          rs.getString("createdBy"),
-                                                                                                          rs.getTimestamp("lastUpdate"));
+                AppointmentView app =
+                        new AppointmentView(rs.getString("title"),
+                                          rs.getString("description"),
+                                          rs.getString("location"),
+                                          rs.getString("contact"),
+                                          rs.getString("url"),
+                                          rs.getString("customerName"),
+                                          rs.getTimestamp("start"),
+                                          rs.getTimestamp("end"),
+                                          rs.getDate("createDate"),
+                                          rs.getString("createdBy"),
+                                          rs.getTimestamp("lastUpdate"));
                 appointmentViews.add(new AppointmentViewProperty(app));
             }
 
@@ -325,12 +324,12 @@ public class AppointmentViewController implements Initializable {
             while(rs.next()){
                 Customer cu = new Customer(
                         rs.getDate("createDate").toLocalDate(),
-                        rs.getInt("customerIdProperty"),
+                        rs.getInt("customerId"),
                         rs.getByte("active"),
                         rs.getInt("addressId"),
                         rs.getString("createdBy"),
                         rs.getString("customerName"),
-                        rs.getString("lastUpdatedByProperty"),
+                        rs.getString("lastUpdatedBy"),
                         rs.getTimestamp("lastUpdate")
                 );
                 customers.add(new CustomerProperty(cu));
@@ -342,17 +341,17 @@ public class AppointmentViewController implements Initializable {
                 Appointment ap = new Appointment(
                         rs.getDate("createDate").toLocalDate(),
                         rs.getInt("appointmentId"),
-                        rs.getString("contactProperty"),
+                        rs.getString("contact"),
                         rs.getString("createdBy"),
-                        rs.getInt("customerIdProperty"),
-                        rs.getString("descriptionProperty"),
-                        rs.getString("endProperty"),
+                        rs.getInt("customerId"),
+                        rs.getString("description"),
+                        rs.getDate("end").toInstant(),
                         rs.getTimestamp("lastUpdate"),
-                        rs.getString("lastUpdatedByProperty"),
-                        rs.getString("locationProperty"),
-                        rs.getString("startProperty"),
-                        rs.getString("titleProperty"),
-                        rs.getString("urlProperty")
+                        rs.getString("lastUpdatedBy"),
+                        rs.getString("location"),
+                        rs.getDate("start").toInstant(),
+                        rs.getString("title"),
+                        rs.getString("url")
                 );
                 appointments.add(new AppointmentProperty(ap));
             }
@@ -366,9 +365,9 @@ public class AppointmentViewController implements Initializable {
                         rs.getString("createdBy"),
                         rs.getDate("createdDate").toLocalDate(),
                         ZonedDateTime.ofInstant(rs.getDate("reminderDate").toInstant(), ZoneId.systemDefault()),
-                        rs.getString("remindercolProperty"),
-                        rs.getInt("snoozeIncrementProperty"),
-                        rs.getInt("snoozeIncrementTypeIdProperty"));
+                        rs.getString("remindercol"),
+                        rs.getInt("snoozeIncrement"),
+                        rs.getInt("snoozeIncrementTypeId"));
                 reminders.add(new ReminderProperty(re));
             }
 
