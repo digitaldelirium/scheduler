@@ -25,11 +25,19 @@ public class AppViewController extends BorderPane implements Initializable {
     @FXML
     private Menu editMenu;
     @FXML
+    private Menu reportMenu;
+    @FXML
     private Menu helpMenu;
     @FXML
     private MenuItem closeMenuItem;
     @FXML
     private MenuItem copyMenuItem;
+    @FXML
+    private MenuItem monthlyAppointmentReportMenuItem;
+    @FXML
+    private MenuItem consultantScheduleMenuItem;
+    @FXML
+    private MenuItem customersByCountryMenuItem;
     @FXML
     private MenuItem aboutMenuItem;
     @FXML
@@ -69,9 +77,13 @@ public class AppViewController extends BorderPane implements Initializable {
         this.menuBar = new MenuBar();
         this.fileMenu = new Menu();
         this.editMenu = new Menu();
+        this.reportMenu = new Menu();
         this.helpMenu = new Menu();
         this.closeMenuItem = new MenuItem();
         this.copyMenuItem = new MenuItem();
+        this.monthlyAppointmentReportMenuItem = new MenuItem();
+        this.consultantScheduleMenuItem = new MenuItem();
+        this.customersByCountryMenuItem = new MenuItem();
         this.aboutMenuItem = new MenuItem();
         this.vbAppView = new VBox();
         this.tpAppPane = new TabPane();
@@ -85,9 +97,10 @@ public class AppViewController extends BorderPane implements Initializable {
 
         this.fileMenu.getItems().setAll(closeMenuItem);
         this.editMenu.getItems().setAll(copyMenuItem);
+        this.reportMenu.getItems().setAll(monthlyAppointmentReportMenuItem, consultantScheduleMenuItem, customersByCountryMenuItem);
         this.helpMenu.getItems().setAll(aboutMenuItem);
 
-        this.menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
+        this.menuBar.getMenus().addAll(fileMenu, editMenu, reportMenu, helpMenu);
         this.rootPane.setTop(menuBar);
 
         appointmentViewController  = new AppointmentViewController();
@@ -148,5 +161,10 @@ public class AppViewController extends BorderPane implements Initializable {
 
     public void setMainApp(MainApp mainApp){
         this.mainApp = mainApp;
+    }
+
+    @FXML
+    private void quitApp(){
+        System.exit(0);
     }
 }

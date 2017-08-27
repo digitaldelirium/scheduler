@@ -40,7 +40,7 @@
         <menus>
           <Menu fx:id="fileMenu" text="_File">
             <items>
-              <MenuItem fx:id="closeMenuItem" mnemonicParsing="true" text="_Close">
+              <MenuItem fx:id="closeMenuItem" mnemonicParsing="true" onAction="#quitApp" text="_Close">
                      <accelerator>
                         <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
@@ -51,7 +51,7 @@
           </Menu>
           <Menu fx:id="editMenu" text="_Edit">
             <items>
-              <MenuItem fx:id="copyMenuItem" mnemonicParsing="true" text="_Copy">
+              <MenuItem fx:id="copyMenuItem" mnemonicParsing="true" text="_Copy Record">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
@@ -60,6 +60,16 @@
                   <KeyCodeCombination alt="DOWN" code="E" control="UP" meta="UP" shift="UP" shortcut="UP" />
                </accelerator>
           </Menu>
+            <Menu fx:id="reportMenu" text="_Report">
+              <items>
+                <MenuItem fx:id="monthlyAppointmentReportMenuItem" mnemonicParsing="false" text="Appointments by Month" />
+                  <MenuItem fx:id="consultantScheduleMenuItem" mnemonicParsing="false" text="Consultant Schedule" />
+                  <MenuItem fx:id="customersByCountryMenuItem" mnemonicParsing="false" text="Customers by Country" />
+              </items>
+               <accelerator>
+                  <KeyCodeCombination alt="DOWN" code="R" control="UP" meta="UP" shift="UP" shortcut="UP" />
+               </accelerator>
+            </Menu>
           <Menu fx:id="helpMenu" text="_Help">
             <items>
               <MenuItem fx:id="aboutMenuItem" mnemonicParsing="true" text="_About" />
