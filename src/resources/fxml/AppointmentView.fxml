@@ -14,13 +14,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="apAppointmentView" maxHeight="-Infinity"
-            maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0"
-            xmlns="http://javafx.com/javafx/8.0.111"
-            fx:controller="edu.wgu.scheduler.controllers.AppointmentViewController">
+<AnchorPane fx:id="apAppointmentView" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.AppointmentViewController">
    <children>
-       <VBox fx:id="vbAppointmentEditor" prefWidth="985.0" AnchorPane.bottomAnchor="-140.0" AnchorPane.leftAnchor="0.0"
-             AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+       <VBox fx:id="vbAppointmentEditor" prefWidth="985.0" AnchorPane.bottomAnchor="-140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
              <Label fx:id="lblViewScope" text="Choose View:" />
              <HBox fx:id="hbViewScope" prefHeight="37.0" prefWidth="708.0">
@@ -98,17 +94,17 @@
                   <Label fx:id="lblCreatedDate" text="Created Date" GridPane.rowIndex="8" />
                   <Label fx:id="lblCreatedBy" text="Created By" GridPane.rowIndex="9" />
                   <Label fx:id="lblLastUpdated" text="Last Updated" GridPane.rowIndex="10" />
-                   <TextField fx:id="txtTitle" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                   <TextField fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                   <TextField fx:id="txtLocation" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                   <TextField fx:id="txtContact" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                   <TextField fx:id="txtUrl" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                   <TextField fx:id="txtStart" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                   <TextField fx:id="txtEnd" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                  <TextField fx:id="txtCustomerName" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                   <TextField fx:id="txtCreatedDate" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                   <TextField fx:id="txtCreatedBy" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                   <TextField fx:id="txtLastUpdated" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                   <TextField fx:id="txtTitle" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                   <TextField fx:id="txtDescription" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                   <TextField fx:id="txtLocation" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                   <TextField fx:id="txtContact" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                   <TextField fx:id="txtUrl" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                   <TextField fx:id="txtStart" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                   <TextField fx:id="txtEnd" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <TextField fx:id="txtCustomerName" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                   <TextField fx:id="txtCreatedDate" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                   <TextField fx:id="txtCreatedBy" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                   <TextField fx:id="txtLastUpdated" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="10" />
                    <ButtonBar fx:id="buttonbarAppointmentEditor" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
                     <buttons>
                         <Button fx:id="btnAppointmentSave" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#saveAppointment" text="Save" />

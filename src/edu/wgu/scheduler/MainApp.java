@@ -1,9 +1,6 @@
 package edu.wgu.scheduler;
 
-import edu.wgu.scheduler.controllers.AppViewController;
-import edu.wgu.scheduler.controllers.AppointmentViewController;
-import edu.wgu.scheduler.controllers.CustomerViewController;
-import edu.wgu.scheduler.controllers.LoginController;
+import edu.wgu.scheduler.controllers.*;
 import edu.wgu.scheduler.models.*;
 
 import javafx.application.Application;
@@ -25,10 +22,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -54,7 +49,10 @@ public class MainApp extends Application {
     private static ObservableMap<Integer, IReminder> reminders = FXCollections.observableHashMap();
     private static ObservableList<ICustomerView> customerList;
 
-    private AppViewController appView;
+    private AppViewController appViewController;
+    public static DataViewController dataViewController;
+    public static AppointmentViewController appointmentViewController;
+    public static CustomerViewController customerViewController;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
@@ -192,7 +190,7 @@ public class MainApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));
-            appView = loader.getController();
+            appViewController = loader.getController();
             rootPane = loader.load();
 
             Scene scene = new Scene(rootPane);

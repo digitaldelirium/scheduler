@@ -10,6 +10,8 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static edu.wgu.scheduler.MainApp.dataViewController;
+
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 8/19/17.
  * Part of Project: scheduler
@@ -43,6 +45,7 @@ public class DataViewController implements Initializable {
 
     public DataViewController() {
         initialize(MainApp.class.getResource("fxml/DataView.fxml"), null);
+        dataViewController = this;
     }
 
     /**

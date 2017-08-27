@@ -103,7 +103,6 @@ public class AppointmentViewController implements Initializable {
     private ButtonBar buttonbarAppointmentEditor;
     @FXML
     private Button btnAppointmentReset;
-    private final ToggleGroup toggleGroup = new ToggleGroup();
     private TableView<AppointmentViewProperty> tvAppointments = new TableView<AppointmentViewProperty>();
     private TableColumn<AppointmentView, String> tcTitle = new TableColumn<>("Title");
     private TableColumn<AppointmentView, String> tcDescription = new TableColumn<>("Description");
@@ -117,7 +116,7 @@ public class AppointmentViewController implements Initializable {
     private TableColumn<AppointmentView, String> tcCreatedBy = new TableColumn<>("Created By");
     private TableColumn<AppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
     private MainApp mainApp;
-    private DataViewController dataViewController;
+    protected static DataViewController dataViewController;
 
     protected static ObservableList<CustomerProperty> customers;
     protected static ObservableList<AppointmentProperty> appointments;
@@ -151,9 +150,6 @@ public class AppointmentViewController implements Initializable {
 
         this.apAppointmentView.getChildren().add(vbAppointmentEditor);
 
-        rdoMonthly.setToggleGroup(toggleGroup);
-        rdoWeekly.setToggleGroup(toggleGroup);
-
         setupCollections();
         getAppointments();
         setupDataView();
@@ -179,6 +175,12 @@ public class AppointmentViewController implements Initializable {
         this.tbAppointmentEditor = new ToggleButton();
         this.rdoWeekly = new RadioButton();
         this.rdoMonthly = new RadioButton();
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+
+        rdoWeekly.setToggleGroup(toggleGroup);
+        rdoWeekly.setSelected(true);
+        rdoMonthly.setToggleGroup(toggleGroup);
 
         this.tbAppointmentEditor.setText("Enable Edit Mode");
         this.tbAppointmentEditor.setSelected(false);

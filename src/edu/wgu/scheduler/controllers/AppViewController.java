@@ -2,16 +2,20 @@ package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AppViewController implements Initializable {
+import static edu.wgu.scheduler.MainApp.appointmentViewController;
+import static edu.wgu.scheduler.MainApp.customerViewController;
+import static edu.wgu.scheduler.MainApp.dataViewController;
+
+public class AppViewController extends BorderPane implements Initializable {
     @FXML
     protected BorderPane rootPane;
     @FXML
@@ -40,16 +44,12 @@ public class AppViewController implements Initializable {
     private Tab tabAppointments;
     @FXML
     private ScrollPane spAppointmentEditor;
-    @FXML
-    private DataViewController dataViewController = new DataViewController();
-    @FXML
-    private static AppointmentViewController appointmentViewController = new AppointmentViewController();
-    @FXML
-    private static CustomerViewController customerViewController = new CustomerViewController();
     private MainApp mainApp;
 
     public AppViewController() {
+        dataViewController = new DataViewController();
         initialize(MainApp.class.getResource("fxml/AppView.fxml"), null);
+
     }
 
     /**
@@ -90,6 +90,9 @@ public class AppViewController implements Initializable {
         this.menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
         this.rootPane.setTop(menuBar);
 
+        appointmentViewController  = new AppointmentViewController();
+        customerViewController = new CustomerViewController();
+
         // populate scroll panes with included views
         this.spAppointmentEditor.setContent(appointmentViewController.apAppointmentView);
         this.spCustomerEditor.setContent(customerViewController.apCustomerView);
@@ -107,8 +110,6 @@ public class AppViewController implements Initializable {
         this.rootPane.setBottom(dataViewController.tabPane);
 
         setupEventHandlers(this);
-
-        this.setMainApp(this.mainApp);
     }
 
     private void setupEventHandlers(AppViewController appViewController) {
@@ -135,17 +136,17 @@ public class AppViewController implements Initializable {
 
     @FXML
     private void setCustomerView() {
-        this.dataViewController = customerViewController.getDataViewController();
+        MainApp.dataViewController = customerViewController.getDataViewController();
     }
 
     @FXML
     private void setAppointmentView() {
-        this.dataViewController = appointmentViewController.getDataViewController();
+        MainApp.dataViewController = appointmentViewController.getDataViewController();
         appointmentViewController.disableTextFields();
     }
 
 
-    private void setMainApp(MainApp mainApp){
+    public void setMainApp(MainApp mainApp){
         this.mainApp = mainApp;
     }
 }
