@@ -1,13 +1,12 @@
 package edu.wgu.scheduler.models;
 
 import com.sun.istack.internal.NotNull;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 6/25/17.
@@ -47,14 +46,15 @@ public class Address implements IAddress {
     }
 
     public Address(int cityId, String address, String address2, String postalCode, String phone, String createdBy) {
-        this.cityId.setValue(cityId);
-        this.address.setValue(address);
-        this.address2.setValue(address2);
-        this.postalCode.setValue(postalCode);
-        this.phone.setValue(phone);
-        this.createdBy.setValue(createdBy);
-        this.lastUpdateBy.setValue(createdBy);
+        this.cityId = new SimpleIntegerProperty(cityId);
+        this.address = new SimpleStringProperty(address);
+        this.address2 = new SimpleStringProperty(address2);
+        this.postalCode = new SimpleStringProperty(postalCode);
+        this.phone = new SimpleStringProperty(phone);
+        this.createdBy = new SimpleStringProperty(createdBy);
+        this.lastUpdateBy = new SimpleStringProperty(createdBy);
         this.createdDate = LocalDate.now(ZoneId.of("UTC"));
+        this.lastUpdate = new SimpleObjectProperty<>(new Timestamp(ZonedDateTime.now(ZoneId.systemDefault()).toEpochSecond()));
     }
 
 
@@ -69,7 +69,7 @@ public class Address implements IAddress {
 
     @Override
     public void setPostalCode(String postalCode) {
-        this.postalCode.setValue(postalCode);
+        this.postalCode = new SimpleStringProperty(postalCode);
     }
 
 
@@ -84,7 +84,7 @@ public class Address implements IAddress {
 
     @Override
     public void setPhone(String phone) {
-        this.phone.setValue(phone);
+        this.phone = new SimpleStringProperty(phone);
     }
 
 
@@ -99,7 +99,7 @@ public class Address implements IAddress {
 
     @Override
     public void setLastUpdateBy(String lastUpdateBy) {
-        this.lastUpdateBy.setValue(lastUpdateBy);
+        this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
     }
 
 
@@ -125,7 +125,7 @@ public class Address implements IAddress {
 
     @Override
     public void setAddress(String address) {
-        this.address.setValue(address);
+        this.address = new SimpleStringProperty(address);
     }
 
 
@@ -140,7 +140,7 @@ public class Address implements IAddress {
 
     @Override
     public void setAddress2(String address2) {
-        this.address2.setValue(address2);
+        this.address2 = new SimpleStringProperty(address2);
     }
 
 

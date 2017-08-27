@@ -57,8 +57,8 @@ public class AppViewController implements Initializable {
      * completely processed.
      *
      * @param location
-     *         The location used to resolve relative paths for the root object, or
-     *         <tt>null</tt> if the location is not known.
+     *         The locationProperty used to resolve relative paths for the root object, or
+     *         <tt>null</tt> if the locationProperty is not known.
      * @param resources
      *         The resources used to localize the root object, or <tt>null</tt> if
      */
