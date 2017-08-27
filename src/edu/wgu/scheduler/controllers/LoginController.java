@@ -116,8 +116,8 @@ public class LoginController implements Initializable {
             if (loginUser.apply(credentials)) {
                 return true;
             }
-            throw new FailedLoginException();
-        } catch (FailedLoginException e) {
+            throw new LoginFailedException();
+        } catch (LoginFailedException e) {
             log.trace(String.format("[%s]\tUser:\t%s login failed!", formatter.format(ZonedDateTime.now()), username));
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("LoginFailed"));
@@ -190,9 +190,9 @@ public class LoginController implements Initializable {
         }
     }
 
-    private static class InvalidPasswordException extends IllegalArgumentException {
-        public InvalidPasswordException() {
-            super(bundle.getString("invalidPassword"));
+    public static class LoginFailedException extends FailedLoginException {
+        public LoginFailedException() {
+            super(new String("The username or password is invalid, Please check both and try again!"));
         }
     }
 }
