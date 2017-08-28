@@ -5,6 +5,9 @@ import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import java.net.URL;
@@ -57,16 +60,16 @@ public class AppViewController extends BorderPane implements Initializable{
         instance = this;
         this.rootPane = new BorderPane();
         this.menuBar = new MenuBar();
-        this.fileMenu = new Menu();
-        this.editMenu = new Menu();
-        this.reportMenu = new Menu();
-        this.helpMenu = new Menu();
-        this.closeMenuItem = new MenuItem();
-        this.copyMenuItem = new MenuItem();
-        this.monthlyAppointmentReportMenuItem = new MenuItem();
-        this.consultantScheduleMenuItem = new MenuItem();
-        this.customersByCountryMenuItem = new MenuItem();
-        this.aboutMenuItem = new MenuItem();
+        this.fileMenu = new Menu("_File");
+        this.editMenu = new Menu("_Edit");
+        this.reportMenu = new Menu("_Report");
+        this.helpMenu = new Menu("_Help");
+        this.closeMenuItem = new MenuItem("Close");
+        this.copyMenuItem = new MenuItem("Copy");
+        this.monthlyAppointmentReportMenuItem = new MenuItem("Monthly Appointment Report");
+        this.consultantScheduleMenuItem = new MenuItem("Consultant Schedule Report");
+        this.customersByCountryMenuItem = new MenuItem("Customers by Country Report");
+        this.aboutMenuItem = new MenuItem("About");
         this.vbAppView = new VBox();
         this.tpAppPane = new TabPane();
         this.tabCustomers = new Tab("Customers");
@@ -79,9 +82,13 @@ public class AppViewController extends BorderPane implements Initializable{
         // populate menus and menuBar and add them to top pane
 
         this.fileMenu.getItems().setAll(closeMenuItem);
+        this.fileMenu.setMnemonicParsing(true);
         this.editMenu.getItems().setAll(copyMenuItem);
+        this.editMenu.setMnemonicParsing(true);
         this.reportMenu.getItems().setAll(monthlyAppointmentReportMenuItem, consultantScheduleMenuItem, customersByCountryMenuItem);
+        this.reportMenu.setMnemonicParsing(true);
         this.helpMenu.getItems().setAll(aboutMenuItem);
+        this.helpMenu.setMnemonicParsing(true);
 
         this.menuBar.getMenus().addAll(fileMenu, editMenu, reportMenu, helpMenu);
         this.rootPane.setTop(menuBar);

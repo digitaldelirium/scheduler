@@ -53,6 +53,8 @@ public class DataViewController {
      */
     public void initialize() {
         this.tabPane = new TabPane();
+        this.tabPane.setPrefHeight(250.0);
+        this.tabPane.setMaxHeight(400.0);
         this.tabTableView = new Tab();
         this.tabListView = new Tab();
         this.spListView = new ScrollPane();
