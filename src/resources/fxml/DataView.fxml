@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
@@ -6,15 +7,14 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
-<TabPane 
-    xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" 
-    xmlns="http://javafx.com/javafx/8.0.111" fx:controller="edu.wgu.scheduler.controllers.DataViewController">
+
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.wgu.scheduler.controllers.DataViewController">
     <tabs>
         <Tab fx:id="tabListView" text="List View">
             <content>
                 <VBox fx:id="vbListView">
                     <children>
-                        <Label fx:id="lblListView" text="List View Label"/>
+                        <Label fx:id="lblListView" text="List View Label" />
                         <ScrollPane>
                             <content>
                                 <ListView fx:id="listView" />
@@ -27,7 +27,7 @@
         <Tab fx:id="tabTableView" text="Table View">
             <content>
                 <VBox fx:id="vbTableView">
-                    <Label fx:id="lblTableView" text="Table View Label"/>
+                    <Label fx:id="lblTableView" text="Table View Label" />
                     <ScrollPane fx:id="spTableView">
                         <content>
                             <TableView fx:id="tableView" />

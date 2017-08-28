@@ -51,11 +51,8 @@ public class LoginController implements Initializable {
     @FXML
     public static PasswordField txtPassword;
     public static ButtonType btnLogin;
-    public static boolean canAddUser;
     @FXML
     private GridPane gpLogin;
-    @FXML
-    private Label lblWelcome;
     @FXML
     private Label lblUsername;
     @FXML
@@ -145,7 +142,6 @@ public class LoginController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         apLogin = new AnchorPane();
         this.gpLogin = new GridPane();
-        this.lblWelcome = new Label(resources.getString("Welcome"));
         this.lblUsername = new Label(resources.getString("Username"));
         this.lblPassword = new Label(resources.getString("Password"));
         txtUsername = new TextField();
@@ -194,5 +190,9 @@ public class LoginController implements Initializable {
         LoginFailedException() {
             super("The username or password is invalid, Please check both and try again!");
         }
+    }
+
+    public void setMainApp(MainApp mainApp){
+        this.mainApp = mainApp;
     }
 }

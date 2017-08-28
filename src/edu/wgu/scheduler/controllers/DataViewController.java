@@ -10,18 +10,16 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static edu.wgu.scheduler.MainApp.dataViewController;
-
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 8/19/17.
  * Part of Project: scheduler
  * <p>
  * Student ID: 000292065
  */
-public class DataViewController implements Initializable {
+public class DataViewController {
 
     @FXML
-    protected TabPane tabPane;
+    protected static TabPane tabPane;
     @FXML
     private Tab tabTableView;
     @FXML
@@ -42,24 +40,18 @@ public class DataViewController implements Initializable {
     private ListView<?> listView;
     @FXML
     private TableView<?> tableView;
+    private MainApp mainApp;
 
     public DataViewController() {
-        initialize(MainApp.class.getResource("fxml/DataView.fxml"), null);
-        dataViewController = this;
+        initialize();
     }
 
     /**
      * Called to initialize a controller after its root element has been
      * completely processed.
      *
-     * @param location
-     *         The locationProperty used to resolve relative paths for the root object, or
-     *         <tt>null</tt> if the locationProperty is not known.
-     * @param resources
-     *         The resources used to localize the root object, or <tt>null</tt> if
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         this.tabPane = new TabPane();
         this.tabTableView = new Tab();
         this.tabListView = new Tab();
@@ -114,5 +106,9 @@ public class DataViewController implements Initializable {
 
     public void setTableView(TableView<?> tableView) {
         this.tableView = tableView;
+    }
+
+    public void setMainApp(MainApp mainApp){
+        this.mainApp = mainApp;
     }
 }

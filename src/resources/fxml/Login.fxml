@@ -17,18 +17,12 @@
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
   <children>
-    <Label fx:id="lblWelcome" text="%Welcome" GridPane.columnSpan="2147483647">
-      <font>
-        <Font size="18.0" />
-      </font>
-    </Label>
-    <Label fx:id="lblUsername" text="%Username" GridPane.rowIndex="1" />
-    <Label fx:id="lblPassword" text="%Password" GridPane.rowIndex="2" />
-    <TextField fx:id="txtUsername" promptText="%Enter Username" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-    <PasswordField fx:id="txtPassword" promptText="%Enter Password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label fx:id="lblUsername" text="%Username" GridPane.rowIndex="0" />
+    <Label fx:id="lblPassword" text="%Password" GridPane.rowIndex="1" />
+    <TextField fx:id="txtUsername" promptText="%Enter Username" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <PasswordField fx:id="txtPassword" promptText="%Enter Password" GridPane.columnIndex="1" GridPane.rowIndex="1" />
   </children>
   <opaqueInsets>
     <Insets />

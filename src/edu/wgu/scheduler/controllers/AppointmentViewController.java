@@ -6,15 +6,12 @@ import edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
@@ -32,76 +29,47 @@ import static edu.wgu.scheduler.MainApp.*;
  * <p>
  * Student ID: 000292065
  */
-public class AppointmentViewController implements Initializable {
-    @FXML
-    AnchorPane apAppointmentView;
-    @FXML
+public class AppointmentViewController extends AnchorPane implements Initializable {
+    public AnchorPane apAppointmentView;
     private VBox vbAppointmentEditor;
-    @FXML
     private HBox hbEditorBar;
-    @FXML
     private ToggleButton tbAppointmentEditor;
-    @FXML
     private Button btnNewAppointment;
-    @FXML
     private GridPane gpAppointmentEditor;
-    @FXML
     private Label lblTitle;
-    @FXML
     private Label lblDescription;
-    @FXML
     private Label lblLocation;
-    @FXML
     private Label lblContact;
-    @FXML
     private Label lblUrl;
-    @FXML
     private Label lblCustomerName;
-    @FXML
     private Label lblStart;
-    @FXML
     private Label lblEnd;
-    @FXML
     private Label lblCreatedDate;
-    @FXML
     private Label lblCreatedBy;
-    @FXML
     private Label lblLastUpdated;
-    @FXML
     private TextField txtTitle;
-    @FXML
     private TextField txtDescription;
-    @FXML
     private TextField txtLocation;
-    @FXML
     private TextField txtContact;
-    @FXML
     private TextField txtUrl;
-    @FXML
     private TextField txtCustomerName;
-    @FXML
-    private TextField txtStart;
-    @FXML
-    private TextField txtEnd;
-    @FXML
+    private HBox hbEndTime;
+    private DatePicker datePickerStartTime;
+    private ChoiceBox<Integer> choiceBoxStartHour;
+    private ChoiceBox<Integer> choiceBoxStartMinute;
+    private HBox hbStartTime;
+    private DatePicker datePickerEndTime;
+    private ChoiceBox<Integer> choiceBoxEndHour;
+    private ChoiceBox<Integer> choiceBoxEndMinute;
     private TextField txtCreatedDate;
-    @FXML
     private TextField txtCreatedBy;
-    @FXML
     private TextField txtLastUpdated;
-    @FXML
     private Button btnAppointmentSave;
-    @FXML
     private Label lblViewScope;
-    @FXML
     private HBox hbViewScope;
-    @FXML
     private RadioButton rdoWeekly;
-    @FXML
     private RadioButton rdoMonthly;
-    @FXML
     private ButtonBar buttonbarAppointmentEditor;
-    @FXML
     private Button btnAppointmentReset;
     private TableView<AppointmentViewProperty> tvAppointments = new TableView<AppointmentViewProperty>();
     private TableColumn<AppointmentView, String> tcTitle = new TableColumn<>("Title");
@@ -116,30 +84,45 @@ public class AppointmentViewController implements Initializable {
     private TableColumn<AppointmentView, String> tcCreatedBy = new TableColumn<>("Created By");
     private TableColumn<AppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
     private MainApp mainApp;
-    protected static DataViewController dataViewController;
-
+    private DataViewController dataViewController;
+    private static AppointmentViewController instance;
+    private static ObservableList<ZonedDateTime> hours;
+    private static ObservableList<ZonedDateTime> minutes;
     protected static ObservableList<CustomerProperty> customers;
     protected static ObservableList<AppointmentProperty> appointments;
     protected static ObservableList<AppointmentViewProperty> appointmentViews;
     protected static ObservableList<ReminderProperty> reminders;
 
-    public AppointmentViewController() {
-        dataViewController = new DataViewController();
+    private AppointmentViewController() {
+        initialize(MainApp.class.getResource("/fxml/AppointmentView.fxml"), null);
+    }
+
+    public static AppointmentViewController getInstance() {
+        if(instance == null){
+            new AppointmentViewController();
+        }
+        return instance;
+    }
+
+    public void initialize(URL location, ResourceBundle resourceBundle) {
+        instance = this;
         appointmentViews = FXCollections.observableArrayList();
         appointments = FXCollections.observableArrayList();
         customers = FXCollections.observableArrayList();
         reminders = FXCollections.observableArrayList();
-        initialize(MainApp.class.getResource("fxml/AppointmentView.fxml"), null);
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
+        hours = FXCollections.observableList(new LinkedList<>());
+        minutes = FXCollections.observableList(new LinkedList<>());
         this.apAppointmentView = new AnchorPane();
+        this.apAppointmentView.setPrefHeight(580.0);
         this.vbAppointmentEditor = new VBox();
+        this.vbAppointmentEditor.setPrefWidth(985.0);
+        this.vbAppointmentEditor.setOpaqueInsets(new Insets(10.0));
+        this.vbAppointmentEditor.setPadding(new Insets(5.0));
+        this.dataViewController = new DataViewController();
+        this.lblViewScope = new Label("Choose View:");
 
-
+        setupHBoxes();
         setupGridPane();
-        setupHBox();
 
         this.vbAppointmentEditor.getChildren().addAll(
                 this.lblViewScope,
@@ -153,7 +136,8 @@ public class AppointmentViewController implements Initializable {
         setupCollections();
         getAppointments();
         setupDataView();
-        disableTextFields();
+        setupEventHandlers();
+        setupTextFields(true);
 
     }
 
@@ -168,25 +152,48 @@ public class AppointmentViewController implements Initializable {
         });
     }
 
-    private void setupHBox() {
+    private void setupHBoxes() {
+
         this.hbEditorBar = new HBox();
         this.hbViewScope = new HBox();
-        this.btnNewAppointment = new Button();
-        this.tbAppointmentEditor = new ToggleButton();
-        this.rdoWeekly = new RadioButton();
-        this.rdoMonthly = new RadioButton();
+        this.hbStartTime = new HBox();
+        this.hbEndTime = new HBox();
 
+        this.btnNewAppointment = new Button("New Appointment");
+        this.tbAppointmentEditor = new ToggleButton("Edit Appointment");
+        this.rdoWeekly = new RadioButton("Weekly");
+        this.rdoMonthly = new RadioButton("Monthly");
+
+        this.datePickerStartTime = new DatePicker(LocalDate.now());
+        this.choiceBoxStartHour = new ChoiceBox<>();
+        this.choiceBoxStartMinute = new ChoiceBox<>();
+        this.hbStartTime.getChildren().addAll(datePickerStartTime, choiceBoxStartHour, choiceBoxStartMinute);
+        this.hbStartTime.setSpacing(5.0);
+
+        this.datePickerEndTime = new DatePicker(LocalDate.now());
+        this.choiceBoxEndHour = new ChoiceBox<>();
+        this.choiceBoxEndMinute = new ChoiceBox<>();
+        this.hbEndTime.getChildren().addAll(datePickerEndTime, choiceBoxEndHour, choiceBoxEndMinute);
+        this.hbEndTime.setSpacing(5.0);
+        this.hbEndTime.setPadding(new Insets(5.0));
+        setupChoiceBoxes();
         ToggleGroup toggleGroup = new ToggleGroup();
 
         rdoWeekly.setToggleGroup(toggleGroup);
         rdoWeekly.setSelected(true);
+        rdoWeekly.setOpaqueInsets(new Insets(5.0));
         rdoMonthly.setToggleGroup(toggleGroup);
+        rdoMonthly.setOpaqueInsets(new Insets(5.0));
 
         this.tbAppointmentEditor.setText("Enable Edit Mode");
         this.tbAppointmentEditor.setSelected(false);
 
         this.hbViewScope.getChildren().addAll(rdoWeekly, rdoMonthly);
+        this.hbViewScope.setPadding(new Insets(5.0));
+        this.hbViewScope.setSpacing(10.0);
         this.hbEditorBar.getChildren().addAll(tbAppointmentEditor, btnNewAppointment);
+        this.hbEditorBar.setPadding(new Insets(5));
+        this.hbEditorBar.setSpacing(10.0);
 
         this.tbAppointmentEditor.onMouseClickedProperty().addListener((event)-> {
             if(tbAppointmentEditor.isSelected()){
@@ -196,6 +203,26 @@ public class AppointmentViewController implements Initializable {
                 tbAppointmentEditor.setText("Enable Edit Mode");
             }
         });
+    }
+
+    private void setupChoiceBoxes() {
+        LinkedList<Integer> hourList = new LinkedList();
+        LinkedList<Integer> minuteList = new LinkedList<>();
+        
+        for (int i = 8; i <= 18; i++){
+            hourList.add(i);
+        }
+        
+        for (int i=0; i < 60;){
+            minuteList.add(i);
+            i = i + 5;
+        }
+        
+        choiceBoxEndHour.setItems(FXCollections.observableList(hourList));
+        choiceBoxStartHour.setItems(FXCollections.observableList(hourList));
+        
+        choiceBoxEndMinute.setItems(FXCollections.observableList(minuteList));
+        choiceBoxStartMinute.setItems(FXCollections.observableList(minuteList));
     }
 
     private void setupGridPane() {
@@ -218,14 +245,12 @@ public class AppointmentViewController implements Initializable {
         this.txtContact = new TextField();
         this.txtUrl = new TextField();
         this.txtCustomerName = new TextField();
-        this.txtStart = new TextField();
-        this.txtEnd = new TextField();
         this.txtCreatedDate = new TextField();
         this.txtCreatedBy = new TextField();
         this.txtLastUpdated = new TextField();
         this.buttonbarAppointmentEditor = new ButtonBar();
-        this.btnAppointmentSave = new Button();
-        this.btnAppointmentReset = new Button();
+        this.btnAppointmentSave = new Button("Save");
+        this.btnAppointmentReset = new Button("Reset");
 
         this.lblTitle.setLabelFor(this.txtTitle);
         this.lblDescription.setLabelFor(this.txtDescription);
@@ -233,8 +258,8 @@ public class AppointmentViewController implements Initializable {
         this.lblContact.setLabelFor(this.txtContact);
         this.lblUrl.setLabelFor(this.txtUrl);
         this.lblCustomerName.setLabelFor(this.txtCustomerName);
-        this.lblStart.setLabelFor(this.txtStart);
-        this.lblEnd.setLabelFor(this.txtEnd);
+        this.lblStart.setLabelFor(this.hbStartTime);
+        this.lblEnd.setLabelFor(this.hbEndTime);
         this.lblCreatedDate.setLabelFor(this.txtCreatedDate);
         this.lblCreatedBy.setLabelFor(this.txtCreatedBy);
         this.lblLastUpdated.setLabelFor(this.txtLastUpdated);
@@ -252,11 +277,11 @@ public class AppointmentViewController implements Initializable {
         this.gpAppointmentEditor.add(lblUrl, 0, 4);
         this.gpAppointmentEditor.add(txtUrl, 1, 4);
         this.gpAppointmentEditor.add(lblStart, 0, 5);
-        this.gpAppointmentEditor.add(txtStart, 1, 5);
+        this.gpAppointmentEditor.add(hbStartTime, 1, 5);
         this.gpAppointmentEditor.add(lblEnd, 0, 6);
-        this.gpAppointmentEditor.add(txtEnd, 1, 6);
+        this.gpAppointmentEditor.add(hbEndTime, 1, 6);
         this.gpAppointmentEditor.add(lblCustomerName, 0, 7);
-        this.gpAppointmentEditor.add(txtCustomerName, 0, 7);
+        this.gpAppointmentEditor.add(txtCustomerName, 1, 7);
         this.gpAppointmentEditor.add(lblCreatedDate, 0, 8);
         this.gpAppointmentEditor.add(txtCreatedDate, 1, 8);
         this.gpAppointmentEditor.add(lblCreatedBy, 0, 9);
@@ -264,6 +289,29 @@ public class AppointmentViewController implements Initializable {
         this.gpAppointmentEditor.add(lblLastUpdated, 0, 10);
         this.gpAppointmentEditor.add(txtLastUpdated, 1, 10);
         this.gpAppointmentEditor.add(buttonbarAppointmentEditor, 1, 11);
+
+        this.gpAppointmentEditor.setPadding(new Insets(20));
+        this.gpAppointmentEditor.setHgap(10.0);
+        this.gpAppointmentEditor.setVgap(5.0);
+        this.gpAppointmentEditor.getRowConstraints().setAll(new RowConstraints(10.0, 30.0, Integer.MAX_VALUE));
+        this.gpAppointmentEditor.getColumnConstraints().setAll(new ColumnConstraints(10, 150.0, Integer.MAX_VALUE));
+
+        this.btnAppointmentReset.setDisable(true);
+        this.btnAppointmentSave.setDisable(true);
+
+        setupTextFields(true);
+    }
+
+    private void setupTextFields(Boolean disabled) {
+        this.gpAppointmentEditor.getChildren().filtered(node -> {
+            if(node instanceof TextField){
+                ((TextField) node).setPrefWidth(300.0);
+                ((TextField) node).setEditable(!disabled);
+                node.setDisable(disabled);
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupCollections() {
@@ -285,12 +333,23 @@ public class AppointmentViewController implements Initializable {
                 re.snoozeIncrementTypeIdProperty()
         });
 
+
+
     }
 
     private void setupDataView() {
         this.tvAppointments.getItems().addAll(appointmentViews);
         dataViewController.setTableView(this.tvAppointments);
         dataViewController.setLblListView(new Label("Appointments"));
+    }
+
+    private void setupEventHandlers(){
+        this.tbAppointmentEditor.setOnAction(event -> toggleEditable());
+        this.btnNewAppointment.setOnAction(event -> createNewAppointment());
+        this.btnAppointmentSave.setOnAction(event -> saveAppointment());
+        this.btnAppointmentReset.setOnAction(event -> clearForm());
+
+        createListeners();
     }
 
     private void setMainApp(MainApp mainApp){
@@ -378,7 +437,6 @@ public class AppointmentViewController implements Initializable {
         }
     }
 
-    @FXML
     private void createNewAppointment() {
         // Enable controls and empty them out
         setTextEditable();
@@ -386,7 +444,19 @@ public class AppointmentViewController implements Initializable {
         this.btnAppointmentSave.setDisable(true);
         this.btnAppointmentReset.setDisable(true);
 
-        createListeners();
+        this.gpAppointmentEditor.getChildren().filtered(node -> {
+            if(node instanceof TextField) {
+                if(node.hashCode() == txtCreatedDate.hashCode()) {
+                    ((TextField) node).setEditable(false);
+                    return true;
+                }
+                ((TextField) node).clear();
+                return true;
+            }
+            return false;
+        });
+
+        this.txtCustomerName.positionCaret(0);
     }
 
     /**
@@ -417,21 +487,18 @@ public class AppointmentViewController implements Initializable {
             } else {
                 btnAppointmentReset.setDisable(false);
                 if (txtDescription.getText().trim().length() >= 10) {
-                    if (txtStart.getText().trim().isEmpty() == false) {
-
+                    if (datePickerStartTime.getValue() != null) {
+                        if (choiceBoxStartHour != null && choiceBoxStartMinute != null){
+                            if (datePickerEndTime.getValue() != null){
+                                if (choiceBoxEndHour != null && choiceBoxEndMinute != null){
+                                    this.btnAppointmentSave.setDisable(false);
+                                }
+                            }
+                        }
                     }
                 }
             }
         });
-
-        txtStart.textProperty().addListener((observable, oldValue, newValue) -> {
-
-        });
-
-        txtEnd.textProperty().addListener((observable, oldValue, newValue) -> {
-
-        });
-
     }
 
     // TODO: Implement Update Appointment method
@@ -444,12 +511,12 @@ public class AppointmentViewController implements Initializable {
         throw new NotImplementedException();
     }
 
-    @FXML
+    
     private void toggleEditable() {
         if (this.tbAppointmentEditor.isSelected()) {
-            setTextEditable();
+            setupTextFields(false);
         } else {
-            this.vbAppointmentEditor.getChildren().filtered(node -> {
+            this.gpAppointmentEditor.getChildren().filtered(node -> {
                 if (node instanceof TextField) {
                     ((TextField) node).setEditable(false);
                     return true;
@@ -463,15 +530,20 @@ public class AppointmentViewController implements Initializable {
      *
      */
     private void setTextEditable() {
-        this.vbAppointmentEditor.getChildren().filtered(node -> {
+        this.gpAppointmentEditor.getChildren().filtered(node -> {
             if (node instanceof TextField) {
-                ((TextField) node).setEditable(true);
+                if(!((TextField) node).isEditable())
+                    ((TextField) node).setEditable(true);
+
+                if (node.isDisabled())
+                    node.setDisable(false);
+
                 return true;
             }
             return false;
         });
 
-        this.txtCreatedBy.setText(MainApp.user.getUsername());
+//        this.txtCreatedBy.setText(MainApp.user.getUsername());
         this.txtCreatedBy.setEditable(false);
         this.txtCreatedDate.setText(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
         this.txtCreatedDate.setEditable(false);
@@ -480,7 +552,7 @@ public class AppointmentViewController implements Initializable {
     /**
      * @return
      */
-    @FXML
+    
     private boolean saveAppointment() {
         int customerId = 0;
         int x = 0;
@@ -499,30 +571,25 @@ public class AppointmentViewController implements Initializable {
             alert.getButtonTypes().add(ButtonType.OK);
             alert.showAndWait()
                     .ifPresent(response -> {
-                        FXMLLoader loader = new FXMLLoader();
-                        loader.setLocation(MainApp.class.getResource("/fxml/CustomerView.fxml"));
-                        CustomerViewController controller = loader.getController();
-                        try {
-                            rootPane = loader.load();
-                        } catch (IOException e) {
-                            e.getLocalizedMessage();
-                        }
-
-                        Scene scene = new Scene(rootPane);
-                        scene.getStylesheets().add("/styles/Styles.css");
-
-                        this.setMainApp(this.mainApp);
-                        primaryStage.setScene(scene);
-                        primaryStage.show();
+                        CustomerViewController controller = CustomerViewController.getInstance();
+                        rootPane = (BorderPane) AppViewController.getInstance().getBorderPane();
                     });
         }
+
+        LocalDate startDate = datePickerStartTime.getValue();
+        LocalTime startTime = LocalTime.of(choiceBoxStartHour.getValue().intValue(), choiceBoxStartMinute.getValue().intValue());
+        LocalDateTime startDateTime = LocalDateTime.of(startDate, startTime);
+
+        LocalDate endDate = datePickerEndTime.getValue();
+        LocalTime endTime = LocalTime.of(choiceBoxEndHour.getValue().intValue(), choiceBoxEndMinute.getValue().intValue());
+        LocalDateTime endDateTime = LocalDateTime.of(endDate, endTime);
 
         Appointment app = new Appointment(txtCreatedBy.getText(),
                                           customerId,
                                           txtDescription.getText(),
-                                          ZonedDateTime.of(LocalDateTime.parse(txtEnd.getText()), ZoneId.systemDefault()),
+                                          ZonedDateTime.of(endDateTime, ZoneId.systemDefault()),
                                           txtLocation.getText(),
-                                          ZonedDateTime.of(LocalDateTime.parse(txtStart.getText()), ZoneId.systemDefault()),
+                                          ZonedDateTime.of(startDateTime, ZoneId.systemDefault()),
                                           txtTitle.getText(),
                                           txtUrl.getText());
 
@@ -561,7 +628,7 @@ public class AppointmentViewController implements Initializable {
         return false;
     }
 
-    @FXML
+    
     private void clearForm() {
         this.vbAppointmentEditor.getChildren().filtered(node -> {
             if (node instanceof TextField) {
@@ -580,6 +647,6 @@ public class AppointmentViewController implements Initializable {
     }
 
     public void setDataViewController(DataViewController dataViewController) {
-        this.dataViewController = dataViewController;
+        MainApp.setDataViewController(this.dataViewController);
     }
 }
