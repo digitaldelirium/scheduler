@@ -1,9 +1,6 @@
 package edu.wgu.scheduler;
 
-import edu.wgu.scheduler.controllers.AppViewController;
-import edu.wgu.scheduler.controllers.AppointmentViewController;
-import edu.wgu.scheduler.controllers.CustomerViewController;
-import edu.wgu.scheduler.controllers.LoginController;
+import edu.wgu.scheduler.controllers.*;
 import edu.wgu.scheduler.models.*;
 
 import javafx.application.Application;
@@ -12,12 +9,17 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -25,10 +27,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -41,7 +41,6 @@ public class MainApp extends Application {
     public static User user;
     public static BasicDataSource dataSource;
     public static Stage primaryStage;
-
     public static Properties config = new Properties();
     public static Locale locale = Locale.getDefault();
     public static ResourceBundle bundle;
@@ -53,8 +52,25 @@ public class MainApp extends Application {
     private static ObservableMap<Integer, ICountry> countries = FXCollections.observableHashMap();
     private static ObservableMap<Integer, IReminder> reminders = FXCollections.observableHashMap();
     private static ObservableList<ICustomerView> customerList;
+    private static Scene scene;
 
-    private AppViewController appView;
+    @FXML
+    private static AppViewController appViewController;
+    @FXML
+    private static AppointmentViewController appointmentViewController;
+    @FXML
+    private static CustomerViewController customerViewController;
+    @FXML
+    private static DataViewController dataViewController;
+    @FXML
+    private Parent appView;
+    @FXML
+    private static Parent appointmentView;
+    @FXML
+    private static Parent customerView;
+    @FXML
+    private static Parent dataView;
+
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
@@ -85,10 +101,29 @@ public class MainApp extends Application {
         }
 
         getDataSourceConnection();
-        LoginController loginController = new LoginController();
+        // TODO: Re-enable Login class and disable direct init call
+        initLayout();
+/*        LoginController loginController = new LoginController();
         loggedIn = showLoginDialog(loginController);
 
-        initLayout();
+        int x = 1;
+        while (x < 3) {
+            if (loggedIn) {
+                initLayout();
+                break;
+            } else {
+                loggedIn = showLoginDialog(loginController);
+            }
+            x++;
+        }
+
+        if (x == 3) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(bundle.getString("LoginExceededTitle"));
+            alert.setContentText(bundle.getString("MaxLoginFailures"));
+            alert.showAndWait();
+            System.exit(1);
+        }*/
 
 
     }
@@ -98,12 +133,12 @@ public class MainApp extends Application {
         dialog.setTitle(bundle.getString("Login"));
         dialog.setHeaderText(bundle.getString("Welcome"));
 
-        dialog.getDialogPane().getButtonTypes().addAll(btnLogin, btnRegister);
+        dialog.getDialogPane().getButtonTypes().add(btnLogin);
+        dialog.getDialogPane().setPrefWidth(350.0);
 
         Node loginButton = dialog.getDialogPane().lookupButton(btnLogin);
         loginButton.setDisable(true);
 
-        Node registerButton = dialog.getDialogPane().lookupButton(btnRegister);
 
         txtUsername.textProperty().addListener(((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             username = txtUsername.getText();
@@ -125,8 +160,6 @@ public class MainApp extends Application {
 
         loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleLoginButtonAction);
 
-        registerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleRegisterButtonAction);
-
         dialog.getDialogPane().setContent(apLogin);
         Platform.runLater(() -> txtUsername.requestFocus());
 
@@ -140,7 +173,7 @@ public class MainApp extends Application {
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
         result.ifPresent((Pair<String, String> usernamePassword) -> {
-            loggedIn = true;
+                loggedIn = login(usernamePassword);
         });
 
         return loggedIn;
@@ -174,13 +207,25 @@ public class MainApp extends Application {
         rootPane = new BorderPane();
 
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/fxml/AppView.fxml"));
-            appView = loader.getController();
-            rootPane = loader.load();
+            appointmentViewController = AppointmentViewController.getInstance();
+            appointmentView = appointmentViewController.apAppointmentView;
 
-            Scene scene = new Scene(rootPane);
+
+            customerViewController = CustomerViewController.getInstance();
+            customerView = customerViewController.apCustomerView;
+
+            FXMLLoader dataViewLoader = new FXMLLoader(MainApp.class.getResource("/fxml/DataView.fxml"));
+            dataView = dataViewLoader.load();
+            dataViewController = dataViewLoader.getController();
+
+            appViewController = AppViewController.getInstance();
+            appView = appViewController.getBorderPane();
+
+            rootPane = (BorderPane) appView;
+
+            scene = new Scene(rootPane);
             scene.getStylesheets().add("/styles/Styles.css");
+
 
 //            controller.setMainApp(this);
             primaryStage.setScene(scene);
@@ -189,6 +234,62 @@ public class MainApp extends Application {
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static AppViewController getAppViewController() {
+        return appViewController;
+    }
+
+    public static void setAppViewController(AppViewController appViewController) {
+        MainApp.appViewController = appViewController;
+    }
+
+    public static void setAppointmentViewController(AppointmentViewController appointmentViewController) {
+        MainApp.appointmentViewController = appointmentViewController.getInstance();
+    }
+
+    public static void setCustomerViewController(CustomerViewController customerViewController) {
+        MainApp.customerViewController = customerViewController;
+    }
+
+    public static DataViewController getDataViewController() {
+        return dataViewController;
+    }
+
+    public static void setDataViewController(DataViewController dataViewController) {
+        MainApp.dataViewController = dataViewController;
+    }
+
+    public Parent getAppView() {
+        return appView;
+    }
+
+    public void setAppView(Parent appView) {
+        this.appView = appView;
+    }
+
+    public static Parent getAppointmentView() {
+        return appointmentView;
+    }
+
+    public static void setAppointmentView(Parent appointmentView) {
+                MainApp.appointmentView = appointmentView;
+    }
+
+    public static Parent getCustomerView() {
+        return customerView;
+    }
+
+    public static void setCustomerView(Parent customerView) {
+        MainApp.customerView = customerView;
+    }
+
+    public static Parent getDataView() {
+        return dataView;
+    }
+
+    public static void setDataView(Parent dataView) {
+        MainApp.dataView = dataView;
     }
 
     public static ObservableMap<Integer, ICustomer> getCustomers() {

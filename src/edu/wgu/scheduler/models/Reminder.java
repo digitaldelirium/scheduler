@@ -1,9 +1,7 @@
 package edu.wgu.scheduler.models;
 
 import com.sun.istack.internal.NotNull;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.property.StringProperty;
 
 import java.time.LocalDate;
@@ -41,19 +39,19 @@ public class Reminder implements IReminder {
         this.appointmentId = appointmentId;
         this.createdBy = createdBy;
         this.createdDate = createdDate;
-        this.reminderDate.set(reminderDate);
-        this.remindercol.set(remindercol);
-        this.snoozeIncrement.set(snoozeIncrement);
-        this.snoozeIncrementTypeId.set(snoozeIncrementTypeId);
+        this.reminderDate = new SimpleObjectProperty<>(reminderDate);
+        this.remindercol = new SimpleStringProperty(remindercol);
+        this.snoozeIncrement = new SimpleIntegerProperty(snoozeIncrement);
+        this.snoozeIncrementTypeId = new SimpleIntegerProperty(snoozeIncrementTypeId);
     }
 
     public Reminder(int appointmentId, String createdBy, LocalDate createdDate, ZonedDateTime reminderDate, int snoozeIncrement, int snoozeIncrementTypeId) {
         this.appointmentId = appointmentId;
         this.createdBy = createdBy;
         this.createdDate = LocalDate.now(ZoneId.of("UTC"));
-        this.reminderDate.setValue(reminderDate);
-        this.snoozeIncrement.setValue(snoozeIncrement);
-        this.snoozeIncrementTypeId.setValue(snoozeIncrementTypeId);
+        this.reminderDate = new SimpleObjectProperty<>(reminderDate);
+        this.snoozeIncrement = new SimpleIntegerProperty(snoozeIncrement);
+        this.snoozeIncrementTypeId = new SimpleIntegerProperty(snoozeIncrementTypeId);
     }
 
     @Override

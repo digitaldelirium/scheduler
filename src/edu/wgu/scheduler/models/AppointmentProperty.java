@@ -1,9 +1,6 @@
 package edu.wgu.scheduler.models;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -16,11 +13,6 @@ import java.time.ZonedDateTime;
  * Student ID: 000292065
  */
 public class AppointmentProperty extends SimpleObjectProperty<Appointment> implements IAppointment {
-    public AppointmentProperty(LocalDate createDate, int appointmentId, String contact, String createdBy, int customerId, String description, String end, Timestamp lastUpdate, String lastUpdateBy, String location, String start, String title, String url) {
-        super(new Appointment(createDate, appointmentId, contact, createdBy, customerId, description, end, lastUpdate, lastUpdateBy, location, start, title, url));
-        init();
-    }
-
 
     public AppointmentProperty(Appointment ap) {
         super(ap);
@@ -39,8 +31,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setContact(contact);
     }
 
-    public StringProperty contact() {
-        return getValue().contact();
+    public StringProperty contactProperty() {
+        return getValue().contactProperty();
     }
 
     @Override
@@ -61,8 +53,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setCustomerId(customerId);
     }
 
-    public IntegerProperty customerId() {
-        return getValue().customerId();
+    public IntegerProperty customerIdProperty() {
+        return getValue().customerIdProperty();
     }
 
     public String getDescription() {
@@ -73,8 +65,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setDescription(description);
     }
 
-    public StringProperty description() {
-        return getValue().description();
+    public StringProperty descriptionProperty() {
+        return getValue().descriptionProperty();
     }
 
     public ZonedDateTime getEnd() {
@@ -85,8 +77,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setEnd(end);
     }
 
-    public ObjectProperty<ZonedDateTime> end() {
-        return getValue().end();
+    public ObjectProperty<ZonedDateTime> endProperty() {
+        return getValue().endProperty();
     }
 
     public String getLastUpdateBy() {
@@ -97,8 +89,22 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setLastUpdateBy(lastUpdateBy);
     }
 
-    public StringProperty lastUpdateBy() {
-        return getValue().lastUpdatedBy();
+    public StringProperty lastUpdatedByProperty() {
+        return getValue().lastUpdatedByProperty();
+    }
+
+    @Override
+    public ZonedDateTime getLastUpdate() {
+        return getValue().getLastUpdate();
+    }
+
+    @Override
+    public void setLastUpdate(ZonedDateTime lastUpdate) {
+        getValue().setLastUpdate(lastUpdate);
+    }
+
+    public ObjectProperty<Timestamp> lastUpdateProperty(){
+        return getValue().lastUpdateProperty();
     }
 
     public String getLocation() {
@@ -109,8 +115,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setLocation(location);
     }
 
-    public StringProperty location() {
-        return getValue().location();
+    public StringProperty locationProperty() {
+        return getValue().locationProperty();
     }
 
     public ZonedDateTime getStart() {
@@ -121,8 +127,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setStart(start);
     }
 
-    public ObjectProperty<ZonedDateTime> start() {
-        return getValue().start();
+    public ObjectProperty<ZonedDateTime> startProperty() {
+        return getValue().startProperty();
     }
 
     public String getTitle() {
@@ -133,8 +139,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setTitle(title);
     }
 
-    public StringProperty title() {
-        return getValue().title();
+    public StringProperty titleProperty() {
+        return getValue().titleProperty();
     }
 
     public String getUrl() {
@@ -145,8 +151,8 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
         getValue().setUrl(url);
     }
 
-    public StringProperty url() {
-        return getValue().url();
+    public StringProperty urlProperty() {
+        return getValue().urlProperty();
     }
 
     public void init() {
@@ -154,14 +160,14 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
             return;
         }
 
-        get().contact().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().customerId().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().description().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().end().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().lastUpdatedBy().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().start().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().title().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
-        get().url().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().contactProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().customerIdProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().descriptionProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().endProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().lastUpdatedByProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().startProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().titleProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
+        get().urlProperty().addListener((observable, oldValue, newValue) -> fireValueChangedEvent());
     }
 
     @Override
@@ -190,4 +196,5 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
     public String toString() {
         return getValue().toString();
     }
+
 }

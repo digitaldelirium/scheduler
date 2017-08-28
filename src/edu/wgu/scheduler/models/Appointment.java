@@ -1,13 +1,10 @@
 package edu.wgu.scheduler.models;
 
 import com.sun.istack.internal.NotNull;
-
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -31,7 +28,7 @@ public class Appointment implements IAppointment {
     private StringProperty description;
     @NotNull
     private ObjectProperty<ZonedDateTime> end;
-    private ObjectProperty<Timestamp> lateUpdate;
+    private ObjectProperty<Timestamp> lastUpdate;
     private StringProperty lastUpdateBy;
     @NotNull
     private StringProperty location;
@@ -58,20 +55,20 @@ public class Appointment implements IAppointment {
      * @param title
      * @param url
      */
-    public Appointment(LocalDate createDate, int appointmentId, String contact, String createdBy, int customerId, String description, String end, Timestamp lastUpdate, String lastUpdateBy, String location, String start, String title, String url) {
+    public Appointment(LocalDate createDate, int appointmentId, String contact, String createdBy, int customerId, String description, Instant end, Timestamp lastUpdate, String lastUpdateBy, String location, Instant start, String title, String url) {
         this.createDate = createDate;
         this.appointmentId = appointmentId;
-        this.contact.set(contact);
+        this.contact = new SimpleStringProperty(contact);
         this.createdBy = createdBy;
-        this.customerId.set(customerId);
-        this.description.set(description);
-        this.end.setValue(ZonedDateTime.from(ZonedDateTime.parse(end)));
-        this.lateUpdate.set(lastUpdate);
-        this.lastUpdateBy.set(lastUpdateBy);
-        this.location.set(location);
-        this.start.set(ZonedDateTime.from(ZonedDateTime.parse(start)));
-        this.title.set(title);
-        this.url.set(url);
+        this.customerId = new SimpleIntegerProperty(customerId);
+        this.description = new SimpleStringProperty(description);
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end, ZoneId.systemDefault()));
+        this.lastUpdate = new SimpleObjectProperty<>(lastUpdate);
+        this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
+        this.location = new SimpleStringProperty(location);
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start, ZoneId.systemDefault()));
+        this.title = new SimpleStringProperty(title);
+        this.url = new SimpleStringProperty(url);
     }
 
     /**
@@ -100,14 +97,14 @@ public class Appointment implements IAppointment {
     public Appointment(String createdBy, int customerId, String description, ZonedDateTime end, String location, ZonedDateTime start, String title, String url) {
         this.createdBy = createdBy;
         this.createDate = LocalDate.now(ZoneId.of("UTC"));
-        this.customerId.setValue(customerId);
-        this.description.setValue(description);
-        this.end.setValue(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC")));
-        this.lastUpdateBy.setValue(createdBy);
-        this.location.setValue(location);
-        this.start.setValue(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.of("UTC")));
-        this.title.setValue(title);
-        this.url.setValue(url);
+        this.customerId = new SimpleIntegerProperty(customerId);
+        this.description = new SimpleStringProperty(description);
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC")));
+        this.lastUpdateBy = new SimpleStringProperty(createdBy);
+        this.location = new SimpleStringProperty(location);
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.of("UTC")));
+        this.title = new SimpleStringProperty(title);
+        this.url = new SimpleStringProperty(url);
     }
 
 
@@ -127,7 +124,7 @@ public class Appointment implements IAppointment {
         this.contact.setValue(contact);
     }
 
-    public StringProperty contact() {
+    public StringProperty contactProperty() {
         return contact;
     }
 
@@ -153,7 +150,7 @@ public class Appointment implements IAppointment {
         this.customerId.setValue(customerId);
     }
 
-    public IntegerProperty customerId() {
+    public IntegerProperty customerIdProperty() {
         return customerId;
     }
 
@@ -167,7 +164,7 @@ public class Appointment implements IAppointment {
         this.description.setValue(description);
     }
 
-    public StringProperty description() {
+    public StringProperty descriptionProperty() {
         return description;
     }
 
@@ -181,7 +178,7 @@ public class Appointment implements IAppointment {
         this.end.setValue(end);
     }
 
-    public ObjectProperty<ZonedDateTime> end() {
+    public ObjectProperty<ZonedDateTime> endProperty() {
         return end;
     }
 
@@ -195,7 +192,17 @@ public class Appointment implements IAppointment {
         this.lastUpdateBy.setValue(lastUpdateBy);
     }
 
-    public StringProperty lastUpdatedBy() {
+    @Override
+    public ZonedDateTime getLastUpdate() {
+        return ZonedDateTime.ofInstant(this.lastUpdate.getValue().toInstant(), ZoneId.systemDefault());
+    }
+
+    @Override
+    public void setLastUpdate(ZonedDateTime lastUpdated) {
+        this.lastUpdate.setValue(new Timestamp(lastUpdated.toInstant().getEpochSecond()));
+    }
+
+    public StringProperty lastUpdatedByProperty() {
         return lastUpdateBy;
     }
 
@@ -209,7 +216,7 @@ public class Appointment implements IAppointment {
         this.location.setValue(location);
     }
 
-    public StringProperty location() {
+    public StringProperty locationProperty() {
         return location;
     }
 
@@ -223,7 +230,7 @@ public class Appointment implements IAppointment {
         this.start.setValue(start);
     }
 
-    public ObjectProperty<ZonedDateTime> start() {
+    public ObjectProperty<ZonedDateTime> startProperty() {
         return start;
     }
 
@@ -237,7 +244,7 @@ public class Appointment implements IAppointment {
         this.title.setValue(title);
     }
 
-    public StringProperty title() {
+    public StringProperty titleProperty() {
         return title;
     }
 
@@ -251,7 +258,7 @@ public class Appointment implements IAppointment {
         this.url.setValue(url);
     }
 
-    public StringProperty url() {
+    public StringProperty urlProperty() {
         return url;
     }
 
@@ -259,6 +266,11 @@ public class Appointment implements IAppointment {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         return null;
+    }
+
+
+    public ObjectProperty<Timestamp> lastUpdateProperty() {
+        return lastUpdate;
     }
 
     @Override
@@ -275,4 +287,6 @@ public class Appointment implements IAppointment {
     public int hashCode() {
         return getAppointmentId();
     }
+
+
 }

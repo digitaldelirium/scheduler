@@ -2,15 +2,17 @@ package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
+import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -22,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static edu.wgu.scheduler.MainApp.*;
+import static edu.wgu.scheduler.models.CustomerViewProperty.*;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 21:21.
@@ -31,6 +34,7 @@ import static edu.wgu.scheduler.MainApp.*;
  */
 public class CustomerViewController implements Initializable {
     @FXML
+    public
     AnchorPane apCustomerView;
     @FXML
     private VBox vbCustomerEditor;
@@ -86,6 +90,10 @@ public class CustomerViewController implements Initializable {
     private HBox hbPhone;
     @FXML
     private CheckBox cbActive;
+    @FXML
+    private HBox hbCustomerEditor;
+    @FXML
+    private Button btnNewCustomer;
     private MainApp mainApp;
     private TableView<ICustomerView> tvCustomerView;
     private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>("Customer Name");
@@ -98,53 +106,250 @@ public class CustomerViewController implements Initializable {
     private TableColumn<ICustomerView, Byte> tcActive = new TableColumn<>("Active");
     private ObservableMap<ZonedDateTime, ICustomerView> omCustomerView;
     private DataViewController dataViewController;
+    private static CustomerViewController instance;
 
-    public CustomerViewController() {
-        dataViewController = new DataViewController();
+    private CustomerViewController() {
         initialize(MainApp.class.getResource("/fxml/CustomerView.fxml"), null);
+    }
+
+    public static CustomerViewController getInstance() {
+        if(instance == null){
+            new CustomerViewController();
+        }
+        return instance;
     }
 
     /**
      * Called to initialize a controller after its root element has been
      * completely processed.
      *
-     * @param location
-     *         The location used to resolve relative paths for the root object, or
-     *         <tt>null</tt> if the location is not known.
-     * @param resources
-     *         The resources used to localize the root object, or <tt>null</tt> if
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resourceBundle) {
+        instance = this;
+        dataViewController = new DataViewController();
         this.apCustomerView = new AnchorPane();
         this.vbCustomerEditor = new VBox();
-        this.tbCustomerEditMode = new ToggleButton();
+        this.vbCustomerEditor.setPrefHeight(475.0);
+        this.vbCustomerEditor.setPrefWidth(985.0);
+        this.vbCustomerEditor.setPadding(new Insets(5.0));
+        this.vbCustomerEditor.setSpacing(10.0);
+        this.btnNewCustomer = new Button("New Customer");
+        this.tbCustomerEditMode = new ToggleButton("Edit Customer");
         this.tbCustomerEditMode.setSelected(false);
+        this.hbCustomerEditor = new HBox(this.tbCustomerEditMode, this.btnNewCustomer);
+        this.hbCustomerEditor.setPadding(new Insets(5));
+        this.hbCustomerEditor.setSpacing(10.0);
 
         setupGridPane();
 
         // Add gpCustomerEditor and add it to vbCustomerEditor and apCustomerEditor to complete view
-        this.vbCustomerEditor.getChildren().addAll(tbCustomerEditMode, gpCustomerEditor);
+        this.vbCustomerEditor.getChildren().addAll(hbCustomerEditor, gpCustomerEditor);
         this.apCustomerView.getChildren().add(vbCustomerEditor);
 
         setupDataView();
+        setupEventHandlers();
+    }
+
+    private void getCustomerViewData() throws SQLException {
+        List<ICustomerView> customerViews = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * from Customers");
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()){
+                Boolean active;
+
+                switch(rs.getByte(8)){
+                    case 0:
+                        active = false;
+                        break;
+                    default:
+                        active = true;
+                        break;
+                }
+
+                CustomerViewProperty view = new CustomerViewProperty(
+                        new CustomerView(
+                        rs.getString(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        rs.getString(7),
+                        active,
+                        rs.getDate(9),
+                        rs.getString(10),
+                        rs.getString(11),
+                        ZonedDateTime.ofInstant(rs.getTimestamp(12).toInstant(), ZoneId.systemDefault()))
+                );
+
+                customerViews.add(view);
+            }
+            // Populate MainApp collection customerList
+            setCustomerList(FXCollections.observableList(customerViews));
+        }
+    }
+
+    private void getCountryData() throws  SQLException {
+        HashMap<Integer, ICountry> countryHashMap = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM country");
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                CountryProperty country = new CountryProperty(
+                rs.getInt("countryId"),
+                rs.getString("country"),
+                rs.getString("createBy"),
+                rs.getDate("createDate"),
+                rs.getTimestamp("lastUpdate"),
+                rs.getString("lastUpdatedBy")
+                );
+
+                countryHashMap.put(country.hashCode(), country);
+            }
+            setCountries(FXCollections.observableMap(countryHashMap));
+        }
+    }
+
+    private void getCityData() throws SQLException {
+        HashMap<Integer, ICity> cityHashMap = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM city");
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()){
+                CityProperty city = new CityProperty(
+                        rs.getInt("cityId"),
+                        rs.getString("city"),
+                        rs.getInt("countryId"),
+                        rs.getString("createdBy"),
+                        rs.getTimestamp("lastUpdate"),
+                        rs.getString("lastUpdatedByProperty"),
+                        ZonedDateTime.ofInstant(rs.getDate("createDate").toInstant(), ZoneId.systemDefault())
+                );
+
+                cityHashMap.put(city.hashCode(), city);
+            }
+            setCities(FXCollections.observableMap(cityHashMap));
+        }
+
+    }
+
+    private void getAddressData() throws SQLException {
+        HashMap<Integer, IAddress> addressHashMap = new HashMap<>();
+        try(Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM address");
+            ResultSet rs = statement.executeQuery();
+
+            while(rs.next()){
+                AddressProperty address = new AddressProperty(
+                        rs.getInt("cityId"),
+                        rs.getString("address"),
+                        rs.getString("address2"),
+                        rs.getString("postalCode"),
+                        rs.getString("phone"),
+                        rs.getString("createdBy")
+                );
+                addressHashMap.put(address.hashCode(), address);
+            }
+            setAddresses(addressHashMap);
+        }
+    }
+
+    private void getCustomerData() throws SQLException {
+        HashMap<Integer, ICustomer> customerHashMap = new HashMap<>();
+        try(Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * from customer");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                CustomerProperty customer = new CustomerProperty(
+                        resultSet.getDate("createDate").toLocalDate(),
+                        resultSet.getInt("customerIdProperty"),
+                        resultSet.getByte("active"),
+                        resultSet.getInt("addressId"),
+                        resultSet.getString("createdBy"),
+                        resultSet.getString("customerName"),
+                        resultSet.getString("lastUpdateBy"),
+                        resultSet.getTimestamp("lastUpdate")
+                );
+
+                customerHashMap.put(customer.hashCode(), customer);
+            }
+            setCustomers(customerHashMap);
+        }
+    }
+
+    public DataViewController getDataViewController() {
+        return dataViewController;
+    }
+
+    private void createNewCustomer(){
+        tbCustomerEditMode.setSelected(true);
+        tbCustomerEditMode.setDisable(true);
+
+        // enable text fields and make them editable
+        enableEditing();
+
+        this.gpCustomerEditor.getChildren().filtered(node -> {
+            if (node instanceof TextField){
+                ((TextField) node).clear();
+                return true;
+            }
+            return false;
+        });
+
+        Platform.runLater(() -> txtCustomerName.positionCaret(0));
+    }
+
+    public void enableEditing() {
+        if(tbCustomerEditMode.isSelected()){
+            this.tbCustomerEditMode.setText("Read Only Mode");
+            this.gpCustomerEditor.getChildren().filtered(n -> {
+                if (n instanceof TextField){
+                    if (n.isDisabled())
+                        n.setDisable(false);
+
+                    if (!((TextField) n).isEditable())
+                        ((TextField) n).setEditable(true);
+
+                    return true;
+                }
+                return false;
+            });
+        }
+        else {
+            this.tbCustomerEditMode.setText("Edit Mode");
+            this.gpCustomerEditor.getChildren().filtered(n -> {
+                if (n instanceof TextField){
+                    n.setDisable(true);
+                    System.out.println(String.format("%s is disabled:\t%s", n.getClass().getName(), n.isDisabled()));
+                    ((TextField) n).setEditable(false);
+                    System.out.println(String.format("%s is editable:\t%s", n.getClass().getName(), ((TextField) n).isEditable()));
+                    return true;
+                }
+                return false;
+            });
+        }
+
+
     }
 
     private void setupGridPane() {
         this.gpCustomerEditor = new GridPane();
-        this.lblCustomerName = new Label();
-        this.lblAddress = new Label();
-        this.lblAddress2 = new Label();
-        this.lblCity = new Label();
-        this.lblState = new Label();
-        this.lblPostalCode = new Label();
-        this.lblCountry = new Label();
-        this.lblPhone = new Label();
-        this.lblCustomerSince = new Label();
+        this.lblCustomerName = new Label("Customer Name:");
+        this.lblAddress = new Label("Address:");
+        this.lblAddress2 = new Label("Address2:");
+        this.lblCity = new Label("City:");
+        this.lblState = new Label("State / Province:");
+        this.lblPostalCode = new Label("Postal Code:");
+        this.lblCountry = new Label("Country:");
+        this.lblPhone = new Label("Phone:");
+        this.lblCustomerSince = new Label("Customer Since:");
         this.lblCustomerCreatedDate = new Label();
-        this.cbActive = new CheckBox();
+        this.cbActive = new CheckBox("Active");
         this.cbActive.setSelected(false);
-        this.lblPrefix = new Label();
+        this.lblPrefix = new Label("Prefix");
         this.txtCustomerName = new TextField();
         this.txtAddress = new TextField();
         this.txtAddress2 = new TextField();
@@ -155,9 +360,9 @@ public class CustomerViewController implements Initializable {
         this.txtPhone = new TextField();
         this.hbPhone = new HBox(5.0, lblPrefix, txtPhone);
         this.btnbarCustomerEditor = new ButtonBar();
-        this.btnCustomerCancel = new Button();
+        this.btnCustomerCancel = new Button("Cancel");
         this.btnCustomerCancel.setCancelButton(true);
-        this.btnCustomerOk = new Button();
+        this.btnCustomerOk = new Button("Save");
         this.btnCustomerOk.setDefaultButton(true);
 
         this.lblCustomerName.setLabelFor(txtCustomerName);
@@ -194,6 +399,14 @@ public class CustomerViewController implements Initializable {
         this.gpCustomerEditor.add(lblCustomerCreatedDate, 1, 8);
         this.gpCustomerEditor.add(cbActive, 1, 9);
         this.gpCustomerEditor.add(btnbarCustomerEditor, 1, 10);
+
+        this.gpCustomerEditor.setVgap(5.0);
+        this.gpCustomerEditor.setHgap(10.0);
+        this.gpCustomerEditor.getRowConstraints().setAll(new RowConstraints(10.0, 30.0, Integer.MAX_VALUE));
+        this.gpCustomerEditor.getColumnConstraints().setAll(new ColumnConstraints(10.0, 150.0, Integer.MAX_VALUE));
+        this.gpCustomerEditor.setPadding(new Insets(10, 20, 20, 20));
+
+        setupTextFields(true);
     }
 
     private void setupDataView() {
@@ -251,140 +464,55 @@ public class CustomerViewController implements Initializable {
                 tcCountry,
                 tcPhone,
                 tcActive
-        );
+                                          );
 
         dataViewController.setTableView(this.tvCustomerView);
     }
 
-    private void getCustomerViewData() throws SQLException {
-        List<ICustomerView> customerViews = new LinkedList<>();
-        try (Connection connection = dataSource.getConnection()){
-            PreparedStatement statement = connection.prepareStatement("SELECT * from Customers");
-            ResultSet rs = statement.executeQuery();
+    private void setupEventHandlers(){
+        this.tbCustomerEditMode.setOnAction(event -> enableEditing());
 
-            while (rs.next()){
-                Boolean active;
+        this.btnNewCustomer.setOnAction(event -> createNewCustomer());
 
-                switch(rs.getByte(8)){
-                    case 0:
-                        active = false;
-                        break;
-                    default:
-                        active = true;
-                        break;
-                }
-
-                CustomerViewProperty view = new CustomerViewProperty(
-                        new CustomerView(
-                        rs.getString(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4),
-                        rs.getString(5),
-                        rs.getString(6),
-                        rs.getString(7),
-                        active,
-                        rs.getDate(9),
-                        rs.getString(10),
-                        rs.getString(11),
-                        ZonedDateTime.ofInstant(rs.getTimestamp(12).toInstant(), ZoneId.systemDefault()))
-                );
-
-                customerViews.add(view);
-            }
-            // Populate MainApp collection customerList
-            setCustomerList(FXCollections.observableList(customerViews));
-        }
+        this.btnCustomerOk.setOnAction(event -> saveCustomer());
     }
 
-    private void getCountryData() throws  SQLException {
-        HashMap<Integer, ICountry> countryHashMap = new HashMap<>();
-        try (Connection connection = dataSource.getConnection()){
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM country");
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()){
-                CountryProperty country = new CountryProperty(
-                    rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getDate(4).toInstant(),
-                        rs.getTimestamp(5),
-                        rs.getString(6)
-                );
-
-                countryHashMap.put(country.getCountryId(), country);
+    /***
+     * Sets whether text fields are enabled or disabled
+     * true = disable Text Fields
+     * false = enable Text Fields
+     * @param disabled
+     */
+    private void setupTextFields(Boolean disabled) {
+        this.gpCustomerEditor.getChildren().filtered(node -> {
+            if(node instanceof TextField){
+                ((TextField) node).setPrefWidth(300.0);
+                ((TextField) node).setEditable(!disabled);
+                node.setDisable(disabled);
+                return true;
             }
-            setCountries(FXCollections.observableMap(countryHashMap));
-        }
+            return false;
+        });
     }
 
-    private void getCityData() throws SQLException {
-        HashMap<Integer, ICity> cityHashMap = new HashMap<>();
-        try (Connection connection = dataSource.getConnection()){
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM city");
-            ResultSet rs = statement.executeQuery();
-
-            while (rs.next()){
-                CityProperty city = new CityProperty(
-                        rs.getInt("cityId"),
-                        rs.getString("city"),
-                        rs.getInt("countryId"),
-                        rs.getString("createdBy"),
-                        rs.getTimestamp("lastUpdate"),
-                        rs.getString("lastUpdatedBy"),
-                        ZonedDateTime.ofInstant(rs.getDate("createDate").toInstant(), ZoneId.systemDefault())
-                );
-
-                cityHashMap.put(city.getCityId(), city);
-            }
-            setCities(FXCollections.observableMap(cityHashMap));
-        }
-
+    public void setDataViewController(DataViewController dataViewController) {
+        this.dataViewController = dataViewController;
     }
 
-    private void getAddressData() throws SQLException {
-        HashMap<Integer, IAddress> addressHashMap = new HashMap<>();
-        try(Connection connection = dataSource.getConnection()){
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM address");
-            ResultSet rs = statement.executeQuery();
+    private void saveCustomer() {
+        String name = txtCustomerName.getText();
+        String addr = txtAddress.getText();
+        String addr2 = txtAddress2.getText();
+        String city = txtCity.getText();
+        String state = txtState.getText();
+        String postal = txtPostalCode.getText();
+        String country = txtCountry.getText();
+        String phone = txtPhone.getText();
 
-            while(rs.next()){
-                AddressProperty address = new AddressProperty(
-                        rs.getInt("cityId"),
-                        rs.getString("address"),
-                        rs.getString("address2"),
-                        rs.getString("postalCode"),
-                        rs.getString("phone"),
-                        rs.getString("createdBy")
-                );
-                addressHashMap.put(address.getAddressId(), address);
-            }
-            setAddresses(addressHashMap);
-
-        }
-    }
-
-    private void getCustomerData() throws SQLException {
-        HashMap<Integer, ICustomer> customerHashMap = new HashMap<>();
-        try(Connection connection = dataSource.getConnection()){
-            PreparedStatement statement = connection.prepareStatement("SELECT * from customer");
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                CustomerProperty customer = new CustomerProperty(
-                        resultSet.getDate("createDate").toLocalDate(),
-                        resultSet.getInt("customerId"),
-                        resultSet.getByte("active"),
-                        resultSet.getInt("addressId"),
-                        resultSet.getString("createdBy"),
-                        resultSet.getString("customerName"),
-                        resultSet.getString("lastUpdateBy"),
-                        resultSet.getTimestamp("lastUpdate")
-                );
-
-                customerHashMap.put(resultSet.getInt("customerId"), customer);
-            }
-            setCustomers(customerHashMap);
-        }
+        ObservableMap countries = getCountries();
+        ObservableMap cities = getCities();
+        ObservableMap addresses = getAddresses();
+        ObservableMap customers = getCustomers();
     }
 
     public Label getLblPrefix() {
@@ -462,4 +590,5 @@ public class CustomerViewController implements Initializable {
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
+
 }

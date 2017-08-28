@@ -1,106 +1,96 @@
 package edu.wgu.scheduler.controllers;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import edu.wgu.scheduler.MainApp;
-import edu.wgu.scheduler.models.ApplicationView;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-import static edu.wgu.scheduler.models.ApplicationView.APPOINTMENT;
-import static edu.wgu.scheduler.models.ApplicationView.CUSTOMER;
+import static edu.wgu.scheduler.MainApp.*;
 
-public class AppViewController implements Initializable {
-    @FXML
-    protected static CustomerViewController customerViewController = new CustomerViewController();
-    @FXML
+public class AppViewController extends BorderPane implements Initializable{
+
+    
+    private BorderPane rootPane;
     private MenuBar menuBar;
-    @FXML
     private Menu fileMenu;
-    @FXML
     private Menu editMenu;
-    @FXML
+    private Menu reportMenu;
     private Menu helpMenu;
-    @FXML
     private MenuItem closeMenuItem;
-    @FXML
     private MenuItem copyMenuItem;
-    @FXML
+    private MenuItem monthlyAppointmentReportMenuItem;
+    private MenuItem consultantScheduleMenuItem;
+    private MenuItem customersByCountryMenuItem;
     private MenuItem aboutMenuItem;
-    @FXML
     private VBox vbAppView;
-    @FXML
     private TabPane tpAppPane;
-    @FXML
     private Tab tabCustomers;
-    @FXML
     private ScrollPane spCustomerEditor;
-    @FXML
     private Tab tabAppointments;
-    @FXML
     private ScrollPane spAppointmentEditor;
-    @FXML
-    protected static DataViewController dataViewController = new DataViewController();
-    @FXML
-    private static AppointmentViewController appointmentViewController = new AppointmentViewController();
-    @FXML
-    protected BorderPane rootPane;
-
     private MainApp mainApp;
+    private static AppViewController instance;
 
-    public AppViewController() {
-        initialize(MainApp.class.getResource("fxml/AppView.fxml"), null);
+
+    private AppViewController() {
+        initialize(MainApp.class.getResource("/fxml/AppView.fxml"), null);
+    }
+
+    public static AppViewController getInstance() {
+        if(instance == null){
+            new AppViewController();
+        }
+        return instance;
     }
 
     /**
      * Called to initialize a controller after its root element has been
      * completely processed.
-     *
-     * @param location
-     *         The location used to resolve relative paths for the root object, or
-     *         <tt>null</tt> if the location is not known.
-     * @param resources
-     *         The resources used to localize the root object, or <tt>null</tt> if
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+     **/
+
+    public void initialize(URL location, ResourceBundle resourceBundle) {
+        instance = this;
         this.rootPane = new BorderPane();
-        MainApp.rootPane = this.rootPane;
         this.menuBar = new MenuBar();
         this.fileMenu = new Menu();
         this.editMenu = new Menu();
+        this.reportMenu = new Menu();
         this.helpMenu = new Menu();
         this.closeMenuItem = new MenuItem();
         this.copyMenuItem = new MenuItem();
+        this.monthlyAppointmentReportMenuItem = new MenuItem();
+        this.consultantScheduleMenuItem = new MenuItem();
+        this.customersByCountryMenuItem = new MenuItem();
         this.aboutMenuItem = new MenuItem();
         this.vbAppView = new VBox();
         this.tpAppPane = new TabPane();
-        this.tabCustomers = new Tab();
+        this.tabCustomers = new Tab("Customers");
+        this.tabCustomers.setClosable(false);
         this.spCustomerEditor = new ScrollPane();
-        this.tabAppointments = new Tab();
+        this.tabAppointments = new Tab("Appointments");
+        this.tabAppointments.setClosable(false);
         this.spAppointmentEditor = new ScrollPane();
-
 
         // populate menus and menuBar and add them to top pane
 
         this.fileMenu.getItems().setAll(closeMenuItem);
         this.editMenu.getItems().setAll(copyMenuItem);
+        this.reportMenu.getItems().setAll(monthlyAppointmentReportMenuItem, consultantScheduleMenuItem, customersByCountryMenuItem);
         this.helpMenu.getItems().setAll(aboutMenuItem);
 
-        this.menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
+        this.menuBar.getMenus().addAll(fileMenu, editMenu, reportMenu, helpMenu);
         this.rootPane.setTop(menuBar);
 
         // populate scroll panes with included views
-        this.spAppointmentEditor.setContent(appointmentViewController.apAppointmentView);
-        this.spCustomerEditor.setContent(customerViewController.apCustomerView);
+        this.spAppointmentEditor.setContent(getAppointmentView());
+        this.spCustomerEditor.setContent(getCustomerView());
 
         // populate tab panes and controllers and add them to the center pane
-
         this.tabAppointments.setContent(spAppointmentEditor);
         this.tabCustomers.setContent(spCustomerEditor);
         this.tpAppPane.getTabs().addAll(tabAppointments, tabCustomers);
@@ -109,44 +99,55 @@ public class AppViewController implements Initializable {
         this.rootPane.setCenter(vbAppView);
 
         // add data view to bottom pane
-        this.rootPane.setBottom(dataViewController.tabPane);
+        this.rootPane.setBottom(getDataView());
 
         setupEventHandlers(this);
-
-        this.setMainApp(this.mainApp);
     }
-
+    
     private void setupEventHandlers(AppViewController appViewController) {
 
         this.tabCustomers.setOnSelectionChanged((event -> {
             if (tabCustomers.isSelected()) {
                 // Change to Customer View
-                setApplicationView(CUSTOMER);
+                setCustomerView();
+            }
+            else {
+                setAppointmentView();
             }
         }));
 
         this.tabAppointments.setOnSelectionChanged(event -> {
             if (tabAppointments.isSelected()) {
-                setApplicationView(APPOINTMENT);
+                setAppointmentView();
+            }
+            else {
+                setCustomerView();
             }
         });
+
+        this.closeMenuItem.setOnAction(event -> quitApp());
     }
 
-    protected void setApplicationView(Enum<ApplicationView> view) {
+    private void setCustomerView() {
+        setDataViewController(CustomerViewController.getInstance().getDataViewController());
+    }
 
-        switch (view.name()) {
-            case "APPOINTMENT":
-
-                break;
-            case "CUSTOMER":
-                break;
-            default:
-                // TODO: See if user is logged in and call Login if not
-        }
+    private void setAppointmentView() {
+        AppointmentViewController controller = AppointmentViewController.getInstance();
+        setDataViewController(controller.getDataViewController());
+        controller.disableTextFields();
     }
 
 
-    private void setMainApp(MainApp mainApp){
+    public void setMainApp(MainApp mainApp){
         this.mainApp = mainApp;
+    }
+
+    private void quitApp(){
+        Platform.exit();
+    }
+
+    public Parent getBorderPane() {
+        return rootPane;
     }
 }
