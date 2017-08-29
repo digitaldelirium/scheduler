@@ -157,4 +157,16 @@ public class AppViewController extends BorderPane implements Initializable{
     public Parent getBorderPane() {
         return rootPane;
     }
+
+    public TabPane getTpAppPane() {
+        return tpAppPane;
+    }
+
+    public Tab getTabCustomers() {
+        return tabCustomers;
+    }
+
+    public Tab getTabAppointments() {
+        return tabAppointments;
+    }
 }
