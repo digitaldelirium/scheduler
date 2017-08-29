@@ -234,7 +234,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
         }
 
         public ZonedDateTime getStart() {
-            return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.of("UTC"));
+            return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.systemDefault());
         }
 
         ReadOnlyProperty<Timestamp> startProperty() {
@@ -242,7 +242,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
         }
 
         public ZonedDateTime getEnd() {
-            return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.of("UTC"));
+            return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.systemDefault());
         }
 
         ReadOnlyProperty<Timestamp> endProperty() {

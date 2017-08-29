@@ -6,6 +6,7 @@ import edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -17,6 +18,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.sql.Date;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -30,7 +32,6 @@ import static edu.wgu.scheduler.MainApp.*;
  * Student ID: 000292065
  */
 public class AppointmentViewController extends AnchorPane implements Initializable {
-    public AnchorPane apAppointmentView;
     private VBox vbAppointmentEditor;
     private HBox hbEditorBar;
     private ToggleButton tbAppointmentEditor;
@@ -85,6 +86,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     private TableColumn<AppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
     private MainApp mainApp;
     private DataViewController dataViewController;
+    private boolean isNewAppointment;
     private static AppointmentViewController instance;
     private static ObservableList<ZonedDateTime> hours;
     private static ObservableList<ZonedDateTime> minutes;
@@ -92,6 +94,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     protected static ObservableList<AppointmentProperty> appointments;
     protected static ObservableList<AppointmentViewProperty> appointmentViews;
     protected static ObservableList<ReminderProperty> reminders;
+    public AnchorPane apAppointmentView;
 
     private AppointmentViewController() {
         initialize(MainApp.class.getResource("/fxml/AppointmentView.fxml"), null);
@@ -165,12 +168,16 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         this.rdoMonthly = new RadioButton("Monthly");
 
         this.datePickerStartTime = new DatePicker(LocalDate.now());
+        this.datePickerStartTime.setShowWeekNumbers(true);
+        this.datePickerStartTime.setTooltip(new Tooltip("Please select a start date for the appointment!"));
         this.choiceBoxStartHour = new ChoiceBox<>();
         this.choiceBoxStartMinute = new ChoiceBox<>();
         this.hbStartTime.getChildren().addAll(datePickerStartTime, choiceBoxStartHour, choiceBoxStartMinute);
         this.hbStartTime.setSpacing(5.0);
 
         this.datePickerEndTime = new DatePicker(LocalDate.now());
+        this.datePickerEndTime.setShowWeekNumbers(true);
+        this.datePickerEndTime.setTooltip(new Tooltip("Please select an end date for the appointment!"));
         this.choiceBoxEndHour = new ChoiceBox<>();
         this.choiceBoxEndMinute = new ChoiceBox<>();
         this.hbEndTime.getChildren().addAll(datePickerEndTime, choiceBoxEndHour, choiceBoxEndMinute);
@@ -194,22 +201,13 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         this.hbEditorBar.getChildren().addAll(tbAppointmentEditor, btnNewAppointment);
         this.hbEditorBar.setPadding(new Insets(5));
         this.hbEditorBar.setSpacing(10.0);
-
-        this.tbAppointmentEditor.onMouseClickedProperty().addListener((event)-> {
-            if(tbAppointmentEditor.isSelected()){
-                tbAppointmentEditor.setText("Enable Read Only");
-            }
-            else {
-                tbAppointmentEditor.setText("Enable Edit Mode");
-            }
-        });
     }
 
     private void setupChoiceBoxes() {
         LinkedList<Integer> hourList = new LinkedList();
         LinkedList<Integer> minuteList = new LinkedList<>();
         
-        for (int i = 8; i <= 18; i++){
+        for (int i = 0; i < 24; i++){
             hourList.add(i);
         }
         
@@ -344,15 +342,41 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private void setupEventHandlers(){
+
         this.tbAppointmentEditor.setOnAction(event -> toggleEditable());
         this.btnNewAppointment.setOnAction(event -> createNewAppointment());
         this.btnAppointmentSave.setOnAction(event -> saveAppointment());
         this.btnAppointmentReset.setOnAction(event -> clearForm());
 
+        this.datePickerStartTime.setOnAction(event -> {
+            LocalDate selectedDate = datePickerStartTime.getValue();
+            if(selectedDate.isBefore(LocalDate.now())){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid Date!");
+                alert.setHeaderText("This date was in the past!");
+                alert.setContentText("Please select a valid date!");
+                alert.show();
+            }
+            this.datePickerStartTime.setValue(LocalDate.now());
+        });
+
+        this.datePickerEndTime.setOnAction(event -> {
+            if(datePickerEndTime.getValue().isBefore(datePickerStartTime.getValue())){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid Date!");
+                alert.setHeaderText("End date before Start date!");
+                alert.setContentText("Please select a valid date and try again!");
+                alert.show();
+            }
+            this.datePickerEndTime.setValue(LocalDate.now());
+        });
+
+
+
         createListeners();
     }
 
-    private void setMainApp(MainApp mainApp){
+    public void setMainApp(MainApp mainApp){
         this.mainApp = mainApp;
     }
 
@@ -438,6 +462,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private void createNewAppointment() {
+        isNewAppointment = true;
         // Enable controls and empty them out
         setTextEditable();
 
@@ -445,8 +470,8 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         this.btnAppointmentReset.setDisable(true);
 
         this.gpAppointmentEditor.getChildren().filtered(node -> {
-            if(node instanceof TextField) {
-                if(node.hashCode() == txtCreatedDate.hashCode()) {
+            if (node instanceof TextField) {
+                if (node.hashCode() == txtCreatedDate.hashCode()) {
                     ((TextField) node).setEditable(false);
                     return true;
                 }
@@ -499,6 +524,15 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                 }
             }
         });
+
+        this.tbAppointmentEditor.onMouseClickedProperty().addListener((event)-> {
+            if(tbAppointmentEditor.isSelected()){
+                tbAppointmentEditor.setText("Enable Read Only");
+            }
+            else {
+                tbAppointmentEditor.setText("Enable Edit Mode");
+            }
+        });
     }
 
     // TODO: Implement Update Appointment method
@@ -507,11 +541,38 @@ public class AppointmentViewController extends AnchorPane implements Initializab
      *
      * @return whether call was successful or not
      */
-    private boolean updateAppointment() {
-        throw new NotImplementedException();
+    private boolean updateAppointment(Connection connection, Appointment app) throws SQLException {
+            PreparedStatement statement = connection.prepareStatement("UPDATE appointment\n" +
+                "SET title = ?, description = ?, location = ?, contact = ?, url = ?, start = ?, lastUpdatedBy = ?, end = ? \n" +
+                "WHERE appointmentId = ?");
+            statement.setString(1, app.getTitle());
+            statement.setString(2, app.getDescription());
+            statement.setString(3, app.getLocation());
+            statement.setString(4, app.getContact());
+            statement.setString(5, app.getUrl());
+            statement.setTime(6, new Time(app.getStart().toEpochSecond()));
+            statement.setString(7, user.getUsername());
+            statement.setTime(8, new Time(app.getEnd().toEpochSecond()));
+            statement.setInt(9, app.getAppointmentId());
+
+            switch (statement.executeUpdate()) {
+                case 1: {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Update Succeeded");
+                    alert.setContentText("Appointment was updated successfully!");
+                    alert.show();
+                    return true;
+                }
+                case 0: {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Appointment Unchanged");
+                    alert.setContentText("There were no changes to the appointment");
+                    alert.show();
+                }
+            }
+        return false;
     }
 
-    
     private void toggleEditable() {
         if (this.tbAppointmentEditor.isSelected()) {
             setupTextFields(false);
@@ -567,60 +628,76 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         if (x >= customers.size()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Customer does not exist!");
-            alert.setContentText("The customer you're trying to create an appointment for does not exist! You will now be switched to Customer View to create this customer!");
+            alert.setContentText(
+                    "The customer you're trying to create an appointment for does not exist! You will now be switched to Customer View to create this customer!");
             alert.getButtonTypes().add(ButtonType.OK);
             alert.showAndWait()
-                    .ifPresent(response -> {
-                        CustomerViewController controller = CustomerViewController.getInstance();
-                        rootPane = (BorderPane) AppViewController.getInstance().getBorderPane();
-                    });
+                 .ifPresent(response -> {
+                     AppViewController appView = AppViewController.getInstance();
+                     Tab customerTab = appView.getTabCustomers();
+                     appView.getTpAppPane().getSelectionModel().select(customerTab);
+                 });
         }
 
         LocalDate startDate = datePickerStartTime.getValue();
-        LocalTime startTime = LocalTime.of(choiceBoxStartHour.getValue().intValue(), choiceBoxStartMinute.getValue().intValue());
-        LocalDateTime startDateTime = LocalDateTime.of(startDate, startTime);
+        LocalTime startTime = LocalTime.of(
+                choiceBoxStartHour.getValue().intValue(), choiceBoxStartMinute.getValue().intValue());
+        ZonedDateTime startDateTime = ZonedDateTime.of(startDate, startTime, ZoneId.systemDefault());
 
         LocalDate endDate = datePickerEndTime.getValue();
-        LocalTime endTime = LocalTime.of(choiceBoxEndHour.getValue().intValue(), choiceBoxEndMinute.getValue().intValue());
-        LocalDateTime endDateTime = LocalDateTime.of(endDate, endTime);
+        LocalTime endTime = LocalTime.of(
+                choiceBoxEndHour.getValue().intValue(), choiceBoxEndMinute.getValue().intValue());
+        ZonedDateTime endDateTime = ZonedDateTime.of(endDate, endTime, ZoneId.systemDefault());
 
-        Appointment app = new Appointment(txtCreatedBy.getText(),
-                                          customerId,
-                                          txtDescription.getText(),
-                                          ZonedDateTime.of(endDateTime, ZoneId.systemDefault()),
-                                          txtLocation.getText(),
-                                          ZonedDateTime.of(startDateTime, ZoneId.systemDefault()),
-                                          txtTitle.getText(),
-                                          txtUrl.getText());
+        try {
+            if ((startDateTime.getHour() < 8) || (startDateTime.getHour() >= 18)) {
+                throw new AppointmentTimeException("The start time is outside of business hours!");
+            } else if ((startDateTime.getDayOfWeek() == DayOfWeek.SATURDAY) || (startDateTime.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+                throw new AppointmentTimeException(
+                        "The appointment is not on a business day! Please select an appointment Monday through Friday!");
+            }
+        }
+        catch (AppointmentTimeException ate){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Start Time");
+            alert.setContentText(ate.getMessage());
+            alert.show();
+            return false;
+        }
 
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("UPDATE appointment\n" +
-                    "SET title = ?, description = ?, location = ?, contact = ?, url = ?, start = ?, lastUpdatedBy = ?, end = ? \n" +
-                    "WHERE appointmentId = ?");
-            statement.setString(1, app.getTitle());
-            statement.setString(2, app.getDescription());
-            statement.setString(3, app.getLocation());
-            statement.setString(4, app.getContact());
-            statement.setString(5, app.getUrl());
-            statement.setTime(6, new Time(app.getStart().toEpochSecond()));
-            statement.setString(7, user.getUsername());
-            statement.setTime(8, new Time(app.getEnd().toEpochSecond()));
-            statement.setInt(9, app.getAppointmentId());
+        try {
+            if ((endDateTime.getHour() < 8) || (endDateTime.getHour() >= 19)) {
+                throw new AppointmentTimeException("The end time is outside of business hours!");
+            } else if ((endDateTime.getDayOfWeek() == DayOfWeek.SATURDAY) || (endDateTime.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+                throw new AppointmentTimeException(
+                        "The appointment is not on a business day! Please select an appointment Monday through Friday!");
+            }
+        }
+        catch (AppointmentTimeException ate){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid End Time");
+            alert.setContentText(ate.getMessage());
+            alert.show();
+        }
 
-            switch (statement.executeUpdate()) {
-                case 1: {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Update Succeeded");
-                    alert.setContentText("Appointment was updated successfully!");
-                    alert.show();
-                    return true;
-                }
-                case 0: {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Appointment Unchanged");
-                    alert.setContentText("There were no changes to the appointment");
-                    alert.show();
-                }
+        Appointment app = new Appointment(
+                txtCreatedBy.getText(),
+                customerId,
+                txtDescription.getText(),
+                endDateTime,
+                txtLocation.getText(),
+                startDateTime,
+                txtTitle.getText(),
+                txtUrl.getText()
+        );
+
+        try (Connection connection = dataSource.getConnection()){
+            if (!isNewAppointment){
+                return updateAppointment(connection, app);
+            }
+            else {
+                isNewAppointment = false;
+                return saveNewAppointment(connection, app);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -628,7 +705,80 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         return false;
     }
 
-    
+    private boolean saveNewAppointment(Connection connection, Appointment app) throws SQLException {
+        PreparedStatement statement =
+                connection.prepareStatement("INSERT INTO appointment (customerId, title, description, " +
+                                                    "location, contact, url, start, end, createDate, createdBy, lastUpdate, lastUpdatedBy)" +
+                                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        statement.setInt(1, app.getCustomerId());
+        statement.setString(2, app.getTitle());
+        statement.setString(3, app.getDescription());
+        statement.setString(4, app.getLocation());
+        statement.setString(5, app.getContact());
+        statement.setString(6, app.getUrl());
+        statement.setTimestamp(7, new Timestamp(app.getStart().toEpochSecond()));
+        statement.setTimestamp(8, new Timestamp(app.getEnd().toEpochSecond()));
+        statement.setDate(9, new Date(app.getCreateDate().toEpochDay()));
+        statement.setString(10, app.getCreatedBy());
+        statement.setTimestamp(11, new Timestamp(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond()));
+        statement.setString(12, app.getLastUpdateBy());
+
+        boolean insertSucceeded = statement.execute();
+        if(insertSucceeded){
+            PreparedStatement updateAppointments = connection.prepareStatement("SELECT * FROM appointment");
+            PreparedStatement updateAppointmentViews = connection.prepareStatement("SELECT * FROM Appointments");
+
+            ResultSet rs = updateAppointments.executeQuery();
+            List<AppointmentProperty> appointmentProperties = new ArrayList<>();
+            while(rs.next()){
+                Appointment appointment = new Appointment(
+                        rs.getDate("createDate").toLocalDate(),
+                        rs.getInt("appointmentId"),
+                        rs.getString("contact"),
+                        rs.getString("createdBy"),
+                        rs.getInt("customerId"),
+                        rs.getString("description"),
+                        rs.getTimestamp("end").toInstant(),
+                        rs.getTimestamp("lastUpdate"),
+                        rs.getString("lastUpdateBy"),
+                        rs.getString("location"),
+                        rs.getTimestamp("start").toInstant(),
+                        rs.getString("title"),
+                        rs.getString("url")
+                );
+                appointmentProperties.add(new AppointmentProperty(appointment));
+            }
+
+            appointments = new SortedList<>(FXCollections.observableList(appointmentProperties),
+                                            Comparator.comparing(AppointmentProperty::getStart)
+                                                      .thenComparing(AppointmentProperty::getCreateDate));
+
+            rs = updateAppointmentViews.executeQuery();
+            List<AppointmentViewProperty> appointmentViewProperties = new ArrayList<>();
+            while(rs.next()){
+                AppointmentView appointmentView = new AppointmentView(
+                       rs.getString("title"),
+                       rs.getString("description"),
+                       rs.getString("location"),
+                       rs.getString("contact"),
+                       rs.getString("url"),
+                       rs.getString("customerName"),
+                       rs.getTimestamp("start"),
+                       rs.getTimestamp("end"),
+                       rs.getDate("createDate"),
+                       rs.getString("createdBy"),
+                       rs.getTimestamp("lastUpdate")
+                );
+                appointmentViewProperties.add(new AppointmentViewProperty(appointmentView));
+            }
+            appointmentViews = new SortedList<>(FXCollections.observableList(appointmentViewProperties),
+                                                Comparator.comparing(AppointmentViewProperty::getStart)
+                                                          .thenComparing(AppointmentViewProperty::getCreateDate));
+        }
+        return insertSucceeded;
+    }
+
+
     private void clearForm() {
         this.vbAppointmentEditor.getChildren().filtered(node -> {
             if (node instanceof TextField) {
@@ -648,5 +798,29 @@ public class AppointmentViewController extends AnchorPane implements Initializab
 
     public void setDataViewController(DataViewController dataViewController) {
         MainApp.setDataViewController(this.dataViewController);
+    }
+
+    private class AppointmentTimeException extends DateTimeException {
+        /**
+         * Constructs a new date-time exception with the specified message.
+         *
+         * @param message
+         *         the message to use for this exception, may be null
+         */
+        public AppointmentTimeException(String message) {
+            super(message);
+        }
+
+        /**
+         * Constructs a new date-time exception with the specified message and cause.
+         *
+         * @param message
+         *         the message to use for this exception, may be null
+         * @param cause
+         *         the cause of the exception, may be null
+         */
+        public AppointmentTimeException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }
