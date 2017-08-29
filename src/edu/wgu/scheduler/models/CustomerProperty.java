@@ -68,4 +68,13 @@ public class CustomerProperty extends SimpleObjectProperty<Customer> implements 
         getValue().setLastUpdateBy(lastUpdateBy);
     }
 
+    @Override
+    public int hashCode(){
+        return getValue().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o){
+        return getValue().equals(o);
+    }
 }
