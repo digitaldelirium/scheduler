@@ -3,14 +3,12 @@ package edu.wgu.scheduler.controllers;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
 import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
@@ -95,6 +93,7 @@ public class CustomerViewController implements Initializable {
     @FXML
     private Button btnNewCustomer;
     private MainApp mainApp;
+    private boolean isNewCustomer;
     private TableView<ICustomerView> tvCustomerView;
     private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>("Customer Name");
     private TableColumn<ICustomerView, String> tcAddress = new TableColumn<>("Address");
@@ -285,8 +284,9 @@ public class CustomerViewController implements Initializable {
     }
 
     private void createNewCustomer(){
+        isNewCustomer = true;
         tbCustomerEditMode.setSelected(true);
-        tbCustomerEditMode.setDisable(true);
+        tbCustomerEditMode.setDisable(false);
 
         // enable text fields and make them editable
         enableEditing();
@@ -499,7 +499,7 @@ public class CustomerViewController implements Initializable {
         this.dataViewController = dataViewController;
     }
 
-    private void saveCustomer() {
+    private boolean saveCustomer() {
         String name = txtCustomerName.getText();
         String addr = txtAddress.getText();
         String addr2 = txtAddress2.getText();
@@ -513,6 +513,24 @@ public class CustomerViewController implements Initializable {
         ObservableMap cities = getCities();
         ObservableMap addresses = getAddresses();
         ObservableMap customers = getCustomers();
+
+        countries.entrySet().stream().filter(o -> {
+            if(o instanceof Map.Entry){
+                ObjectProperty obj = (ObjectProperty) ((Map.Entry)o).getValue();
+                System.out.println(obj.getValue());
+                return true;
+            }
+            return false;
+        }).findFirst();
+
+        try(Connection connection = dataSource.getConnection()){
+            if(isNewCustomer){
+//                return saveNewCustomer(connection, )
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public Label getLblPrefix() {
