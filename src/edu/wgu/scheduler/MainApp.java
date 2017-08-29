@@ -209,10 +209,12 @@ public class MainApp extends Application {
         try {
             appointmentViewController = AppointmentViewController.getInstance();
             appointmentView = appointmentViewController.apAppointmentView;
+            appointmentViewController.setMainApp(this);
 
 
             customerViewController = CustomerViewController.getInstance();
             customerView = customerViewController.apCustomerView;
+            customerViewController.setMainApp(this);
 
             FXMLLoader dataViewLoader = new FXMLLoader(MainApp.class.getResource("/fxml/DataView.fxml"));
             dataView = dataViewLoader.load();
@@ -220,6 +222,7 @@ public class MainApp extends Application {
 
             appViewController = AppViewController.getInstance();
             appView = appViewController.getBorderPane();
+            appViewController.setMainApp(this);
 
             rootPane = (BorderPane) appView;
 
