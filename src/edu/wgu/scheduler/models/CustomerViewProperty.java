@@ -149,7 +149,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         private ReadOnlyObjectWrapper<ZonedDateTime> lastUpdate;
 
 
-        public CustomerView(String customerName, String address, String address2, String city, String postalCode, String country, String phone, boolean active, Date createDate, String createdBy, String lastUpdateBy, ZonedDateTime lastUpdate ){
+        public CustomerView(String customerName, String address, String address2, String city, String postalCode, String country, String phone, boolean active, Timestamp createDate, String createdBy, String lastUpdateBy, ZonedDateTime lastUpdate ){
             this.customerName.setValue(customerName);
             this.address.setValue(address);
             this.address2.setValue(address2);
@@ -158,7 +158,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
             this.country.setValue(country);
             this.phone.setValue(phone);
             this.active.setValue(active);
-            this.createDate = ZonedDateTime.of(createDate.toLocalDate().atStartOfDay(), ZoneId.systemDefault());
+            this.createDate = ZonedDateTime.of(createDate.toLocalDateTime(), ZoneId.systemDefault());
             this.createdBy = createdBy;
             this.lastUpdateBy.setValue(lastUpdateBy);
             this.lastUpdate.setValue(lastUpdate);
