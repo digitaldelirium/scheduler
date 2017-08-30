@@ -414,7 +414,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                         rs.getInt("addressId"),
                         rs.getString("createdBy"),
                         rs.getString("customerName"),
-                        rs.getString("lastUpdatedBy"),
+                        rs.getString("lastUpdateBy"),
                         rs.getTimestamp("lastUpdate")
                 );
                 customers.add(new CustomerProperty(cu));
