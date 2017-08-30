@@ -3,6 +3,7 @@ package edu.wgu.scheduler.controllers;
 import edu.wgu.scheduler.MainApp;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -10,14 +11,15 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.MainApp.*;
 
-public class AppViewController extends BorderPane implements Initializable{
+public class AppViewController extends BorderPane implements Initializable {
 
-    
+
     private BorderPane rootPane;
     private MenuBar menuBar;
     private Menu fileMenu;
@@ -45,7 +47,7 @@ public class AppViewController extends BorderPane implements Initializable{
     }
 
     public static AppViewController getInstance() {
-        if(instance == null){
+        if (instance == null) {
             new AppViewController();
         }
         return instance;
@@ -85,7 +87,9 @@ public class AppViewController extends BorderPane implements Initializable{
         this.fileMenu.setMnemonicParsing(true);
         this.editMenu.getItems().setAll(copyMenuItem);
         this.editMenu.setMnemonicParsing(true);
-        this.reportMenu.getItems().setAll(monthlyAppointmentReportMenuItem, consultantScheduleMenuItem, customersByCountryMenuItem);
+        this.reportMenu
+                .getItems()
+                .setAll(monthlyAppointmentReportMenuItem, consultantScheduleMenuItem, customersByCountryMenuItem);
         this.reportMenu.setMnemonicParsing(true);
         this.helpMenu.getItems().setAll(aboutMenuItem);
         this.helpMenu.setMnemonicParsing(true);
@@ -110,15 +114,14 @@ public class AppViewController extends BorderPane implements Initializable{
 
         setupEventHandlers(this);
     }
-    
+
     private void setupEventHandlers(AppViewController appViewController) {
 
         this.tabCustomers.setOnSelectionChanged((event -> {
             if (tabCustomers.isSelected()) {
                 // Change to Customer View
                 setCustomerView();
-            }
-            else {
+            } else {
                 setAppointmentView();
             }
         }));
@@ -126,8 +129,7 @@ public class AppViewController extends BorderPane implements Initializable{
         this.tabAppointments.setOnSelectionChanged(event -> {
             if (tabAppointments.isSelected()) {
                 setAppointmentView();
-            }
-            else {
+            } else {
                 setCustomerView();
             }
         });
@@ -136,21 +138,40 @@ public class AppViewController extends BorderPane implements Initializable{
     }
 
     private void setCustomerView() {
-        setDataViewController(CustomerViewController.getInstance().getDataViewController());
+        CustomerViewController customerViewController = CustomerViewController.getInstance();
+        setDataViewController(customerViewController.getDataViewController());
+        customerViewController.getGpCustomerEditor().getChildren().filtered(node -> toggleTextFields(node, true));
+
     }
 
     private void setAppointmentView() {
         AppointmentViewController controller = AppointmentViewController.getInstance();
         setDataViewController(controller.getDataViewController());
-        controller.disableTextFields();
+        controller.getGpAppointmentEditor().getChildren().filtered(node -> toggleTextFields(node, true));
     }
 
+    /***
+     * Sets whether text fields are enabled or disabled
+     * true = disable Text Fields
+     * false = enable Text Fields
+     * @param node the child nodes of the editor
+     * @param disabled whether to disable or enable the text fields
+     * @return whether node was affected or not
+     */
+    public static boolean toggleTextFields(Node node, boolean disabled) {
+        if (node instanceof TextField) {
+            ((TextField) node).setEditable(!disabled);
+            node.setDisable(disabled);
+            return true;
+        }
+        return false;
+    }
 
-    public void setMainApp(MainApp mainApp){
+    public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
 
-    private void quitApp(){
+    private void quitApp() {
         Platform.exit();
     }
 
