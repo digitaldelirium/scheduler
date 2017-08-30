@@ -54,21 +54,13 @@ public class MainApp extends Application {
     private static ObservableList<ICustomerView> customerList;
     private static Scene scene;
 
-    @FXML
     private static AppViewController appViewController;
-    @FXML
     private static AppointmentViewController appointmentViewController;
-    @FXML
     private static CustomerViewController customerViewController;
-    @FXML
     private static DataViewController dataViewController;
-    @FXML
     private Parent appView;
-    @FXML
     private static Parent appointmentView;
-    @FXML
     private static Parent customerView;
-    @FXML
     private static Parent dataView;
 
 
@@ -101,10 +93,11 @@ public class MainApp extends Application {
         }
 
         getDataSourceConnection();
-        // TODO: Re-enable Login class and disable direct init call
+        LoginController loginController = new LoginController();
+        // TODO:  uncomment this to enable login
+        user = new User("test1");
         initLayout();
-/*        LoginController loginController = new LoginController();
-        loggedIn = showLoginDialog(loginController);
+/*        loggedIn = showLoginDialog(loginController);
 
         int x = 1;
         while (x < 3) {
@@ -124,8 +117,6 @@ public class MainApp extends Application {
             alert.showAndWait();
             System.exit(1);
         }*/
-
-
     }
 
     private boolean showLoginDialog(LoginController loginController) {
@@ -176,9 +167,14 @@ public class MainApp extends Application {
                 loggedIn = login(usernamePassword);
         });
 
+        if(loggedIn){
+            user = new User(username);
+        }
+
         return loggedIn;
     }
 
+    
     private void getDataSourceConnection() {
         try {
             byte[] decodedPassword = Base64.getDecoder().decode(config.getProperty("dbPassword"));
@@ -205,55 +201,33 @@ public class MainApp extends Application {
 
     private void initLayout() {
         rootPane = new BorderPane();
-
-        try {
-            appointmentViewController = AppointmentViewController.getInstance();
-            appointmentView = appointmentViewController.apAppointmentView;
-            appointmentViewController.setMainApp(this);
-
-
-            customerViewController = CustomerViewController.getInstance();
-            customerView = customerViewController.apCustomerView;
-            customerViewController.setMainApp(this);
-
-            FXMLLoader dataViewLoader = new FXMLLoader(MainApp.class.getResource("/fxml/DataView.fxml"));
-            dataView = dataViewLoader.load();
-            dataViewController = dataViewLoader.getController();
-
-            appViewController = AppViewController.getInstance();
-            appView = appViewController.getBorderPane();
-            appViewController.setMainApp(this);
-
-            rootPane = (BorderPane) appView;
-
-            scene = new Scene(rootPane);
-            scene.getStylesheets().add("/styles/Styles.css");
+        
+        appointmentViewController = AppointmentViewController.getInstance();
+        appointmentView = appointmentViewController.apAppointmentView;
+        appointmentViewController.setMainApp(this);
 
 
-//            controller.setMainApp(this);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        customerViewController = CustomerViewController.getInstance();
+        customerView = customerViewController.apCustomerView;
+        customerViewController.setMainApp(this);
+        
+        dataViewController = new DataViewController();
+        dataView = dataViewController.tabPane;
+        dataViewController.setMainApp(this);
+        
+        appViewController = AppViewController.getInstance();
+        appView = appViewController.getBorderPane();
+        appViewController.setMainApp(this);
+
+        rootPane = (BorderPane) appView;
+
+        scene = new Scene(rootPane);
+        scene.getStylesheets().add("/styles/Styles.css");
+        
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
-    public static AppViewController getAppViewController() {
-        return appViewController;
-    }
-
-    public static void setAppViewController(AppViewController appViewController) {
-        MainApp.appViewController = appViewController;
-    }
-
-    public static void setAppointmentViewController(AppointmentViewController appointmentViewController) {
-        MainApp.appointmentViewController = appointmentViewController.getInstance();
-    }
-
-    public static void setCustomerViewController(CustomerViewController customerViewController) {
-        MainApp.customerViewController = customerViewController;
-    }
 
     public static DataViewController getDataViewController() {
         return dataViewController;
@@ -351,6 +325,11 @@ public class MainApp extends Application {
         MainApp.customerList = customerList;
     }
 
+    public static DataViewController getMainDataViewController(){ return dataViewController; }
+
+    public static void setMainDataViewController(DataViewController controller) {
+        dataViewController = controller;
+    }
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * main() serves only as fallback in case the application can not be
