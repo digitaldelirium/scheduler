@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static edu.wgu.scheduler.MainApp.*;
+import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 21:20.
@@ -142,17 +143,6 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         setupEventHandlers();
         setupTextFields(true);
 
-    }
-
-    protected void disableTextFields() {
-        this.gpAppointmentEditor.getChildren().filtered(n -> {
-            if(n instanceof TextField){
-                n.setDisable(true);
-                ((TextField) n).setEditable(false);
-                return true;
-            }
-            return false;
-        });
     }
 
     private void setupHBoxes() {
@@ -301,15 +291,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private void setupTextFields(Boolean disabled) {
-        this.gpAppointmentEditor.getChildren().filtered(node -> {
-            if(node instanceof TextField){
-                ((TextField) node).setPrefWidth(300.0);
-                ((TextField) node).setEditable(!disabled);
-                node.setDisable(disabled);
-                return true;
-            }
-            return false;
-        });
+        this.gpAppointmentEditor.getChildren().filtered(node -> toggleTextFields(node, disabled));
     }
 
     private void setupCollections() {
@@ -591,20 +573,9 @@ public class AppointmentViewController extends AnchorPane implements Initializab
      *
      */
     private void setTextEditable() {
-        this.gpAppointmentEditor.getChildren().filtered(node -> {
-            if (node instanceof TextField) {
-                if(!((TextField) node).isEditable())
-                    ((TextField) node).setEditable(true);
+        this.gpAppointmentEditor.getChildren().filtered(node -> toggleTextFields(node, false));
 
-                if (node.isDisabled())
-                    node.setDisable(false);
-
-                return true;
-            }
-            return false;
-        });
-
-//        this.txtCreatedBy.setText(MainApp.user.getUsername());
+        this.txtCreatedBy.setText(MainApp.user.getUsername());
         this.txtCreatedBy.setEditable(false);
         this.txtCreatedDate.setText(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
         this.txtCreatedDate.setEditable(false);
@@ -796,8 +767,8 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         return dataViewController;
     }
 
-    public void setDataViewController(DataViewController dataViewController) {
-        MainApp.setDataViewController(this.dataViewController);
+    public GridPane getGpAppointmentEditor() {
+        return gpAppointmentEditor;
     }
 
     private class AppointmentTimeException extends DateTimeException {

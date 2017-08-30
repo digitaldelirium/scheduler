@@ -8,6 +8,7 @@ import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static edu.wgu.scheduler.MainApp.*;
+import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
 import static edu.wgu.scheduler.models.CustomerViewProperty.*;
 
 /**
@@ -175,7 +177,7 @@ public class CustomerViewController implements Initializable {
                         rs.getString("country"),
                         rs.getString("phone"),
                         active,
-                        rs.getDate("createDate"),
+                        rs.getTimestamp("createDate"),
                         rs.getString("createdBy"),
                         rs.getString("lastUpdateBy"),
                         ZonedDateTime.of(rs.getTimestamp("lastUpdate").toLocalDateTime(), ZoneId.systemDefault())
@@ -450,7 +452,7 @@ public class CustomerViewController implements Initializable {
         }
         catch (SQLException e) {
             System.out.println("Could not get customer view information");
-            e.getLocalizedMessage();
+            System.out.println(e.getLocalizedMessage());
         }
 
         dataViewController.setLblTableView(new Label("Customers"));
@@ -469,7 +471,6 @@ public class CustomerViewController implements Initializable {
                                           );
 
         dataViewController.setTableView(this.tvCustomerView);
-        setMainDataViewController(this.dataViewController);
     }
 
     private void setupEventHandlers(){
@@ -493,19 +494,7 @@ public class CustomerViewController implements Initializable {
      * @param disabled
      */
     private void setupTextFields(Boolean disabled) {
-        this.gpCustomerEditor.getChildren().filtered(node -> {
-            if(node instanceof TextField){
-                ((TextField) node).setPrefWidth(300.0);
-                ((TextField) node).setEditable(!disabled);
-                node.setDisable(disabled);
-                return true;
-            }
-            return false;
-        });
-    }
-
-    public void setDataViewController(DataViewController dataViewController) {
-        this.dataViewController = dataViewController;
+        this.gpCustomerEditor.getChildren().filtered(node -> toggleTextFields(node, disabled));
     }
 
     private boolean saveCustomer() throws SQLException {
@@ -893,6 +882,10 @@ public class CustomerViewController implements Initializable {
 
     public void setTxtPhone(TextField txtPhone) {
         this.txtPhone = txtPhone;
+    }
+
+    public GridPane getGpCustomerEditor() {
+        return gpCustomerEditor;
     }
 
     public void setMainApp(MainApp mainApp) {
