@@ -3,7 +3,6 @@ package edu.wgu.scheduler.controllers;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -13,12 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.sql.*;
+import java.sql.Date;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static edu.wgu.scheduler.MainApp.*;
@@ -106,6 +103,7 @@ public class CustomerViewController implements Initializable {
     private ObservableMap<ZonedDateTime, ICustomerView> omCustomerView;
     private DataViewController dataViewController;
     private static CustomerViewController instance;
+    private boolean isCustomerUpdate;
 
     private CustomerViewController() {
         initialize(MainApp.class.getResource("/fxml/CustomerView.fxml"), null);
@@ -156,7 +154,7 @@ public class CustomerViewController implements Initializable {
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()){
-                Boolean active;
+                boolean active;
 
                 switch(rs.getByte(8)){
                     case 0:
@@ -169,19 +167,19 @@ public class CustomerViewController implements Initializable {
 
                 CustomerViewProperty view = new CustomerViewProperty(
                         new CustomerView(
-                        rs.getString(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4),
-                        rs.getString(5),
-                        rs.getString(6),
-                        rs.getString(7),
+                        rs.getString("customerName"),
+                        rs.getString("address"),
+                        rs.getString("address2"),
+                        rs.getString("city"),
+                        rs.getString("postalCode"),
+                        rs.getString("country"),
+                        rs.getString("phone"),
                         active,
-                        rs.getDate(9),
-                        rs.getString(10),
-                        rs.getString(11),
-                        ZonedDateTime.ofInstant(rs.getTimestamp(12).toInstant(), ZoneId.systemDefault()))
-                );
+                        rs.getDate("createDate"),
+                        rs.getString("createdBy"),
+                        rs.getString("lastUpdateBy"),
+                        ZonedDateTime.of(rs.getTimestamp("lastUpdate").toLocalDateTime(), ZoneId.systemDefault())
+                ));
 
                 customerViews.add(view);
             }
@@ -224,8 +222,8 @@ public class CustomerViewController implements Initializable {
                         rs.getInt("countryId"),
                         rs.getString("createdBy"),
                         rs.getTimestamp("lastUpdate"),
-                        rs.getString("lastUpdatedByProperty"),
-                        ZonedDateTime.ofInstant(rs.getDate("createDate").toInstant(), ZoneId.systemDefault())
+                        rs.getString("lastUpdateBy"),
+                        ZonedDateTime.of(rs.getDate("createDate").toLocalDate().atStartOfDay(), ZoneId.of("UTC"))
                 );
 
                 cityHashMap.put(city.hashCode(), city);
@@ -248,7 +246,9 @@ public class CustomerViewController implements Initializable {
                         rs.getString("address2"),
                         rs.getString("postalCode"),
                         rs.getString("phone"),
-                        rs.getString("createdBy")
+                        rs.getString("createBy"),
+                        rs.getTimestamp("lastUpdate"),
+                        rs.getDate("createDate").toLocalDate()
                 );
                 addressHashMap.put(address.hashCode(), address);
             }
@@ -264,7 +264,7 @@ public class CustomerViewController implements Initializable {
             while (resultSet.next()){
                 CustomerProperty customer = new CustomerProperty(
                         resultSet.getDate("createDate").toLocalDate(),
-                        resultSet.getInt("customerIdProperty"),
+                        resultSet.getInt("customerId"),
                         resultSet.getByte("active"),
                         resultSet.getInt("addressId"),
                         resultSet.getString("createdBy"),
@@ -453,6 +453,8 @@ public class CustomerViewController implements Initializable {
             e.getLocalizedMessage();
         }
 
+        dataViewController.setLblTableView(new Label("Customers"));
+        dataViewController.setLblListView(new Label("Customer List"));
         this.tvCustomerView = new TableView<>();
         this.tvCustomerView.setItems(getCustomerList());
         tvCustomerView.getColumns().addAll(
@@ -467,6 +469,7 @@ public class CustomerViewController implements Initializable {
                                           );
 
         dataViewController.setTableView(this.tvCustomerView);
+        setMainDataViewController(this.dataViewController);
     }
 
     private void setupEventHandlers(){
@@ -474,7 +477,13 @@ public class CustomerViewController implements Initializable {
 
         this.btnNewCustomer.setOnAction(event -> createNewCustomer());
 
-        this.btnCustomerOk.setOnAction(event -> saveCustomer());
+        this.btnCustomerOk.setOnAction(event -> {
+            try {
+                saveCustomer();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /***
@@ -499,38 +508,319 @@ public class CustomerViewController implements Initializable {
         this.dataViewController = dataViewController;
     }
 
-    private boolean saveCustomer() {
-        String name = txtCustomerName.getText();
-        String addr = txtAddress.getText();
-        String addr2 = txtAddress2.getText();
-        String city = txtCity.getText();
-        String state = txtState.getText();
-        String postal = txtPostalCode.getText();
-        String country = txtCountry.getText();
-        String phone = txtPhone.getText();
+    private boolean saveCustomer() throws SQLException {
+        int countryId;
+        int addressId = 0;
+        int cityId = 0;
+        int customerId = 0;
+        String name = txtCustomerName.getText().trim();
+        String addr = txtAddress.getText().trim();
+        String addr2 = txtAddress2.getText().trim();
+        String city = txtCity.getText().trim();
+        String state = txtState.getText().trim();
+        String postal = txtPostalCode.getText().trim();
+        String country = txtCountry.getText().trim();
+        String phone = txtPhone.getText().trim();
 
-        ObservableMap countries = getCountries();
-        ObservableMap cities = getCities();
-        ObservableMap addresses = getAddresses();
-        ObservableMap customers = getCustomers();
-
-        countries.entrySet().stream().filter(o -> {
-            if(o instanceof Map.Entry){
-                ObjectProperty obj = (ObjectProperty) ((Map.Entry)o).getValue();
-                System.out.println(obj.getValue());
-                return true;
-            }
-            return false;
-        }).findFirst();
+        ObservableMap<Integer, ICustomer> customers = getCustomers();
 
         try(Connection connection = dataSource.getConnection()){
+
+            countryId = getCountryId(connection, country);
+
+            if(countryId != 0) {
+                cityId = getCityId(connection, countryId, city);
+            }
+
+            if(cityId != 0) {
+                addressId = getAddressId(connection, cityId, addr, addr2, postal, phone);
+            }
+
+            if(addressId != 0) {
+                customerId = getCustomerId(connection, addressId, name, isNewCustomer);
+            }
+
+            if (customerId != 0){
+                PreparedStatement statement = connection.prepareStatement("SELECT createDate FROM customer WHERE customerId = ?;");
+                ResultSet rs = statement.executeQuery();
+                if(rs.next()){
+                    this.lblCustomerSince.setText(rs.getDate(1).toLocalDate().format(DateTimeFormatter.ISO_DATE));
+                }
+
+                this.dataViewController.setListView(new ListView<>(getCustomerList()));
+                this.dataViewController.setTableView(new TableView<>(getCustomerList()));
+
+                resetForm();
+                return true;
+            }
+        }
+        resetForm();
+        return false;
+    }
+
+    private void resetForm() {
+        this.gpCustomerEditor.getChildren().filtered(node -> {
+            if (node instanceof TextField){
+                ((TextField) node).clear();
+                return true;
+            }
+            else if(node instanceof CheckBox){
+                ((CheckBox) node).setSelected(false);
+                return true;
+            }
+            else if(node instanceof Button){
+                node.setDisable(true);
+            }
+            return false;
+        });
+    }
+
+    private int getCustomerId(Connection connection, int addressId, String name, boolean isNewCustomer) {
+        int customerId = 0;
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT customerId FROM customer WHERE LCASE(customerName) LIKE LCASE(?)" +
+                                                                              "AND addressId = ?");
+            statement.setString(1, name);
+            statement.setInt(2, addressId);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+                customerId = rs.getInt(1);
+                statement.close();
+                if(!isCustomerUpdate) {
+                    return customerId;
+                }
+            }
+
             if(isNewCustomer){
-//                return saveNewCustomer(connection, )
+                statement = connection.prepareStatement("INSERT INTO customer (customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy)" +
+                                                                "VALUES (?, ?, ?, UTC_DATE, ?, UTC_TIMESTAMP, ?);");
+                statement.setString(1, txtCustomerName.getText().trim());
+                statement.setInt(2, addressId);
+                statement.setBoolean(3, true);
+                statement.setString(4, user.getUsername());
+                statement.setString(5, user.getUsername());
+                if(statement.execute()){
+                    statement = connection.prepareStatement("SELECT customerId FROM customer WHERE LCASE(customerName) LIKE LCASE(?)" +
+                                                                                      "AND addressId = ?");
+                    statement.setString(1, name);
+                    statement.setInt(2, addressId);
+                    rs = statement.executeQuery();
+                    if(rs.next()){
+                        customerId = rs.getInt(1);
+                        statement.close();
+                        getCustomerData();
+                        getCustomerViewData();
+                        this.isNewCustomer = false;
+                        return customerId;
+                    }
+                }
+            } else if(isCustomerUpdate && customerId != 0) {
+                statement = connection.prepareStatement("UPDATE customer\n" +
+                                                                "SET customerName = ?, addressId = ?, lastUpdateBy = ?, lastUpdate = ?\n" +
+                                                                "WHERE customerId = ?;");
+                statement.setString(1, txtCustomerName.getText().trim());
+                statement.setInt(2, addressId);
+                statement.setString(3, user.getUsername());
+                statement.setTimestamp(4, new Timestamp(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond() * 1000));
+                statement.setInt(5, customerId);
+                int recordsUpdated = statement.executeUpdate();
+                if (recordsUpdated > 0){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText("Customer update succeeded!");
+                    alert.setContentText(String.format("There were %d records updated!", recordsUpdated));
+                    alert.show();
+                    getCustomerData();
+                    getCustomerViewData();
+                    this.isCustomerUpdate = false;
+                    return customerId;
+                }
+            }
+            this.isNewCustomer = false;
+            this.isCustomerUpdate = false;
+            statement.close();
+            getCustomerData();
+            getCustomerViewData();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error querying customer data");
+            alert.setContentText("There was an error querying the database for customer data!");
+            alert.show();
+        }
+        return 0;
+    }
+
+    private int getAddressId(Connection connection, int cityId, String addr, String addr2, String postal, String phone) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT addressId FROM address\n" +
+                                                                              "WHERE LCASE(address) LIKE LCASE(?)\n" +
+                                                                              "AND LCASE(address2) LIKE LCASE(?)\n" +
+                                                                              "AND LCASE(postalCode) LIKE LCASE(?)\n" +
+                                                                              "AND LCASE(phone) LIKE LCASE(?)\n" +
+                                                                              "AND cityId = ?;");
+            statement.setString(1, addr);
+            statement.setString(2, addr2);
+            statement.setString(3, postal);
+            statement.setString(4, phone);
+            statement.setInt(5, cityId);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                int addressId = rs.getInt(1);
+                statement.close();
+                getAddressData();
+                return addressId;
+            }
+
+            statement = connection.prepareStatement("INSERT INTO address (address, address2, cityId, postalCode, phone, createBy, createDate, lastUpdate, lastUpdatedBy)\n" +
+                                                            "    VALUES (?, ?, ?, ?, ?, ?, UTC_DATE, UTC_TIMESTAMP, ?);");
+            statement.setString(1, addr);
+            statement.setString(2, addr2);
+            statement.setInt(3, cityId);
+            statement.setString(4, postal);
+            statement.setString(5, phone);
+            statement.setString(6, user.getUsername());
+            statement.setString(7, user.getUsername());
+            boolean failed = statement.execute();
+            if (!failed){
+                statement = connection.prepareStatement("SELECT addressId FROM address WHERE LCASE(address) = LCASE(?)" +
+                                                                "AND LCASE(address2) = LCASE(?) " +
+                                                                "AND LCASE(postalCode) = LCASE(?)" +
+                                                                "AND LCASE(phone) = LCASE(?) " +
+                                                                "AND cityId = ?;");
+                statement.setString(1, addr);
+                statement.setString(2, addr2);
+                statement.setString(3, postal);
+                statement.setString(4, phone);
+                statement.setInt(5, cityId);
+                rs = statement.executeQuery();
+
+                if(rs.next()){
+                    int addrId = rs.getInt(1);
+                    getAddressData();
+                    statement.close();
+                    return addrId;
+                }
+                statement.close();
+                getAddressData();
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error querying address data");
+            alert.setContentText("There was an error querying the database for address data!");
+            alert.show();
         }
-        return false;
+        return 0;
+    }
+
+    private int getCountryId(Connection connection, String country) {
+        int countryId;
+        try{
+            PreparedStatement statement = connection.prepareStatement("SELECT countryId FROM country\n" +
+                                                                              "WHERE LCASE(country) LIKE LCASE(?);");
+            statement.setString(1, country);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+                countryId = rs.getInt(1);
+                statement.close();
+                getCountryData();
+                return countryId;
+            }
+            else {
+                statement = connection.prepareStatement(
+                        "INSERT INTO country (country, createBy, createDate, lastUpdate, lastUpdatedBy)\n" +
+                                "    VALUES (?, ?, UTC_DATE, UTC_TIMESTAMP, ?);");
+                statement.setString(1, country);
+                statement.setString(2, user.getUsername());
+                statement.setString(3, user.getUsername());
+                boolean failed = statement.execute();
+                if(failed){
+                    throw new SQLDataException("Insert country operation failed!");
+                }
+                else {
+                    statement = connection.prepareStatement("SELECT countryId FROM country WHERE LCASE(country) LIKE LCASE(?)");
+                    statement.setString(1, country);
+                    rs = statement.executeQuery();
+                    if(rs.next()){
+                        countryId =  rs.getInt(1);
+                        getCountryData();
+                        statement.close();
+                        return countryId;
+                    }
+                }
+                statement.close();
+            }
+        } catch (SQLDataException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error inserting country data");
+            alert.setContentText(String.format("There was an error saving the country to the database\n%s", e.toString()));
+            alert.show();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error querying country data");
+            alert.setContentText("There was an error querying the database for country data!");
+            alert.show();
+        }
+        return 0;
+    }
+
+    private int getCityId(Connection connection, int countryId, String city) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT cityId FROM city\n" +
+                                                                              "WHERE LCASE(city) LIKE LCASE(?)\n" +
+                                                                              "AND countryId = ?;");
+            statement.setString(1, city);
+            statement.setInt(2, countryId);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                int cityId =  rs.getInt(1);
+                statement.close();
+                return cityId;
+            }
+            else {
+                statement = connection.prepareStatement("INSERT INTO city (city, countryId, createDate, createdBy, lastUpdateBy, lastUpdate)" +
+                                                                "VALUES (?, ?, UTC_DATE, ?, ?, UTC_TIMESTAMP);");
+                statement.setString(1, city);
+                statement.setInt(2, countryId);
+                statement.setString(3, user.getUsername());
+                statement.setString(4, user.getUsername());
+                boolean failed = statement.execute();
+
+                if(failed){
+                    throw new SQLDataException("Failed to insert City!");
+                }
+
+                statement = connection.prepareStatement("SELECT * from city WHERE city = ?");
+                statement.setString(1, city);
+                rs = statement.executeQuery();
+
+                if(rs.next()){
+                    int cityId = rs.getInt(1);
+                    statement.close();
+                    getCityData();
+                    return cityId;
+                }
+            }
+            statement.close();
+            getCityData();
+        }
+        catch (SQLDataException e){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error querying city data");
+            alert.setContentText(String.format("There was an error querying the database for city data!\n%s", e.getMessage()));
+            alert.show();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error querying city data");
+            alert.setContentText("There was an error querying the database for city data!");
+            alert.show();
+        }
+        return 0;
     }
 
     public Label getLblPrefix() {
