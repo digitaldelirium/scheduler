@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/29/2017 at 20:45.
@@ -38,7 +39,7 @@ public class AddressProperty extends SimpleObjectProperty<Address> implements IA
         init();
     }
 
-    public AddressProperty(int cityId, String address, String address2, String postalCode, String phone, String createdBy, Timestamp lastUpdate, LocalDate createdDate){
+    public AddressProperty(int cityId, String address, String address2, String postalCode, String phone, String createdBy, Timestamp lastUpdate, Timestamp createdDate){
         super(new Address(cityId, address, address2, postalCode, phone, createdBy, lastUpdate, createdDate));
     }
 
@@ -91,7 +92,7 @@ public class AddressProperty extends SimpleObjectProperty<Address> implements IA
         getValue().setLastUpdateBy(lastUpdateBy);
     }
 
-    public LocalDate getCreatedDate() {
+    public ZonedDateTime getCreatedDate() {
         return getValue().getCreatedDate();
     }
 

@@ -1,6 +1,5 @@
 package edu.wgu.scheduler.models;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 /**
@@ -16,7 +15,7 @@ public interface IAppointment {
 
     void setContact(String contact);
 
-    LocalDate getCreateDate();
+    ZonedDateTime getCreateDate();
 
     String getCreatedBy();
 

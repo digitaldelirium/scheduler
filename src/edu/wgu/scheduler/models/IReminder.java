@@ -1,6 +1,5 @@
 package edu.wgu.scheduler.models;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 
@@ -17,7 +16,7 @@ public interface IReminder {
 
     String getCreatedBy();
 
-    LocalDate getCreatedDate();
+    ZonedDateTime getCreatedDate();
 
     String getRemindercol();
 

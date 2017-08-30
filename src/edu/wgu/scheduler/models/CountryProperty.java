@@ -2,7 +2,6 @@ package edu.wgu.scheduler.models;
 
 import javafx.beans.property.SimpleObjectProperty;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.*;
 
@@ -17,7 +16,7 @@ public class CountryProperty extends SimpleObjectProperty<Country> implements IC
     /**
      * The constructor of {@code ObjectProperty}
      */
-    public CountryProperty(int countryId, String country, String createBy, Date createDate, Timestamp lastUpdate, String lastUpdatedBy) {
+    public CountryProperty(int countryId, String country, String createBy, Timestamp createDate, Timestamp lastUpdate, String lastUpdatedBy) {
         super(
                 new Country(
                     countryId,

@@ -37,14 +37,14 @@ public class City implements ICity {
         this.createDate = ZonedDateTime.now(ZoneId.of("UTC"));
     }
 
-    public City(int cityId, String city, int countryId, String createdBy, Timestamp lastUpdate, String lastUpdateBy, ZonedDateTime createDate) {
+    public City(int cityId, String city, int countryId, String createdBy, Timestamp lastUpdate, String lastUpdateBy, Timestamp createDate) {
         this.cityId = cityId;
         this.city  = new SimpleStringProperty(city);
         this.countryId = new SimpleIntegerProperty(countryId);
         this.createdBy = createdBy;
-        this.lastUpdate = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
+        this.lastUpdate = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.of("UTC")));
         this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
-        this.createDate = createDate;
+        this.createDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.of("UTC"));
     }
 
     @Override

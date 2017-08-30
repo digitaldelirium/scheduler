@@ -380,7 +380,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                                           rs.getString("customerName"),
                                           rs.getTimestamp("start"),
                                           rs.getTimestamp("end"),
-                                          rs.getDate("createDate"),
+                                          rs.getTimestamp("createDate"),
                                           rs.getString("createdBy"),
                                           rs.getTimestamp("lastUpdate"));
                 appointmentViews.add(new AppointmentViewProperty(app));
@@ -390,7 +390,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
             rs = statement.executeQuery();
             while(rs.next()){
                 Customer cu = new Customer(
-                        rs.getDate("createDate").toLocalDate(),
+                        rs.getTimestamp("createDate"),
                         rs.getInt("customerId"),
                         rs.getByte("active"),
                         rs.getInt("addressId"),
@@ -406,17 +406,17 @@ public class AppointmentViewController extends AnchorPane implements Initializab
             rs = statement.executeQuery();
             while (rs.next()){
                 Appointment ap = new Appointment(
-                        rs.getDate("createDate").toLocalDate(),
+                        rs.getTimestamp("createDate"),
                         rs.getInt("appointmentId"),
                         rs.getString("contact"),
                         rs.getString("createdBy"),
                         rs.getInt("customerId"),
                         rs.getString("description"),
-                        rs.getDate("end").toInstant(),
+                        rs.getTimestamp("end"),
                         rs.getTimestamp("lastUpdate"),
                         rs.getString("lastUpdatedBy"),
                         rs.getString("location"),
-                        rs.getDate("start").toInstant(),
+                        rs.getTimestamp("start"),
                         rs.getString("title"),
                         rs.getString("url")
                 );
@@ -430,8 +430,8 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                         rs.getInt("reminderId"),
                         rs.getInt("appointmentId"),
                         rs.getString("createdBy"),
-                        rs.getDate("createdDate").toLocalDate(),
-                        ZonedDateTime.ofInstant(rs.getDate("reminderDate").toInstant(), ZoneId.systemDefault()),
+                        rs.getTimestamp("createdDate"),
+                        rs.getTimestamp("reminderDate"),
                         rs.getString("remindercol"),
                         rs.getInt("snoozeIncrement"),
                         rs.getInt("snoozeIncrementTypeId"));
@@ -452,13 +452,10 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         this.btnAppointmentReset.setDisable(true);
 
         this.gpAppointmentEditor.getChildren().filtered(node -> {
-            if (node instanceof TextField) {
-                if (node.hashCode() == txtCreatedDate.hashCode()) {
+            toggleTextFields(node, false);
+            if (node.hashCode() == txtCreatedDate.hashCode()) {
                     ((TextField) node).setEditable(false);
                     return true;
-                }
-                ((TextField) node).clear();
-                return true;
             }
             return false;
         });
@@ -532,9 +529,9 @@ public class AppointmentViewController extends AnchorPane implements Initializab
             statement.setString(3, app.getLocation());
             statement.setString(4, app.getContact());
             statement.setString(5, app.getUrl());
-            statement.setTime(6, new Time(app.getStart().toEpochSecond()));
+            statement.setTimestamp(6, new Timestamp(app.getStart().toEpochSecond() * 1000));
             statement.setString(7, user.getUsername());
-            statement.setTime(8, new Time(app.getEnd().toEpochSecond()));
+            statement.setTimestamp(8, new Timestamp(app.getEnd().toEpochSecond() * 1000));
             statement.setInt(9, app.getAppointmentId());
 
             switch (statement.executeUpdate()) {
@@ -687,11 +684,11 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         statement.setString(4, app.getLocation());
         statement.setString(5, app.getContact());
         statement.setString(6, app.getUrl());
-        statement.setTimestamp(7, new Timestamp(app.getStart().toEpochSecond()));
-        statement.setTimestamp(8, new Timestamp(app.getEnd().toEpochSecond()));
-        statement.setDate(9, new Date(app.getCreateDate().toEpochDay()));
+        statement.setTimestamp(7, new Timestamp(app.getStart().toEpochSecond() * 1000));
+        statement.setTimestamp(8, new Timestamp(app.getEnd().toEpochSecond() * 1000));
+        statement.setTimestamp(9, new Timestamp(app.getCreateDate().toEpochSecond() * 1000));
         statement.setString(10, app.getCreatedBy());
-        statement.setTimestamp(11, new Timestamp(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond()));
+        statement.setTimestamp(11, new Timestamp(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond() * 1000));
         statement.setString(12, app.getLastUpdateBy());
 
         boolean insertSucceeded = statement.execute();
@@ -703,17 +700,17 @@ public class AppointmentViewController extends AnchorPane implements Initializab
             List<AppointmentProperty> appointmentProperties = new ArrayList<>();
             while(rs.next()){
                 Appointment appointment = new Appointment(
-                        rs.getDate("createDate").toLocalDate(),
+                        rs.getTimestamp("createDate"),
                         rs.getInt("appointmentId"),
                         rs.getString("contact"),
                         rs.getString("createdBy"),
                         rs.getInt("customerId"),
                         rs.getString("description"),
-                        rs.getTimestamp("end").toInstant(),
+                        rs.getTimestamp("end"),
                         rs.getTimestamp("lastUpdate"),
                         rs.getString("lastUpdateBy"),
                         rs.getString("location"),
-                        rs.getTimestamp("start").toInstant(),
+                        rs.getTimestamp("start"),
                         rs.getString("title"),
                         rs.getString("url")
                 );
@@ -736,7 +733,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                        rs.getString("customerName"),
                        rs.getTimestamp("start"),
                        rs.getTimestamp("end"),
-                       rs.getDate("createDate"),
+                       rs.getTimestamp("createDate"),
                        rs.getString("createdBy"),
                        rs.getTimestamp("lastUpdate")
                 );

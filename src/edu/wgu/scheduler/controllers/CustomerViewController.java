@@ -200,7 +200,7 @@ public class CustomerViewController implements Initializable {
                 rs.getInt("countryId"),
                 rs.getString("country"),
                 rs.getString("createBy"),
-                rs.getDate("createDate"),
+                rs.getTimestamp("createDate"),
                 rs.getTimestamp("lastUpdate"),
                 rs.getString("lastUpdatedBy")
                 );
@@ -225,7 +225,7 @@ public class CustomerViewController implements Initializable {
                         rs.getString("createdBy"),
                         rs.getTimestamp("lastUpdate"),
                         rs.getString("lastUpdateBy"),
-                        ZonedDateTime.of(rs.getDate("createDate").toLocalDate().atStartOfDay(), ZoneId.of("UTC"))
+                        rs.getTimestamp("createDate")
                 );
 
                 cityHashMap.put(city.hashCode(), city);
@@ -250,7 +250,7 @@ public class CustomerViewController implements Initializable {
                         rs.getString("phone"),
                         rs.getString("createBy"),
                         rs.getTimestamp("lastUpdate"),
-                        rs.getDate("createDate").toLocalDate()
+                        rs.getTimestamp("createDate")
                 );
                 addressHashMap.put(address.hashCode(), address);
             }

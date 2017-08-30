@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 
@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 public class ReminderProperty extends SimpleObjectProperty<Reminder> implements IReminder {
 
-    public ReminderProperty(int reminderId, int appointmentId, String createdBy, LocalDate createdDate, ZonedDateTime reminderDate, String remindercol, int snoozeIncrement, int snoozeIncrementTypeId) {
+    public ReminderProperty(int reminderId, int appointmentId, String createdBy, Timestamp createdDate, Timestamp reminderDate, String remindercol, int snoozeIncrement, int snoozeIncrementTypeId) {
         super(new Reminder(reminderId, appointmentId, createdBy, createdDate, reminderDate, remindercol, snoozeIncrement, snoozeIncrementTypeId));
         init();
     }
@@ -43,7 +43,7 @@ public class ReminderProperty extends SimpleObjectProperty<Reminder> implements 
     }
 
     @Override
-    public LocalDate getCreatedDate() {
+    public ZonedDateTime getCreatedDate() {
         return getValue().getCreatedDate();
     }
 

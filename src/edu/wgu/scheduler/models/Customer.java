@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
  * Student ID: 000292065
  */
 public class Customer implements ICustomer {
-    private final LocalDate createDate;
+    private final ZonedDateTime createDate;
     private int customerId;
     @NotNull
     private SimpleBooleanProperty active = new SimpleBooleanProperty();
@@ -32,15 +32,15 @@ public class Customer implements ICustomer {
     public Customer(int addressId, String customerName, String createdBy) {
         this.addressId.setValue(addressId);
         this.customerName.setValue(customerName);
-        this.createDate = LocalDate.now(ZoneId.of("UTC"));
+        this.createDate = ZonedDateTime.now(ZoneId.of("UTC"));
         this.active.setValue(Boolean.TRUE);
         this.lastUpdateBy.setValue(createdBy);
         this.lastUpdate.setValue(ZonedDateTime.now(ZoneId.of("UTC")));
         this.createdBy = createdBy;
     }
 
-    public Customer(LocalDate createDate, int customerId, Byte active, int addressId, String createdBy, String customerName, String lastUpdateBy, Timestamp lastUpdate) {
-        this.createDate = createDate;
+    public Customer(Timestamp createDate, int customerId, Byte active, int addressId, String createdBy, String customerName, String lastUpdateBy, Timestamp lastUpdate) {
+        this.createDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.of("UTC"));
         this.customerId = customerId;
         switch (active.intValue()) {
             case 0:
@@ -83,7 +83,7 @@ public class Customer implements ICustomer {
 
 
     @Override
-    public LocalDate getCreateDate() {
+    public ZonedDateTime getCreateDate() {
         return createDate;
     }
 

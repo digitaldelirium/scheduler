@@ -23,7 +23,7 @@ public class CityProperty extends SimpleObjectProperty<City> implements ICity {
         init();
     }
 
-    public CityProperty(int cityId, String city, int countryId, String createdBy, Timestamp lastUpdate, String lastUpdatedBy, ZonedDateTime createDate) {
+    public CityProperty(int cityId, String city, int countryId, String createdBy, Timestamp lastUpdate, String lastUpdatedBy, Timestamp createDate) {
         super(new City(cityId, city, countryId, createdBy, lastUpdate, lastUpdatedBy, createDate));
         init();
     }

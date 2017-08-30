@@ -5,7 +5,6 @@ import javafx.beans.property.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -17,7 +16,7 @@ import java.time.ZonedDateTime;
  */
 public class Appointment implements IAppointment {
     @NotNull
-    private final LocalDate createDate;
+    private final ZonedDateTime createDate;
     private int appointmentId;
     private StringProperty contact;
     @NotNull
@@ -55,18 +54,18 @@ public class Appointment implements IAppointment {
      * @param title
      * @param url
      */
-    public Appointment(LocalDate createDate, int appointmentId, String contact, String createdBy, int customerId, String description, Instant end, Timestamp lastUpdate, String lastUpdateBy, String location, Instant start, String title, String url) {
-        this.createDate = createDate;
+    public Appointment(Timestamp createDate, int appointmentId, String contact, String createdBy, int customerId, String description, Timestamp end, Timestamp lastUpdate, String lastUpdateBy, String location, Timestamp start, String title, String url) {
+        this.createDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.systemDefault());
         this.appointmentId = appointmentId;
         this.contact = new SimpleStringProperty(contact);
         this.createdBy = createdBy;
         this.customerId = new SimpleIntegerProperty(customerId);
         this.description = new SimpleStringProperty(description);
-        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end, ZoneId.systemDefault()));
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault()));
         this.lastUpdate = new SimpleObjectProperty<>(lastUpdate);
         this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
         this.location = new SimpleStringProperty(location);
-        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start, ZoneId.systemDefault()));
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.systemDefault()));
         this.title = new SimpleStringProperty(title);
         this.url = new SimpleStringProperty(url);
     }
@@ -96,7 +95,7 @@ public class Appointment implements IAppointment {
      */
     public Appointment(String createdBy, int customerId, String description, ZonedDateTime end, String location, ZonedDateTime start, String title, String url) {
         this.createdBy = createdBy;
-        this.createDate = LocalDate.now(ZoneId.of("UTC"));
+        this.createDate = ZonedDateTime.now(ZoneId.of("UTC"));
         this.customerId = new SimpleIntegerProperty(customerId);
         this.description = new SimpleStringProperty(description);
         this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC")));
@@ -129,7 +128,7 @@ public class Appointment implements IAppointment {
     }
 
     @Override
-    public LocalDate getCreateDate() {
+    public ZonedDateTime getCreateDate() {
         return createDate;
     }
 

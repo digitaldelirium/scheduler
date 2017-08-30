@@ -1,6 +1,7 @@
 package edu.wgu.scheduler.models;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/30/2017 at 20:44.
@@ -21,7 +22,7 @@ public interface IAddress {
 
     void setLastUpdateBy(String lastUpdateBy);
 
-    LocalDate getCreatedDate();
+    ZonedDateTime getCreatedDate();
 
     String getCreatedBy();
 

@@ -16,7 +16,8 @@ import java.time.ZonedDateTime;
  */
 public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentViewProperty.AppointmentView> implements IAppointmentView {
 
-    public AppointmentViewProperty(String title, String description, String location, String contact, String url, String customerName, Timestamp start, Timestamp end, Date createDate, String createdBy, Timestamp lastUpdate) {
+    public AppointmentViewProperty(String title, String description, String location, String contact, String url,
+                                   String customerName, Timestamp start, Timestamp end, Timestamp createDate, String createdBy, Timestamp lastUpdate) {
         super(new AppointmentView(title, description, location, contact, url, customerName, start, end, createDate, createdBy, lastUpdate));
         init();
     }
@@ -79,7 +80,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
         return zdt.withZoneSameInstant(ZoneId.systemDefault());
     }
 
-    public ReadOnlyProperty<Timestamp> startProperty() {
+    public ReadOnlyProperty<ZonedDateTime> startProperty() {
         return getValue().startProperty();
     }
 
@@ -88,7 +89,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
         return zdt.withZoneSameInstant(ZoneId.systemDefault());
     }
 
-    public ReadOnlyProperty<Timestamp> endProperty() {
+    public ReadOnlyProperty<ZonedDateTime> endProperty() {
         return getValue().endProperty();
     }
 
@@ -105,7 +106,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
         return zdt.withZoneSameInstant(ZoneId.systemDefault());
     }
 
-    public ReadOnlyProperty<Timestamp> lastUpdatedProperty() {
+    public ReadOnlyProperty<ZonedDateTime> lastUpdatedProperty() {
         return getValue().lastUpdatedProperty();
     }
 
@@ -157,7 +158,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
      * Student ID: 000292065
      */
     public static class AppointmentView implements IAppointmentView {
-        private final Date createdDate;
+        private final ZonedDateTime createdDate;
         private final String createdBy;
         // Interface needs these components
         private ReadOnlyStringProperty title;
@@ -166,21 +167,21 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
         private ReadOnlyStringProperty contact;
         private ReadOnlyStringProperty url;
         private ReadOnlyStringProperty customerName;
-        private ReadOnlyObjectProperty<Timestamp> start;
-        private ReadOnlyObjectProperty<Timestamp> end;
-        private ReadOnlyProperty<Timestamp> lastUpdated;
+        private ReadOnlyObjectProperty<ZonedDateTime> start;
+        private ReadOnlyObjectProperty<ZonedDateTime> end;
+        private ReadOnlyProperty<ZonedDateTime> lastUpdated;
 
-        public AppointmentView(String title, String description, String location, String contact, String url, String customerName, Timestamp start, Timestamp end, Date createDate, String createdBy, Timestamp lastUpdate) {
+        public AppointmentView(String title, String description, String location, String contact, String url, String customerName, Timestamp start, Timestamp end, Timestamp createDate, String createdBy, Timestamp lastUpdate) {
             this.title = new SimpleStringProperty(title);
             this.description = new SimpleStringProperty(description);
             this.location = new SimpleStringProperty(location);
             this.contact = new SimpleStringProperty(contact);
             this.customerName = new SimpleStringProperty(customerName);
-            this.start = new SimpleObjectProperty<>(start);
-            this.end = new SimpleObjectProperty<>(end);
-            this.lastUpdated = new SimpleObjectProperty<>(lastUpdate);
+            this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.systemDefault()));
+            this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault()));
+            this.lastUpdated = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
             this.url = new SimpleStringProperty(url);
-            this.createdDate = createDate;
+            this.createdDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.systemDefault());
             this.createdBy = createdBy;
 
         }
@@ -237,7 +238,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
             return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.systemDefault());
         }
 
-        ReadOnlyProperty<Timestamp> startProperty() {
+        ReadOnlyProperty<ZonedDateTime> startProperty() {
             return start;
         }
 
@@ -245,7 +246,7 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
             return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.systemDefault());
         }
 
-        ReadOnlyProperty<Timestamp> endProperty() {
+        ReadOnlyProperty<ZonedDateTime> endProperty() {
             return end;
         }
 
@@ -258,10 +259,10 @@ public class AppointmentViewProperty extends SimpleObjectProperty<AppointmentVie
         }
 
         public ZonedDateTime getLastUpdate() {
-            return ZonedDateTime.ofInstant(lastUpdated.getValue().toInstant(), ZoneId.of("UTC"));
+            return ZonedDateTime.ofInstant(lastUpdated.getValue().toInstant(), ZoneId.systemDefault());
         }
 
-        ReadOnlyProperty<Timestamp> lastUpdatedProperty() {
+        ReadOnlyProperty<ZonedDateTime> lastUpdatedProperty() {
             return lastUpdated;
         }
 

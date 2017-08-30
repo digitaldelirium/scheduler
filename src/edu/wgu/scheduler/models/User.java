@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -17,7 +18,7 @@ import java.util.stream.IntStream;
  * Student ID: 000292065
  */
 public class User {
-    private final LocalDate createdDate;
+    private final ZonedDateTime createdDate;
     private int userId;
     private BooleanProperty active = new SimpleBooleanProperty();
     private String createdBy;
@@ -36,7 +37,7 @@ public class User {
     public User(String username, String password, String createdBy) {
         this.username = username;
         this.password.setValue(password);
-        this.createdDate = LocalDate.now(ZoneId.of("UTC"));
+        this.createdDate = ZonedDateTime.now(ZoneId.of("UTC"));
         this.createdBy = createdBy;
         this.lastUpdatedBy.setValue(createdBy);
         this.active.set(true);
@@ -58,7 +59,7 @@ public class User {
         return createdBy;
     }
 
-    public LocalDate getCreatedDate() {
+    public ZonedDateTime getCreatedDate() {
         return createdDate;
     }
 

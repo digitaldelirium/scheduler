@@ -4,7 +4,7 @@ import com.sun.istack.internal.NotNull;
 import javafx.beans.property.*;
 import javafx.beans.property.StringProperty;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +25,7 @@ public class Reminder implements IReminder {
     @NotNull
     private final String createdBy;
     @NotNull
-    private final LocalDate createdDate;
+    private final ZonedDateTime createdDate;
     @NotNull
     private ObjectProperty<ZonedDateTime> reminderDate;
     private StringProperty remindercol;
@@ -34,21 +34,21 @@ public class Reminder implements IReminder {
     @NotNull
     private SimpleIntegerProperty snoozeIncrementTypeId;
 
-    public Reminder(int reminderId, int appointmentId, String createdBy, LocalDate createdDate, ZonedDateTime reminderDate, String remindercol, int snoozeIncrement, int snoozeIncrementTypeId) {
+    public Reminder(int reminderId, int appointmentId, String createdBy, Timestamp createdDate, Timestamp reminderDate, String remindercol, int snoozeIncrement, int snoozeIncrementTypeId) {
         this.reminderId = reminderId;
         this.appointmentId = appointmentId;
         this.createdBy = createdBy;
-        this.createdDate = createdDate;
-        this.reminderDate = new SimpleObjectProperty<>(reminderDate);
+        this.createdDate = ZonedDateTime.ofInstant(createdDate.toInstant(), ZoneId.of("UTC"));
+        this.reminderDate = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(reminderDate.toInstant(), ZoneId.of("UTC")));
         this.remindercol = new SimpleStringProperty(remindercol);
         this.snoozeIncrement = new SimpleIntegerProperty(snoozeIncrement);
         this.snoozeIncrementTypeId = new SimpleIntegerProperty(snoozeIncrementTypeId);
     }
 
-    public Reminder(int appointmentId, String createdBy, LocalDate createdDate, ZonedDateTime reminderDate, int snoozeIncrement, int snoozeIncrementTypeId) {
+    public Reminder(int appointmentId, String createdBy, ZonedDateTime createdDate, ZonedDateTime reminderDate, int snoozeIncrement, int snoozeIncrementTypeId) {
         this.appointmentId = appointmentId;
         this.createdBy = createdBy;
-        this.createdDate = LocalDate.now(ZoneId.of("UTC"));
+        this.createdDate = ZonedDateTime.now(ZoneId.of("UTC"));
         this.reminderDate = new SimpleObjectProperty<>(reminderDate);
         this.snoozeIncrement = new SimpleIntegerProperty(snoozeIncrement);
         this.snoozeIncrementTypeId = new SimpleIntegerProperty(snoozeIncrementTypeId);
@@ -70,7 +70,7 @@ public class Reminder implements IReminder {
     }
 
     @Override
-    public LocalDate getCreatedDate() {
+    public ZonedDateTime getCreatedDate() {
         return createdDate;
     }
 

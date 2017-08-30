@@ -3,7 +3,6 @@ package edu.wgu.scheduler.models;
 import javafx.beans.property.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 /**
@@ -36,7 +35,7 @@ public class AppointmentProperty extends SimpleObjectProperty<Appointment> imple
     }
 
     @Override
-    public LocalDate getCreateDate() {
+    public ZonedDateTime getCreateDate() {
         return getValue().getCreateDate();
     }
 

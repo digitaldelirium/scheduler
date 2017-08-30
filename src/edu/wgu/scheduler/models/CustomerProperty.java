@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/30/2017 at 00:48.
@@ -12,7 +13,7 @@ import java.time.LocalDate;
  * Student ID: 000292065
  */
 public class CustomerProperty extends SimpleObjectProperty<Customer> implements ICustomer {
-    public CustomerProperty(LocalDate createDate, int customerId, Byte active, int addressId, String createdBy, String customerName, String lastUpdateBy, Timestamp lastUpdate) {
+    public CustomerProperty(Timestamp createDate, int customerId, Byte active, int addressId, String createdBy, String customerName, String lastUpdateBy, Timestamp lastUpdate) {
         super(new Customer(createDate, customerId, active, addressId, createdBy, customerName, lastUpdateBy, lastUpdate));
     }
 
@@ -44,7 +45,7 @@ public class CustomerProperty extends SimpleObjectProperty<Customer> implements 
         return getValue().getAddressId();
     }
 
-    public LocalDate getCreateDate() {
+    public ZonedDateTime getCreateDate() {
         return getValue().getCreateDate();
     }
 

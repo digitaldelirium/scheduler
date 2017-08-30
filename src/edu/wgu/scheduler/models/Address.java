@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
  */
 public class Address implements IAddress {
     @NotNull
-    private final LocalDate createdDate;
+    private final ZonedDateTime createdDate;
     private int addressId;
     @NotNull
     private StringProperty address;
@@ -53,11 +53,11 @@ public class Address implements IAddress {
         this.phone = new SimpleStringProperty(phone);
         this.createdBy = new SimpleStringProperty(createdBy);
         this.lastUpdateBy = new SimpleStringProperty(createdBy);
-        this.createdDate = LocalDate.now(ZoneId.of("UTC"));
-        this.lastUpdate = new SimpleObjectProperty<>(new Timestamp(ZonedDateTime.now(ZoneId.systemDefault()).toEpochSecond()));
+        this.createdDate = ZonedDateTime.now(ZoneId.of("UTC"));
+        this.lastUpdate = new SimpleObjectProperty<>(new Timestamp(ZonedDateTime.now(ZoneId.systemDefault()).toEpochSecond() * 1000));
     }
 
-    public Address(int cityId, String address, String address2, String postalCode, String phone, String createdBy, Timestamp lastUpdate, LocalDate createdDate) {
+    public Address(int cityId, String address, String address2, String postalCode, String phone, String createdBy, Timestamp lastUpdate, Timestamp createdDate) {
         this.cityId = new SimpleIntegerProperty(cityId);
         this.address = new SimpleStringProperty(address);
         this.address2 = new SimpleStringProperty(address2);
@@ -65,7 +65,7 @@ public class Address implements IAddress {
         this.phone = new SimpleStringProperty(phone);
         this.createdBy = new SimpleStringProperty(createdBy);
         this.lastUpdateBy = new SimpleStringProperty(createdBy);
-        this.createdDate = createdDate;
+        this.createdDate = ZonedDateTime.ofInstant(createdDate.toInstant(), ZoneId.systemDefault());
         this.lastUpdate = new SimpleObjectProperty<>(lastUpdate);
     }
 
@@ -116,7 +116,7 @@ public class Address implements IAddress {
 
 
     @Override
-    public LocalDate getCreatedDate() {
+    public ZonedDateTime getCreatedDate() {
         return createdDate;
     }
 

@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -47,12 +46,11 @@ public class Country implements ICountry {
         this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
     }
 
-    public Country(int countryId, String country, Date createdDate, String createdBy, Timestamp lastUpdate, String lastUpdateBy) {
-        this.createdDate = ZonedDateTime.ofInstant(createdDate.toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC), ZoneId.systemDefault());
+    public Country(int countryId, String country, Timestamp createdDate, String createdBy, Timestamp lastUpdate, String lastUpdateBy) {
+        this.createdDate = ZonedDateTime.ofInstant(createdDate.toInstant(), ZoneId.systemDefault());
         this.countryId = countryId;
         this.country = new SimpleStringProperty(country);
         this.createdBy = createdBy;
-        System.out.println(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
         this.lastUpdate = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
         this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
     }
