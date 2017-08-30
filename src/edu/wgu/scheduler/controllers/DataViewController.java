@@ -18,27 +18,17 @@ import java.util.ResourceBundle;
  */
 public class DataViewController {
 
-    @FXML
-    protected static TabPane tabPane;
-    @FXML
+//    private static DataViewController instance;
+    public TabPane tabPane;
     private Tab tabTableView;
-    @FXML
     private Tab tabListView;
-    @FXML
     private VBox vbListView;
-    @FXML
     private VBox vbTableView;
-    @FXML
     private Label lblListView;
-    @FXML
     private Label lblTableView;
-    @FXML
     protected ScrollPane spListView;
-    @FXML
     protected ScrollPane spTableView;
-    @FXML
     private ListView<?> listView;
-    @FXML
     private TableView<?> tableView;
     private MainApp mainApp;
 
@@ -52,11 +42,15 @@ public class DataViewController {
      *
      */
     public void initialize() {
+//        this.instance = this;
         this.tabPane = new TabPane();
         this.tabPane.setPrefHeight(250.0);
         this.tabPane.setMaxHeight(400.0);
-        this.tabTableView = new Tab();
-        this.tabListView = new Tab();
+        this.tabPane.setMaxWidth(Integer.MAX_VALUE);
+        this.tabTableView = new Tab("Table View");
+        this.tabTableView.setClosable(false);
+        this.tabListView = new Tab("List View");
+        this.tabListView.setClosable(false);
         this.spListView = new ScrollPane();
         this.spTableView = new ScrollPane();
         this.lblListView = new Label();
