@@ -2,6 +2,7 @@ package edu.wgu.scheduler.models;
 
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 /**
@@ -35,6 +36,10 @@ public class AddressProperty extends SimpleObjectProperty<Address> implements IA
     public AddressProperty(int cityId, String address, String address2, String postalCode, String phone, String createdBy) {
         super(new Address(cityId, address, address2, postalCode, phone, createdBy));
         init();
+    }
+
+    public AddressProperty(int cityId, String address, String address2, String postalCode, String phone, String createdBy, Timestamp lastUpdate, LocalDate createdDate){
+        super(new Address(cityId, address, address2, postalCode, phone, createdBy, lastUpdate, createdDate));
     }
 
     public AddressProperty(Address address) {

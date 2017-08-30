@@ -57,6 +57,18 @@ public class Address implements IAddress {
         this.lastUpdate = new SimpleObjectProperty<>(new Timestamp(ZonedDateTime.now(ZoneId.systemDefault()).toEpochSecond()));
     }
 
+    public Address(int cityId, String address, String address2, String postalCode, String phone, String createdBy, Timestamp lastUpdate, LocalDate createdDate) {
+        this.cityId = new SimpleIntegerProperty(cityId);
+        this.address = new SimpleStringProperty(address);
+        this.address2 = new SimpleStringProperty(address2);
+        this.postalCode = new SimpleStringProperty(postalCode);
+        this.phone = new SimpleStringProperty(phone);
+        this.createdBy = new SimpleStringProperty(createdBy);
+        this.lastUpdateBy = new SimpleStringProperty(createdBy);
+        this.createdDate = createdDate;
+        this.lastUpdate = new SimpleObjectProperty<>(lastUpdate);
+    }
+
 
     @Override
     public String getPostalCode() {
