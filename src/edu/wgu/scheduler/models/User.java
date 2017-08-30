@@ -1,11 +1,14 @@
 package edu.wgu.scheduler.models;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Base64;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 15:09.
@@ -16,11 +19,15 @@ import java.util.Base64;
 public class User {
     private final LocalDate createdDate;
     private int userId;
-    private BooleanProperty active;
+    private BooleanProperty active = new SimpleBooleanProperty();
     private String createdBy;
-    private SimpleStringProperty lastUpdatedBy;
-    private SimpleStringProperty password;
+    private SimpleStringProperty lastUpdatedBy = new SimpleStringProperty();
+    private SimpleStringProperty password = new SimpleStringProperty();
     private String username;
+
+    public User(String username){
+        this(username, null);
+    }
 
     public User(String username, String password) {
         this(username, password, null);
@@ -28,10 +35,10 @@ public class User {
 
     public User(String username, String password, String createdBy) {
         this.username = username;
-        this.password.set(password);
+        this.password.setValue(password);
         this.createdDate = LocalDate.now(ZoneId.of("UTC"));
         this.createdBy = createdBy;
-        this.lastUpdatedBy.set(createdBy);
+        this.lastUpdatedBy.setValue(createdBy);
         this.active.set(true);
     }
 

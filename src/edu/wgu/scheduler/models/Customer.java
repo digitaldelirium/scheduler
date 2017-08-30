@@ -1,9 +1,7 @@
 package edu.wgu.scheduler.models;
 
 import com.sun.istack.internal.NotNull;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -20,12 +18,12 @@ public class Customer implements ICustomer {
     private final LocalDate createDate;
     private int customerId;
     @NotNull
-    private ObjectProperty<Byte> active;
-    private SimpleIntegerProperty addressId;
+    private SimpleBooleanProperty active = new SimpleBooleanProperty();
+    private SimpleIntegerProperty addressId = new SimpleIntegerProperty();
     private final String createdBy;
-    private StringProperty customerName;
-    private StringProperty lastUpdateBy;
-    private ObjectProperty<ZonedDateTime> lastUpdate;
+    private StringProperty customerName = new SimpleStringProperty();
+    private StringProperty lastUpdateBy = new SimpleStringProperty();
+    private ObjectProperty<ZonedDateTime> lastUpdate = new SimpleObjectProperty<>();
 
     public Customer(int addressId, String customerName) {
         this(addressId, customerName, null);
@@ -35,7 +33,7 @@ public class Customer implements ICustomer {
         this.addressId.setValue(addressId);
         this.customerName.setValue(customerName);
         this.createDate = LocalDate.now(ZoneId.of("UTC"));
-        this.active.setValue(Byte.valueOf("1"));
+        this.active.setValue(Boolean.TRUE);
         this.lastUpdateBy.setValue(createdBy);
         this.lastUpdate.setValue(ZonedDateTime.now(ZoneId.of("UTC")));
         this.createdBy = createdBy;
@@ -46,10 +44,10 @@ public class Customer implements ICustomer {
         this.customerId = customerId;
         switch (active.intValue()) {
             case 0:
-                this.active.setValue(Byte.parseByte("0"));
+                this.active.setValue(Boolean.FALSE);
                 break;
             default:
-                this.active.setValue(Byte.parseByte("1"));
+                this.active.setValue(Boolean.TRUE);
                 break;
         }
         this.addressId = new SimpleIntegerProperty(addressId);
@@ -67,23 +65,13 @@ public class Customer implements ICustomer {
 
     @Override
     public boolean isActive() {
-        Byte val = active.get();
-        switch (val.intValue()){
-            case 0:
-                return false;
-            default:
-                return true;
-        }
+        return active.getValue();
     }
 
 
     @Override
     public void setActive(boolean active) {
-        if(active){
-            this.active.setValue(Byte.valueOf("1"));
-        } else {
-            this.active.setValue(Byte.valueOf("0"));
-        }
+        this.active.setValue(active);
         return;
     }
 

@@ -158,7 +158,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
             this.country.setValue(country);
             this.phone.setValue(phone);
             this.active.setValue(active);
-            this.createDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.systemDefault());
+            this.createDate = ZonedDateTime.of(createDate.toLocalDate().atStartOfDay(), ZoneId.systemDefault());
             this.createdBy = createdBy;
             this.lastUpdateBy.setValue(lastUpdateBy);
             this.lastUpdate.setValue(lastUpdate);
