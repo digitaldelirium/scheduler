@@ -325,11 +325,6 @@ public class MainApp extends Application {
         MainApp.customerList = customerList;
     }
 
-    public static DataViewController getMainDataViewController(){ return dataViewController; }
-
-    public static void setMainDataViewController(DataViewController controller) {
-        dataViewController = controller;
-    }
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * main() serves only as fallback in case the application can not be
