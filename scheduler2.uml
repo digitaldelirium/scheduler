@@ -3,529 +3,492 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="4011.2284081598227" y="7241.5">edu.wgu.scheduler.controllers.LoginController.LoginFailedException</node>
-    <node x="2756.625" y="575.0">edu.wgu.scheduler.models.Customer</node>
-    <node x="3798.6450748264897" y="7819.0">edu.wgu.scheduler.controllers.LoginController</node>
-    <node x="6295.5027306848815" y="745.5">edu.wgu.scheduler.models.ICountry</node>
-    <node x="5976.425741336512" y="91.0">edu.wgu.scheduler.models.ICity</node>
-    <node x="2084.375" y="1338.0">edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView</node>
-    <node x="6153.661741493156" y="1664.0">edu.wgu.scheduler.models.CountryProperty</node>
-    <node x="5486.974241493156" y="536.0">edu.wgu.scheduler.models.City</node>
-    <node x="3972.458333333333" y="1533.5">edu.wgu.scheduler.models.AddressProperty</node>
-    <node x="3540.375" y="1585.0">edu.wgu.scheduler.controllers.DataViewController</node>
-    <node x="913.8325748264892" y="1247.0">edu.wgu.scheduler.models.Appointment</node>
-    <node x="2315.2075748264892" y="3995.0">edu.wgu.scheduler.controllers.AppointmentViewController</node>
-    <node x="688.2708333333335" y="641.5">edu.wgu.scheduler.models.IAppointment</node>
-    <node x="3514.2284081598227" y="6773.0">edu.wgu.scheduler.MainApp</node>
-    <node x="3556.458333333333" y="5927.0">edu.wgu.scheduler.controllers.AppViewController</node>
-    <node x="361.29105425823946" y="1468.0">edu.wgu.scheduler.models.Reminder</node>
-    <node x="4360.161741493156" y="2447.0">edu.wgu.scheduler.controllers.CustomerViewController</node>
-    <node x="5247.425741336512" y="0.0">edu.wgu.scheduler.models.ICustomerView</node>
-    <node x="508.83257482648924" y="2850.5">edu.wgu.scheduler.models.ReminderProperty</node>
-    <node x="6802.334752144787" y="6057.0">edu.wgu.scheduler.models.User</node>
-    <node x="4670.974241493156" y="1273.0">edu.wgu.scheduler.models.CustomerViewProperty.CustomerView</node>
-    <node x="2086.22855425824" y="667.5">edu.wgu.scheduler.models.IAppointmentView</node>
-    <node x="3631.631897351548" y="78.0">edu.wgu.scheduler.models.IAddress</node>
-    <node x="63.9375" y="693.0">edu.wgu.scheduler.models.IReminder</node>
-    <node x="3851.631897351548" y="91.0">edu.wgu.scheduler.models.ICustomer</node>
-    <node x="1414.5825748264892" y="2733.5">edu.wgu.scheduler.models.AppointmentProperty</node>
-    <node x="4694.474241493156" y="497.5">edu.wgu.scheduler.models.CustomerViewProperty</node>
-    <node x="2900.375" y="1612.0">edu.wgu.scheduler.models.CustomerProperty</node>
-    <node x="5577.974241493156" y="1507.5">edu.wgu.scheduler.models.CityProperty</node>
-    <node x="1823.5825748264892" y="2759.5">edu.wgu.scheduler.models.AppointmentViewProperty</node>
-    <node x="4093.311741493156" y="497.0">edu.wgu.scheduler.models.Address</node>
+    <node x="2841.8082264096092" y="790.0">edu.wgu.scheduler.models.Customer</node>
+    <node x="3559.8082264096092" y="4948.0">edu.wgu.scheduler.controllers.LoginController</node>
+    <node x="5275.719156491018" y="117.0">edu.wgu.scheduler.models.ICountry</node>
+    <node x="4353.443454329199" y="91.0">edu.wgu.scheduler.models.ICity</node>
+    <node x="2112.8082264096092" y="1617.0">edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView</node>
+    <node x="4807.308226409609" y="1943.0">edu.wgu.scheduler.models.CountryProperty</node>
+    <node x="4208.808226409609" y="751.0">edu.wgu.scheduler.models.City</node>
+    <node x="6340.808226409609" y="1799.5">edu.wgu.scheduler.models.AddressProperty</node>
+    <node x="1718.8082264096092" y="2008.5">edu.wgu.scheduler.controllers.AppointmentViewController.AppointmentTimeException</node>
+    <node x="0.0" y="7227.0">edu.wgu.scheduler.models.IncrementTypes</node>
+    <node x="3964.8082264096092" y="1851.0">edu.wgu.scheduler.controllers.DataViewController</node>
+    <node x="169.37072640960923" y="517.0">edu.wgu.scheduler.models.Appointment</node>
+    <node x="1787.9748930762762" y="2645.0">edu.wgu.scheduler.controllers.AppointmentViewController</node>
+    <node x="109.52272791958967" y="13.0">edu.wgu.scheduler.models.IAppointment</node>
+    <node x="3704.8082264096092" y="5847.0">edu.wgu.scheduler.MainApp</node>
+    <node x="1048.0582264096092" y="738.0">edu.wgu.scheduler.models.Reminder</node>
+    <node x="1956.2248930762757" y="4883.0">edu.wgu.scheduler.controllers.AppViewController</node>
+    <node x="4937.058226409609" y="829.0">edu.wgu.scheduler.models.Country</node>
+    <node x="4922.808226409609" y="2866.0">edu.wgu.scheduler.controllers.CustomerViewController</node>
+    <node x="5741.219156491018" y="0.0">edu.wgu.scheduler.models.ICustomerView</node>
+    <node x="1164.8082264096092" y="1760.5">edu.wgu.scheduler.models.ReminderProperty</node>
+    <node x="7070.308226409609" y="5039.0">edu.wgu.scheduler.models.User</node>
+    <node x="5468.058226409609" y="543.0">edu.wgu.scheduler.models.CustomerViewProperty.CustomerView</node>
+    <node x="2409.8082264096092" y="882.5">edu.wgu.scheduler.models.IAppointmentView</node>
+    <node x="6579.969156491018" y="78.0">edu.wgu.scheduler.models.IAddress</node>
+    <node x="540.6477279195897" y="64.5">edu.wgu.scheduler.models.IReminder</node>
+    <node x="3485.7727279195897" y="91.0">edu.wgu.scheduler.models.ICustomer</node>
+    <node x="727.1207264096092" y="1643.5">edu.wgu.scheduler.models.AppointmentProperty</node>
+    <node x="5863.643454329199" y="1721.5">edu.wgu.scheduler.models.CustomerViewProperty</node>
+    <node x="2967.8082264096092" y="1864.5">edu.wgu.scheduler.models.CustomerProperty</node>
+    <node x="4291.308226409609" y="1786.5">edu.wgu.scheduler.models.CityProperty</node>
+    <node x="6502.308226409609" y="699.0">edu.wgu.scheduler.models.Address</node>
   </nodes>
   <notes />
   <edges>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.User">
-      <point x="229.32692307692332" y="-498.0" />
-      <point x="3982.055331236746" y="6753.0" />
-      <point x="6953.334752144787" y="6753.0" />
-      <point x="0.0" y="213.0" />
+      <point x="180.48648648648668" y="-667.5" />
+      <point x="4123.794712896096" y="5787.0" />
+      <point x="7296.808226409609" y="5787.0" />
+      <point x="75.5" y="226.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.AddressProperty" target="edu.wgu.scheduler.models.Address">
-      <point x="0.0" y="-238.5" />
-      <point x="4189.958333333333" y="1227.0" />
-      <point x="4188.311741493157" y="1227.0" />
-      <point x="-95.0" y="330.0" />
+      <point x="0.0" y="-251.5" />
+      <point x="-134.0" y="343.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppViewController" target="edu.wgu.scheduler.controllers.AppointmentViewController">
-      <point x="-128.0" y="-343.0" />
-      <point x="3620.458333333333" y="5902.0" />
-      <point x="2739.5825748264892" y="5902.0" />
-      <point x="181.875" y="941.0" />
+      <point x="-128.0" y="-382.0" />
+      <point x="2020.2248930762757" y="4853.0" />
+      <point x="2151.724893076276" y="4853.0" />
+      <point x="121.25" y="1084.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.ReminderProperty" target="edu.wgu.scheduler.models.Reminder">
-      <point x="-187.66666666666663" y="-290.5" />
-      <point x="602.6659081598227" y="2427.0" />
-      <point x="678.7910542582395" y="2427.0" />
-      <point x="63.5" y="304.0" />
+      <point x="0.0" y="-290.5" />
+      <point x="1431.8082264096092" y="1597.0" />
+      <point x="1467.1832264096092" y="1597.0" />
+      <point x="179.625" y="304.0" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.controllers.DataViewController">
-      <point x="-45.865384615384755" y="-498.0" />
-      <point x="3706.863023544438" y="6653.0" />
-      <point x="3545.958333333333" y="6653.0" />
-      <point x="3545.958333333333" y="2427.0" />
-      <point x="3657.0416666666665" y="2427.0" />
-      <point x="-33.333333333333485" y="187.0" />
+      <point x="64.4594594594596" y="-667.5" />
+      <point x="4007.767685869069" y="5697.0" />
+      <point x="4227.664772727273" y="5697.0" />
+      <point x="4227.664772727273" y="2625.0" />
+      <point x="4096.580953682336" y="2625.0" />
+      <point x="20.27272727272748" y="200.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CustomerViewProperty" target="edu.wgu.scheduler.models.CustomerViewProperty.CustomerView">
-      <point x="123.375" y="329.5" />
-      <point x="4982.349241493156" y="1227.0" />
-      <point x="5068.474241493156" y="1227.0" />
-      <point x="0.0" y="-499.0" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.controllers.DataViewController">
-      <point x="194.0" y="-941.0" />
-      <point x="2751.7075748264892" y="3945.0" />
-      <point x="3310.248564018215" y="3945.0" />
-      <point x="3310.248564018215" y="2407.0" />
-      <point x="3590.375" y="2407.0" />
-      <point x="-100.0" y="187.0" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.ReminderProperty">
-      <point x="-193.99999999999955" y="-941.0" />
-      <point x="2363.7075748264897" y="3955.0" />
-      <point x="649.5825748264892" y="3955.0" />
-      <point x="-140.75" y="290.5" />
+      <point x="-109.0" y="-329.5" />
+      <point x="5918.143454329199" y="1597.0" />
+      <point x="5885.058226409609" y="1597.0" />
+      <point x="0.0" y="499.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.AppointmentProperty" target="edu.wgu.scheduler.models.IAppointment">
       <point x="97.25" y="-407.5" />
-      <point x="1706.3325748264892" y="1177.0" />
-      <point x="888.6458333333335" y="1177.0" />
-      <point x="85.875" y="185.5" />
+      <point x="1018.8707264096092" y="467.0" />
+      <point x="311.64772791958967" y="467.0" />
+      <point x="86.625" y="185.5" />
+    </edge>
+    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.controllers.DataViewController">
+      <point x="210.86956521739125" y="-1084.0" />
+      <point x="2241.3444582936672" y="2615.0" />
+      <point x="3995.2173173187" y="2615.0" />
+      <point x="-81.09090909090901" y="200.0" />
+    </edge>
+    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.ReminderProperty">
+      <point x="-63.26086956521738" y="-1084.0" />
+      <point x="1967.2140235110587" y="2545.0" />
+      <point x="1565.3082264096092" y="2545.0" />
+      <point x="133.5" y="290.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.controllers.DataViewController">
-      <point x="-172.0" y="-694.0" />
-      <point x="4446.161741493156" y="2357.0" />
-      <point x="3790.375" y="2357.0" />
-      <point x="100.0" y="187.0" />
+      <point x="-172.0" y="-863.0" />
+      <point x="5008.808226409609" y="2565.0" />
+      <point x="4157.399135500518" y="2565.0" />
+      <point x="81.09090909090901" y="200.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.Appointment">
-      <point x="-135.79999999999973" y="-941.0" />
-      <point x="2421.9075748264895" y="3925.0" />
-      <point x="1179.9992414931558" y="3925.0" />
-      <point x="1179.9992414931558" y="2427.0" />
-      <point x="1304.8325748264892" y="2427.0" />
-      <point x="0.0" y="525.0" />
+      <point x="-231.9565217391305" y="-1084.0" />
+      <point x="1798.5183713371457" y="2625.0" />
+      <point x="393.5744229846023" y="2625.0" />
+      <point x="393.5744229846023" y="1597.0" />
+      <point x="309.2040597429427" y="1597.0" />
+      <point x="-279.6666666666665" y="525.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.Reminder">
-      <point x="-213.39999999999964" y="-941.0" />
-      <point x="2344.3075748264896" y="3965.0" />
-      <point x="498.33257482648924" y="3965.0" />
-      <point x="498.33257482648924" y="2427.0" />
-      <point x="551.7910542582395" y="2427.0" />
-      <point x="-63.5" y="304.0" />
+      <point x="-126.52173913043498" y="-1084.0" />
+      <point x="1903.9531539458412" y="2575.0" />
+      <point x="1143.3082264096092" y="2575.0" />
+      <point x="1143.3082264096092" y="1597.0" />
+      <point x="1107.9332264096092" y="1597.0" />
+      <point x="-179.625" y="304.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CountryProperty" target="edu.wgu.scheduler.models.ICountry">
-      <point x="0.0" y="-108.0" />
-      <point x="6383.161741493156" y="1227.0" />
-      <point x="6385.1277306848815" y="1227.0" />
-      <point x="-29.875" y="81.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.controllers.CustomerViewController">
-      <point x="232.80000000000018" y="-941.0" />
-      <point x="2790.5075748264894" y="3965.0" />
-      <point x="4411.7617414931565" y="3965.0" />
-      <point x="-206.39999999999964" y="694.0" />
+      <point x="-166.0" y="-108.0" />
+      <point x="4890.308226409609" y="1597.0" />
+      <point x="4867.183226409609" y="1597.0" />
+      <point x="4867.183226409609" y="487.0" />
+      <point x="5299.619156491019" y="487.0" />
+      <point x="-95.59999999999991" y="81.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.controllers.CustomerViewController">
-      <point x="64.21153846153857" y="-498.0" />
-      <point x="3816.9399466213613" y="6663.0" />
-      <point x="4710.361741493156" y="6663.0" />
-      <point x="4710.361741493156" y="3975.0" />
-      <point x="4618.161741493156" y="3975.0" />
-      <point x="0.0" y="694.0" />
+      <point x="128.91891891891873" y="-667.5" />
+      <point x="4072.227145328528" y="5747.0" />
+      <point x="5248.90822640961" y="5747.0" />
+      <point x="5248.90822640961" y="4863.0" />
+      <point x="5387.20822640961" y="4863.0" />
+      <point x="206.4000000000001" y="863.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.CustomerProperty">
-      <point x="116.40000000000009" y="-941.0" />
-      <point x="2674.1075748264893" y="3905.0" />
-      <point x="3059.175" y="3905.0" />
-      <point x="3059.175" y="2427.0" />
-      <point x="2956.975" y="2427.0" />
-      <point x="-226.4000000000001" y="160.0" />
+      <point x="168.695652173913" y="-1084.0" />
+      <point x="2199.170545250189" y="2595.0" />
+      <point x="3253.3082264096092" y="2595.0" />
+      <point x="0.0" y="186.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.AddressProperty" target="edu.wgu.scheduler.models.IAddress">
-      <point x="-145.0" y="-238.5" />
-      <point x="4044.958333333333" y="1227.0" />
-      <point x="4027.061741493156" y="1227.0" />
-      <point x="4027.061741493156" y="447.0" />
-      <point x="3731.631897351548" y="447.0" />
-      <point x="0.0" y="120.5" />
+      <point x="-197.0" y="-251.5" />
+      <point x="6439.308226409609" y="1597.0" />
+      <point x="6416.558226409609" y="1597.0" />
+      <point x="6416.558226409609" y="497.0" />
+      <point x="6651.669156491018" y="497.0" />
+      <point x="-47.80000000000018" y="120.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.controllers.LoginController">
-      <point x="159.0" y="498.0" />
-      <point x="3911.7284081598227" y="7799.0" />
-      <point x="3949.4784081598227" y="7799.0" />
-      <point x="-30.166666666666515" y="-329.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.ICountry">
-      <point x="137.5961538461538" y="-498.0" />
-      <point x="3890.3245620059765" y="6703.0" />
-      <point x="6634.161741493156" y="6703.0" />
-      <point x="6634.161741493156" y="1217.0" />
-      <point x="6504.6277306848815" y="1217.0" />
-      <point x="89.625" y="81.5" />
+      <point x="-51.567567567567494" y="-667.5" />
+      <point x="3891.7406588420417" y="5687.0" />
+      <point x="3695.5582264096092" y="5687.0" />
+      <point x="-45.25" y="317.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.Appointment" target="edu.wgu.scheduler.models.IAppointment">
       <point x="0.0" y="-525.0" />
-      <point x="1304.8325748264892" y="1187.0" />
-      <point x="831.3958333333335" y="1187.0" />
-      <point x="28.625" y="185.5" />
+      <point x="588.8707264096092" y="477.0" />
+      <point x="253.89772791958967" y="477.0" />
+      <point x="28.875" y="185.5" />
+    </edge>
+    <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.ICountry">
+      <point x="154.70270270270248" y="-667.5" />
+      <point x="4098.010929112312" y="5767.0" />
+      <point x="7059.808226409609" y="5767.0" />
+      <point x="7059.808226409609" y="457.0" />
+      <point x="5490.8191564910185" y="457.0" />
+      <point x="95.59999999999991" y="81.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.ReminderProperty" target="edu.wgu.scheduler.models.IReminder">
-      <point x="187.66666666666652" y="-290.5" />
-      <point x="977.9992414931558" y="2427.0" />
-      <point x="903.3325748264892" y="2427.0" />
-      <point x="903.3325748264892" y="1197.0" />
-      <point x="362.3125" y="1197.0" />
+      <point x="178.0" y="-290.5" />
+      <point x="1609.8082264096092" y="1597.0" />
+      <point x="1741.0" y="1597.0" />
+      <point x="1741.0" y="447.0" />
+      <point x="839.0227279195897" y="447.0" />
       <point x="127.875" y="134.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.AppointmentProperty">
-      <point x="-116.40000000000009" y="-941.0" />
-      <point x="2441.307574826489" y="3915.0" />
-      <point x="1479.4159081598227" y="3915.0" />
-      <point x="-129.66666666666674" y="407.5" />
+      <point x="-168.695652173913" y="-1084.0" />
+      <point x="1861.7792409023632" y="2595.0" />
+      <point x="921.6207264096092" y="2595.0" />
+      <point x="0.0" y="407.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.ICity">
-      <point x="172.0" y="-694.0" />
-      <point x="4790.161741493156" y="2397.0" />
-      <point x="6117.474241493156" y="2397.0" />
-      <point x="6117.474241493156" y="477.0" />
-      <point x="6091.925741336512" y="477.0" />
-      <point x="0.0" y="107.5" />
+      <point x="-49.14285714285711" y="-863.0" />
+      <point x="5131.665369266752" y="2515.0" />
+      <point x="4796.808226409609" y="2515.0" />
+      <point x="4796.808226409609" y="487.0" />
+      <point x="4561.343454329199" y="487.0" />
+      <point x="92.40000000000009" y="107.5" />
+    </edge>
+    <edge source="edu.wgu.scheduler.models.Country" target="edu.wgu.scheduler.models.ICountry">
+      <point x="0.0" y="-213.0" />
+      <point x="5175.558226409609" y="497.0" />
+      <point x="5347.419156491018" y="497.0" />
+      <point x="-47.799999999999955" y="81.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.CustomerViewProperty">
-      <point x="24.57142857142844" y="-694.0" />
-      <point x="4642.733170064585" y="2427.0" />
-      <point x="4649.474241493156" y="2427.0" />
-      <point x="4649.474241493156" y="1207.0" />
-      <point x="4735.599241493156" y="1207.0" />
-      <point x="-123.375" y="329.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.LoginController" target="edu.wgu.scheduler.controllers.LoginController.LoginFailedException">
-      <point x="30.166666666666515" y="-329.5" />
-      <point x="4009.8117414931558" y="7799.0" />
-      <point x="4047.5617414931567" y="7799.0" />
-      <point x="-72.66666666666652" y="29.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.models.AppointmentViewProperty" target="edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView">
-      <point x="-104.875" y="-381.5" />
-      <point x="2138.2075748264892" y="2427.0" />
-      <point x="2149.708333333333" y="2427.0" />
-      <point x="-326.6666666666665" y="434.0" />
+      <point x="147.42857142857156" y="-863.0" />
+      <point x="5328.236797838181" y="2585.0" />
+      <point x="5945.393454329199" y="2585.0" />
+      <point x="-81.75" y="329.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.ICustomer">
-      <point x="-49.14285714285688" y="-694.0" />
-      <point x="4569.018884350299" y="2417.0" />
-      <point x="4596.161741493156" y="2417.0" />
-      <point x="4596.161741493156" y="417.0" />
-      <point x="4025.331897351548" y="417.0" />
-      <point x="77.19999999999982" y="107.5" />
+      <point x="-122.85714285714289" y="-863.0" />
+      <point x="5057.951083552466" y="2545.0" />
+      <point x="4198.308226409609" y="2545.0" />
+      <point x="4198.308226409609" y="477.0" />
+      <point x="3693.6727279195898" y="477.0" />
+      <point x="92.39999999999998" y="107.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppViewController" target="edu.wgu.scheduler.controllers.CustomerViewController">
-      <point x="128.0" y="-343.0" />
-      <point x="3876.458333333333" y="5902.0" />
-      <point x="3817.958333333333" y="5902.0" />
-      <point x="3817.958333333333" y="3975.0" />
-      <point x="4514.961741493156" y="3975.0" />
-      <point x="-103.19999999999982" y="694.0" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.AppointmentViewProperty">
-      <point x="-58.19999999999982" y="-941.0" />
-      <point x="2499.5075748264894" y="3885.0" />
-      <point x="1928.4575748264892" y="3885.0" />
-      <point x="-314.625" y="381.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.LoginController.LoginFailedException" target="edu.wgu.scheduler.controllers.LoginController">
-      <point x="72.66666666666697" y="29.5" />
-      <point x="4192.89507482649" y="7799.0" />
-      <point x="4130.478408159823" y="7799.0" />
-      <point x="150.83333333333303" y="-329.5" />
+      <point x="128.0" y="-382.0" />
+      <point x="2276.2248930762757" y="4863.0" />
+      <point x="4974.408226409609" y="4863.0" />
+      <point x="-206.4000000000001" y="863.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CustomerViewProperty.CustomerView" target="edu.wgu.scheduler.models.ICustomerView">
-      <point x="265.0" y="-499.0" />
-      <point x="5333.474241493156" y="1227.0" />
-      <point x="5283.9193973515485" y="1227.0" />
-      <point x="5283.9193973515485" y="477.0" />
-      <point x="5361.925741336512" y="477.0" />
+      <point x="0.0" y="-499.0" />
+      <point x="5885.058226409609" y="497.0" />
+      <point x="5855.719156491018" y="497.0" />
       <point x="0.0" y="198.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.IAppointment">
-      <point x="-155.94230769230762" y="-498.0" />
-      <point x="3596.786100467515" y="6713.0" />
-      <point x="191.29105425823946" y="6713.0" />
-      <point x="191.29105425823946" y="1217.0" />
-      <point x="716.8958333333335" y="1217.0" />
-      <point x="-85.875" y="185.5" />
+      <point x="-232.05405405405372" y="-667.5" />
+      <point x="3711.2541723555555" y="5827.0" />
+      <point x="0.0" y="5827.0" />
+      <point x="0.0" y="467.0" />
+      <point x="138.39772791958967" y="467.0" />
+      <point x="-86.625" y="185.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.ICustomerView">
-      <point x="155.94230769230762" y="-498.0" />
-      <point x="3908.6707158521303" y="6713.0" />
-      <point x="6659.849241493156" y="6713.0" />
-      <point x="6659.849241493156" y="467.0" />
-      <point x="5427.354312765084" y="467.0" />
-      <point x="65.42857142857156" y="198.5" />
+      <point x="206.27027027027043" y="-667.5" />
+      <point x="4149.57849667988" y="5807.0" />
+      <point x="7393.808226409609" y="5807.0" />
+      <point x="7393.808226409609" y="437.0" />
+      <point x="5953.862013633876" y="437.0" />
+      <point x="98.14285714285711" y="198.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.CustomerViewProperty.CustomerView">
-      <point x="73.71428571428532" y="-694.0" />
-      <point x="4691.876027207441" y="2357.0" />
-      <point x="5068.474241493156" y="2357.0" />
-      <point x="0.0" y="499.0" />
+      <point x="122.85714285714289" y="-863.0" />
+      <point x="5303.665369266752" y="2575.0" />
+      <point x="5728.845256317935" y="2575.0" />
+      <point x="5728.845256317935" y="1597.0" />
+      <point x="5607.058226409609" y="1597.0" />
+      <point x="-278.0" y="499.0" />
+    </edge>
+    <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.CityProperty">
+      <point x="-73.71428571428578" y="-863.0" />
+      <point x="5107.093940695324" y="2525.0" />
+      <point x="4662.558226409609" y="2525.0" />
+      <point x="123.75" y="264.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.City" target="edu.wgu.scheduler.models.ICity">
       <point x="0.0" y="-291.0" />
-      <point x="5723.974241493156" y="477.0" />
-      <point x="5999.5257413365125" y="477.0" />
-      <point x="-92.39999999999964" y="107.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.CityProperty">
-      <point x="147.42857142857156" y="-694.0" />
-      <point x="4765.590312921728" y="2387.0" />
-      <point x="5974.724241493156" y="2387.0" />
-      <point x="132.25" y="264.5" />
+      <point x="4428.808226409609" y="497.0" />
+      <point x="4468.943454329199" y="497.0" />
+      <point x="0.0" y="107.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppViewController" target="edu.wgu.scheduler.MainApp">
-      <point x="0.0" y="343.0" />
-      <point x="3748.458333333333" y="6753.0" />
-      <point x="3743.555331236746" y="6753.0" />
-      <point x="-9.173076923076678" y="-498.0" />
+      <point x="144.0" y="382.0" />
+      <point x="2292.2248930762757" y="5717.0" />
+      <point x="3853.064983166366" y="5717.0" />
+      <point x="-90.24324324324334" y="-667.5" />
+    </edge>
+    <edge source="edu.wgu.scheduler.models.CountryProperty" target="edu.wgu.scheduler.models.Country">
+      <point x="0.0" y="-108.0" />
+      <point x="-119.25" y="213.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CustomerProperty" target="edu.wgu.scheduler.models.ICustomer">
-      <point x="188.66666666666652" y="-160.0" />
-      <point x="3372.0416666666665" y="1227.0" />
-      <point x="3354.270833333333" y="1227.0" />
-      <point x="3354.270833333333" y="467.0" />
-      <point x="3909.5318973515487" y="467.0" />
-      <point x="-38.59999999999991" y="107.5" />
+      <point x="190.33333333333337" y="-186.5" />
+      <point x="3443.6415597429427" y="1597.0" />
+      <point x="3473.3082264096092" y="1597.0" />
+      <point x="3473.3082264096092" y="487.0" />
+      <point x="3555.07272791959" y="487.0" />
+      <point x="-46.200000000000045" y="107.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.IAddress">
-      <point x="-229.32692307692332" y="-498.0" />
-      <point x="3523.4014850828994" y="6753.0" />
-      <point x="0.0" y="6753.0" />
-      <point x="0.0" y="437.0" />
-      <point x="3651.631897351548" y="437.0" />
-      <point x="-80.0" y="120.5" />
+      <point x="219.16216216216208" y="-667.5" />
+      <point x="4162.470388571772" y="5817.0" />
+      <point x="7498.633928571429" y="5817.0" />
+      <point x="7498.633928571429" y="427.0" />
+      <point x="6747.269156491018" y="427.0" />
+      <point x="47.80000000000018" y="120.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.AddressProperty">
-      <point x="-98.28571428571468" y="-694.0" />
-      <point x="4519.876027207441" y="2327.0" />
-      <point x="4298.708333333333" y="2327.0" />
-      <point x="108.75" y="238.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.AppViewController" target="edu.wgu.scheduler.controllers.DataViewController">
-      <point x="0.0" y="-343.0" />
-      <point x="3748.458333333333" y="5902.0" />
-      <point x="3774.958333333333" y="5902.0" />
-      <point x="3774.958333333333" y="2427.0" />
-      <point x="3690.375" y="2427.0" />
-      <point x="0.0" y="187.0" />
-    </edge>
-    <edge source="edu.wgu.scheduler.models.AppointmentViewProperty" target="edu.wgu.scheduler.models.IAppointmentView">
-      <point x="-314.625" y="-381.5" />
-      <point x="1928.4575748264892" y="2427.0" />
-      <point x="1841.6242414931562" y="2427.0" />
-      <point x="1841.6242414931562" y="1227.0" />
-      <point x="2143.47855425824" y="1227.0" />
-      <point x="-57.25" y="159.5" />
+      <point x="245.71428571428578" y="-863.0" />
+      <point x="5426.522512123895" y="2625.0" />
+      <point x="6784.058226409609" y="2625.0" />
+      <point x="147.75" y="251.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView" target="edu.wgu.scheduler.models.IAppointmentView">
       <point x="0.0" y="-434.0" />
-      <point x="2476.375" y="1227.0" />
-      <point x="2257.97855425824" y="1227.0" />
-      <point x="57.25" y="159.5" />
+      <point x="0.0" y="159.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.DataViewController" target="edu.wgu.scheduler.MainApp">
-      <point x="33.333333333333485" y="187.0" />
-      <point x="3723.7083333333335" y="2417.0" />
-      <point x="3950.958333333333" y="2417.0" />
-      <point x="3950.958333333333" y="6643.0" />
-      <point x="3780.2476389290537" y="6643.0" />
-      <point x="27.519230769230944" y="-498.0" />
+      <point x="-20.27272727272748" y="200.0" />
+      <point x="4056.0354991368818" y="2615.0" />
+      <point x="4065.3082264096092" y="2615.0" />
+      <point x="4065.3082264096092" y="5677.0" />
+      <point x="3981.983902085285" y="5677.0" />
+      <point x="38.67567567567585" y="-667.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.controllers.AppointmentViewController">
-      <point x="-119.25" y="-498.0" />
-      <point x="3633.4784081598227" y="6693.0" />
-      <point x="2486.0825748264892" y="6693.0" />
-      <point x="2486.0825748264892" y="5902.0" />
-      <point x="2375.8325748264892" y="5902.0" />
-      <point x="-181.875" y="941.0" />
+      <point x="-180.48648648648623" y="-667.5" />
+      <point x="3762.821739923123" y="5787.0" />
+      <point x="1912.7248930762762" y="5787.0" />
+      <point x="1912.7248930762762" y="4863.0" />
+      <point x="1828.3915597429427" y="4863.0" />
+      <point x="-202.08333333333348" y="1084.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CityProperty" target="edu.wgu.scheduler.models.ICity">
-      <point x="176.33333333333303" y="-264.5" />
-      <point x="6018.807574826489" y="1227.0" />
-      <point x="6038.974241493156" y="1227.0" />
-      <point x="6038.974241493156" y="477.0" />
-      <point x="6045.725741336512" y="477.0" />
-      <point x="-46.19999999999982" y="107.5" />
+      <point x="165.0" y="-264.5" />
+      <point x="4703.808226409609" y="1597.0" />
+      <point x="4722.558226409609" y="1597.0" />
+      <point x="4722.558226409609" y="497.0" />
+      <point x="4515.143454329198" y="497.0" />
+      <point x="46.19999999999982" y="107.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.IAddress">
-      <point x="-73.71428571428532" y="-694.0" />
-      <point x="4544.447455778871" y="2317.0" />
-      <point x="4483.811741493157" y="2317.0" />
-      <point x="4483.811741493157" y="427.0" />
-      <point x="3811.631897351548" y="427.0" />
-      <point x="80.0" y="120.5" />
+      <point x="196.57142857142867" y="-863.0" />
+      <point x="5377.379654981038" y="2605.0" />
+      <point x="6330.308226409609" y="2605.0" />
+      <point x="6330.308226409609" y="487.0" />
+      <point x="6603.869156491019" y="487.0" />
+      <point x="-95.59999999999991" y="120.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.AppointmentProperty" target="edu.wgu.scheduler.models.Appointment">
       <point x="-97.25" y="-407.5" />
-      <point x="1511.8325748264892" y="2427.0" />
-      <point x="1565.4992414931558" y="2427.0" />
-      <point x="260.66666666666674" y="525.0" />
+      <point x="824.3707264096092" y="1597.0" />
+      <point x="868.5373930762762" y="1597.0" />
+      <point x="279.66666666666697" y="525.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.Reminder" target="edu.wgu.scheduler.models.IReminder">
       <point x="0.0" y="-304.0" />
-      <point x="615.2910542582395" y="1207.0" />
-      <point x="277.0625" y="1207.0" />
+      <point x="1287.5582264096092" y="457.0" />
+      <point x="753.7727279195897" y="457.0" />
       <point x="42.625" y="134.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.ICustomerView">
-      <point x="98.28571428571468" y="-694.0" />
-      <point x="4716.447455778871" y="2367.0" />
-      <point x="5476.474241493156" y="2367.0" />
-      <point x="5476.474241493156" y="477.0" />
-      <point x="5394.6400270507975" y="477.0" />
-      <point x="32.714285714285325" y="198.5" />
+      <point x="49.14285714285711" y="-863.0" />
+      <point x="5229.951083552466" y="2545.0" />
+      <point x="5435.558226409609" y="2545.0" />
+      <point x="5435.558226409609" y="477.0" />
+      <point x="5757.576299348161" y="477.0" />
+      <point x="-98.14285714285711" y="198.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.controllers.AppViewController">
-      <point x="-27.519230769230944" y="-498.0" />
-      <point x="3725.209177390592" y="6643.0" />
-      <point x="3620.458333333333" y="6643.0" />
-      <point x="-128.0" y="343.0" />
+      <point x="-128.91891891891873" y="-667.5" />
+      <point x="3814.3893074906905" y="5747.0" />
+      <point x="2004.2248930762757" y="5747.0" />
+      <point x="-144.0" y="382.0" />
     </edge>
-    <edge source="edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView" target="edu.wgu.scheduler.models.AppointmentViewProperty">
-      <point x="-65.33333333333348" y="434.0" />
-      <point x="2411.041666666666" y="2427.0" />
-      <point x="2557.7075748264892" y="2427.0" />
-      <point x="314.625" y="-381.5" />
+    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.controllers.AppViewController">
+      <point x="202.08333333333326" y="1084.0" />
+      <point x="2232.5582264096092" y="4863.0" />
+      <point x="2148.2248930762757" y="4863.0" />
+      <point x="0.0" y="-382.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.MainApp">
-      <point x="60.625" y="941.0" />
-      <point x="2618.3325748264892" y="5902.0" />
-      <point x="2508.0825748264892" y="5902.0" />
-      <point x="2508.0825748264892" y="6673.0" />
-      <point x="3670.1707158521303" y="6673.0" />
-      <point x="-82.55769230769238" y="-498.0" />
+      <point x="-121.25" y="1084.0" />
+      <point x="1909.2248930762762" y="4853.0" />
+      <point x="1923.7248930762762" y="4853.0" />
+      <point x="1923.7248930762762" y="5777.0" />
+      <point x="3775.7136318150147" y="5777.0" />
+      <point x="-167.59459459459458" y="-667.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.Customer" target="edu.wgu.scheduler.models.ICustomer">
       <point x="0.0" y="-252.0" />
-      <point x="3012.125" y="457.0" />
-      <point x="3870.9318973515483" y="457.0" />
-      <point x="-77.19999999999982" y="107.5" />
+      <point x="3099.8082264096092" y="477.0" />
+      <point x="3508.8727279195896" y="477.0" />
+      <point x="-92.39999999999998" y="107.5" />
+    </edge>
+    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.controllers.AppointmentViewController.AppointmentTimeException">
+      <point x="-42.17391304347825" y="-1084.0" />
+      <point x="1988.3009800327982" y="2535.0" />
+      <point x="1781.1415597429427" y="2535.0" />
+      <point x="-124.66666666666667" y="42.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CityProperty" target="edu.wgu.scheduler.models.City">
       <point x="0.0" y="-264.5" />
-      <point x="118.5" y="291.0" />
+      <point x="110.0" y="291.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.Customer">
-      <point x="77.59999999999991" y="-941.0" />
-      <point x="2635.307574826489" y="3885.0" />
-      <point x="2878.875" y="3885.0" />
-      <point x="2878.875" y="1227.0" />
-      <point x="2820.5" y="1227.0" />
-      <point x="-191.625" y="252.0" />
+      <point x="105.43478260869551" y="-1084.0" />
+      <point x="2135.9096756849717" y="2565.0" />
+      <point x="2957.3082264096092" y="2565.0" />
+      <point x="2957.3082264096092" y="1597.0" />
+      <point x="3035.3082264096092" y="1597.0" />
+      <point x="-64.5" y="252.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CustomerViewProperty.CustomerView" target="edu.wgu.scheduler.models.CustomerViewProperty">
-      <point x="-265.0" y="-499.0" />
-      <point x="4803.474241493156" y="1227.0" />
-      <point x="4900.099241493156" y="1227.0" />
-      <point x="41.125" y="329.5" />
+      <point x="278.0" y="499.0" />
+      <point x="6163.058226409609" y="1587.0" />
+      <point x="6027.143454329199" y="1587.0" />
+      <point x="0.0" y="-329.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.CustomerProperty">
-      <point x="-221.14285714285688" y="-694.0" />
-      <point x="4397.018884350299" y="2377.0" />
-      <point x="3409.775" y="2377.0" />
-      <point x="226.4000000000001" y="160.0" />
+      <point x="-245.71428571428555" y="-863.0" />
+      <point x="4935.093940695324" y="2595.0" />
+      <point x="3367.508226409609" y="2595.0" />
+      <point x="114.19999999999999" y="186.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.MainApp">
-      <point x="206.39999999999964" y="694.0" />
-      <point x="4824.561741493156" y="3975.0" />
-      <point x="4732.361741493156" y="3975.0" />
-      <point x="4732.361741493156" y="6683.0" />
-      <point x="3853.632254313669" y="6683.0" />
-      <point x="100.90384615384619" y="-498.0" />
+      <point x="103.20000000000005" y="863.0" />
+      <point x="5284.008226409609" y="4853.0" />
+      <point x="5237.90822640961" y="4853.0" />
+      <point x="5237.90822640961" y="5737.0" />
+      <point x="4059.3352534366363" y="5737.0" />
+      <point x="116.02702702702709" y="-667.5" />
+    </edge>
+    <edge source="edu.wgu.scheduler.controllers.AppointmentViewController.AppointmentTimeException" target="edu.wgu.scheduler.controllers.AppointmentViewController">
+      <point x="124.66666666666652" y="42.5" />
+      <point x="0.0" y="-1084.0" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.AppointmentViewController" target="edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView">
-      <point x="58.19999999999982" y="-941.0" />
-      <point x="2615.907574826489" y="3875.0" />
-      <point x="2787.229166666667" y="3875.0" />
-      <point x="2787.229166666667" y="2427.0" />
-      <point x="2803.041666666666" y="2427.0" />
-      <point x="326.6666666666665" y="434.0" />
+      <point x="63.26086956521738" y="-1084.0" />
+      <point x="2093.7357626414937" y="2545.0" />
+      <point x="2798.6415597429423" y="2545.0" />
+      <point x="274.33333333333326" y="434.0" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.ICity">
-      <point x="192.63461538461524" y="-498.0" />
-      <point x="3945.363023544438" y="6733.0" />
-      <point x="6780.834752144787" y="6733.0" />
-      <point x="6780.834752144787" y="447.0" />
-      <point x="6138.125741336512" y="447.0" />
-      <point x="46.19999999999982" y="107.5" />
-    </edge>
-    <edge source="edu.wgu.scheduler.models.Address" target="edu.wgu.scheduler.models.IAddress">
-      <point x="0.0" y="-330.0" />
-      <point x="4283.311741493157" y="437.0" />
-      <point x="3771.631897351548" y="437.0" />
-      <point x="40.0" y="120.5" />
+      <point x="12.891891891891646" y="-667.5" />
+      <point x="3956.200118301501" y="5827.0" />
+      <point x="3954.3082264096092" y="5827.0" />
+      <point x="3954.3082264096092" y="497.0" />
+      <point x="4422.743454329198" y="497.0" />
+      <point x="-46.19999999999982" y="107.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.LoginController" target="edu.wgu.scheduler.MainApp">
-      <point x="-150.83333333333348" y="-329.5" />
-      <point x="3828.8117414931558" y="7799.0" />
-      <point x="3593.7284081598227" y="7799.0" />
-      <point x="-159.0" y="498.0" />
+      <point x="45.25" y="317.0" />
+      <point x="3786.0582264096092" y="5677.0" />
+      <point x="3904.6325507339334" y="5677.0" />
+      <point x="-38.67567567567585" y="-667.5" />
+    </edge>
+    <edge source="edu.wgu.scheduler.models.Address" target="edu.wgu.scheduler.models.IAddress">
+      <point x="0.0" y="-343.0" />
+      <point x="6770.308226409609" y="497.0" />
+      <point x="6699.469156491018" y="497.0" />
+      <point x="0.0" y="120.5" />
     </edge>
     <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.CountryProperty">
-      <point x="221.14285714285688" y="-694.0" />
-      <point x="4839.304598636013" y="2417.0" />
-      <point x="6268.411741493156" y="2417.0" />
-      <point x="-114.75" y="108.0" />
+      <point x="-24.57142857142867" y="-863.0" />
+      <point x="5156.236797838181" y="2505.0" />
+      <point x="4931.808226409609" y="2505.0" />
+      <point x="-124.5" y="108.0" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CustomerProperty" target="edu.wgu.scheduler.models.Customer">
-      <point x="-188.66666666666652" y="-160.0" />
-      <point x="2994.7083333333335" y="1227.0" />
-      <point x="3076.0" y="1227.0" />
-      <point x="63.875" y="252.0" />
-    </edge>
-    <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.ICountry">
-      <point x="196.57142857142844" y="-694.0" />
-      <point x="4814.733170064585" y="2407.0" />
-      <point x="6143.161741493156" y="2407.0" />
-      <point x="6143.161741493156" y="1227.0" />
-      <point x="6325.3777306848815" y="1227.0" />
-      <point x="-89.625" y="81.5" />
+      <point x="0.0" y="-186.5" />
+      <point x="3253.3082264096092" y="1597.0" />
+      <point x="3293.3082264096092" y="1597.0" />
+      <point x="193.5" y="252.0" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.IReminder">
-      <point x="-174.28846153846143" y="-498.0" />
-      <point x="3578.4399466213613" y="6723.0" />
-      <point x="99.88832357335832" y="6723.0" />
-      <point x="99.88832357335832" y="1207.0" />
-      <point x="191.8125" y="1207.0" />
-      <point x="-42.625" y="134.0" />
+      <point x="-206.27027027026998" y="-667.5" />
+      <point x="3737.0379561393393" y="5807.0" />
+      <point x="59.985698011263594" y="5807.0" />
+      <point x="59.985698011263594" y="487.0" />
+      <point x="583.2727279195897" y="487.0" />
+      <point x="-127.875" y="134.0" />
+    </edge>
+    <edge source="edu.wgu.scheduler.controllers.CustomerViewController" target="edu.wgu.scheduler.models.ICountry">
+      <point x="24.57142857142844" y="-863.0" />
+      <point x="5205.379654981038" y="2535.0" />
+      <point x="5424.558226409609" y="2535.0" />
+      <point x="5424.558226409609" y="497.0" />
+      <point x="5395.219156491018" y="497.0" />
+      <point x="0.0" y="81.5" />
     </edge>
     <edge source="edu.wgu.scheduler.MainApp" target="edu.wgu.scheduler.models.ICustomer">
-      <point x="-64.21153846153857" y="-498.0" />
-      <point x="3688.516869698284" y="6663.0" />
-      <point x="3476.875" y="6663.0" />
-      <point x="3476.875" y="477.0" />
-      <point x="3948.131897351548" y="477.0" />
+      <point x="-77.35135135135124" y="-667.5" />
+      <point x="3865.956875058258" y="5707.0" />
+      <point x="3549.3082264096092" y="5707.0" />
+      <point x="3549.3082264096092" y="497.0" />
+      <point x="3601.2727279195897" y="497.0" />
       <point x="0.0" y="107.5" />
     </edge>
     <edge source="edu.wgu.scheduler.models.CustomerViewProperty" target="edu.wgu.scheduler.models.ICustomerView">
-      <point x="0.0" y="-329.5" />
-      <point x="4858.974241493156" y="467.0" />
-      <point x="5329.211455622227" y="467.0" />
-      <point x="-32.714285714285325" y="198.5" />
+      <point x="109.0" y="-329.5" />
+      <point x="6136.143454329199" y="1597.0" />
+      <point x="6319.308226409609" y="1597.0" />
+      <point x="6319.308226409609" y="487.0" />
+      <point x="5888.433442205304" y="487.0" />
+      <point x="32.71428571428578" y="198.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.5000000000000001" x="2773.999999999998" y="921.9999999999998" />
-  <SelectedNodes>
-    <node>edu.wgu.scheduler.models.IAppointmentView</node>
-  </SelectedNodes>
+  <settings layout="Hierarchic Group" zoom="0.5000000000000001" x="1110.9999999999995" y="413.9999999999998" />
+  <SelectedNodes />
   <Categories>
-    <Category>Inner Classes</Category>
-    <Category>Constructors</Category>
     <Category>Fields</Category>
+    <Category>Constructors</Category>
     <Category>Methods</Category>
     <Category>Properties</Category>
+    <Category>Inner Classes</Category>
   </Categories>
   <SCOPE>All</SCOPE>
   <VISIBILITY>private</VISIBILITY>
