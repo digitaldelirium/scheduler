@@ -2,24 +2,18 @@ package edu.wgu.scheduler;
 
 import edu.wgu.scheduler.controllers.*;
 import edu.wgu.scheduler.models.*;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -218,6 +212,8 @@ public class MainApp extends Application {
         appViewController = AppViewController.getInstance();
         appView = appViewController.getBorderPane();
         appViewController.setMainApp(this);
+
+        setDataViewController(appointmentViewController.getDataViewController());
 
         rootPane = (BorderPane) appView;
 
