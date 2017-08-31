@@ -193,6 +193,6 @@ public class LoginController implements Initializable {
     }
 
     public void setMainApp(MainApp mainApp){
-        this.mainApp = mainApp;
+        LoginController.mainApp = mainApp;
     }
 }

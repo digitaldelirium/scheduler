@@ -113,7 +113,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
     }
 
     public ReadOnlyStringProperty postalCode(){
-        return (StringProperty) getValue().postalCode();
+        return getValue().postalCode();
     }
 
     @Override

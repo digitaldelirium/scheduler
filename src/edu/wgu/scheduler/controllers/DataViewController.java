@@ -1,14 +1,8 @@
 package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 8/19/17.

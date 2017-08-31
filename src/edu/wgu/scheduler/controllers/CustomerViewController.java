@@ -5,22 +5,24 @@ import edu.wgu.scheduler.models.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import java.net.URL;
 import java.sql.*;
-import java.time.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.MainApp.*;
 import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
-import static edu.wgu.scheduler.models.CustomerViewProperty.*;
+import static edu.wgu.scheduler.models.CustomerViewProperty.CustomerView;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 21:21.
@@ -29,69 +31,44 @@ import static edu.wgu.scheduler.models.CustomerViewProperty.*;
  * Student ID: 000292065
  */
 public class CustomerViewController implements Initializable {
-    @FXML
+    
     public
     AnchorPane apCustomerView;
-    @FXML
     private VBox vbCustomerEditor;
-    @FXML
     private ToggleButton tbCustomerEditMode;
-    @FXML
     private GridPane gpCustomerEditor;
-    @FXML
     private Label lblAddress;
-    @FXML
     private Label lblCustomerName;
-    @FXML
     private Label lblAddress2;
-    @FXML
     private Label lblCity;
-    @FXML
     private Label lblState;
-    @FXML
     private Label lblPostalCode;
-    @FXML
     private Label lblCountry;
-    @FXML
     private Label lblCustomerSince;
-    @FXML
     private Label lblCustomerCreatedDate;
-    @FXML
     private Label lblPhone;
-    @FXML
     private Label lblPrefix;
-    @FXML
     private ButtonBar btnbarCustomerEditor;
-    @FXML
     private Button btnCustomerOk;
-    @FXML
     private Button btnCustomerCancel;
-    @FXML
     private TextField txtCustomerName;
-    @FXML
     private TextField txtAddress;
-    @FXML
     private TextField txtAddress2;
-    @FXML
     private TextField txtCity;
-    @FXML
     private TextField txtState;
-    @FXML
     private TextField txtPostalCode;
-    @FXML
     private TextField txtCountry;
-    @FXML
     private TextField txtPhone;
-    @FXML
     private HBox hbPhone;
-    @FXML
+    
     private CheckBox cbActive;
-    @FXML
+    
     private HBox hbCustomerEditor;
-    @FXML
+    
     private Button btnNewCustomer;
     private MainApp mainApp;
     private boolean isNewCustomer;
+    private ListView<ICustomerView> lvCustomerView;
     private TableView<ICustomerView> tvCustomerView;
     private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>("Customer Name");
     private TableColumn<ICustomerView, String> tcAddress = new TableColumn<>("Address");
@@ -470,6 +447,8 @@ public class CustomerViewController implements Initializable {
                                           );
 
         dataViewController.setTableView(this.tvCustomerView);
+        this.lvCustomerView = new ListView<>(getCustomerList());
+        dataViewController.setListView(this.lvCustomerView);
     }
 
     private void setupEventHandlers(){
