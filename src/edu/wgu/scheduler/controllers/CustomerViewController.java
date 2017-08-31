@@ -14,7 +14,6 @@ import javafx.scene.layout.*;
 
 import java.net.URL;
 import java.sql.*;
-import java.sql.Date;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -158,7 +157,7 @@ public class CustomerViewController implements Initializable {
             while (rs.next()){
                 boolean active;
 
-                switch(rs.getByte(8)){
+                switch(rs.getByte("active")){
                     case 0:
                         active = false;
                         break;
@@ -180,7 +179,7 @@ public class CustomerViewController implements Initializable {
                         rs.getTimestamp("createDate"),
                         rs.getString("createdBy"),
                         rs.getString("lastUpdateBy"),
-                        ZonedDateTime.of(rs.getTimestamp("lastUpdate").toLocalDateTime(), ZoneId.systemDefault())
+                        rs.getTimestamp("lastUpdate")
                 ));
 
                 customerViews.add(view);
@@ -265,7 +264,7 @@ public class CustomerViewController implements Initializable {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
                 CustomerProperty customer = new CustomerProperty(
-                        resultSet.getDate("createDate").toLocalDate(),
+                        resultSet.getTimestamp("createDate"),
                         resultSet.getInt("customerId"),
                         resultSet.getByte("active"),
                         resultSet.getInt("addressId"),
@@ -533,7 +532,7 @@ public class CustomerViewController implements Initializable {
                 PreparedStatement statement = connection.prepareStatement("SELECT createDate FROM customer WHERE customerId = ?;");
                 ResultSet rs = statement.executeQuery();
                 if(rs.next()){
-                    this.lblCustomerSince.setText(rs.getDate(1).toLocalDate().format(DateTimeFormatter.ISO_DATE));
+                    this.lblCustomerSince.setText(rs.getTimestamp(1).toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_DATE));
                 }
 
                 this.dataViewController.setListView(new ListView<>(getCustomerList()));
