@@ -112,7 +112,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         return getValue().getPostalCode();
     }
 
-    public StringProperty postalCode(){
+    public ReadOnlyStringProperty postalCode(){
         return (StringProperty) getValue().postalCode();
     }
 
@@ -135,33 +135,33 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
      */
     public static class CustomerView implements ICustomerView {
 
-        private ReadOnlyStringWrapper customerName;
-        private ReadOnlyStringWrapper address;
-        private ReadOnlyStringWrapper address2;
-        private ReadOnlyStringWrapper city;
-        private ReadOnlyStringWrapper postalCode;
-        private ReadOnlyStringWrapper country;
-        private ReadOnlyStringWrapper phone;
-        private ReadOnlyBooleanWrapper active;
+        private ReadOnlyStringProperty customerName;
+        private ReadOnlyStringProperty address;
+        private ReadOnlyStringProperty address2;
+        private ReadOnlyStringProperty city;
+        private ReadOnlyStringProperty postalCode;
+        private ReadOnlyStringProperty country;
+        private ReadOnlyStringProperty phone;
+        private ReadOnlyBooleanProperty active;
         private final ZonedDateTime createDate;
         private final String createdBy;
-        private ReadOnlyStringWrapper lastUpdateBy;
-        private ReadOnlyObjectWrapper<ZonedDateTime> lastUpdate;
+        private ReadOnlyStringProperty lastUpdateBy;
+        private ReadOnlyObjectProperty<ZonedDateTime> lastUpdate;
 
 
-        public CustomerView(String customerName, String address, String address2, String city, String postalCode, String country, String phone, boolean active, Timestamp createDate, String createdBy, String lastUpdateBy, ZonedDateTime lastUpdate ){
-            this.customerName.setValue(customerName);
-            this.address.setValue(address);
-            this.address2.setValue(address2);
-            this.city.setValue(city);
-            this.postalCode.setValue(postalCode);
-            this.country.setValue(country);
-            this.phone.setValue(phone);
-            this.active.setValue(active);
-            this.createDate = ZonedDateTime.of(createDate.toLocalDateTime(), ZoneId.systemDefault());
+        public CustomerView(String customerName, String address, String address2, String city, String postalCode, String country, String phone, boolean active, Timestamp createDate, String createdBy, String lastUpdateBy, Timestamp lastUpdate){
+            this.customerName = new SimpleStringProperty(customerName);
+            this.address = new SimpleStringProperty(address);
+            this.address2 = new SimpleStringProperty(address2);
+            this.city = new SimpleStringProperty(city);
+            this.postalCode = new SimpleStringProperty(postalCode);
+            this.country = new SimpleStringProperty(country);
+            this.phone = new SimpleStringProperty(phone);
+            this.active = new SimpleBooleanProperty(active);
+            this.createDate = createDate.toInstant().atZone(ZoneId.systemDefault());
             this.createdBy = createdBy;
-            this.lastUpdateBy.setValue(lastUpdateBy);
-            this.lastUpdate.setValue(lastUpdate);
+            this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
+            this.lastUpdate = new SimpleObjectProperty<>(lastUpdate.toInstant().atZone(ZoneId.systemDefault()));
         }
 
         public boolean isActive() {
@@ -169,7 +169,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         }
 
         ReadOnlyStringProperty customerName(){
-            return customerName.getReadOnlyProperty();
+            return customerName;
         }
 
         public int getAddressId() {
@@ -250,7 +250,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         }
 
         ReadOnlyStringProperty address(){
-            return address.getReadOnlyProperty();
+            return address;
         }
 
         public String getAddress2() {
@@ -258,7 +258,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         }
 
         ReadOnlyStringProperty address2(){
-            return address2.getReadOnlyProperty();
+            return address2;
         }
 
         public String getCity() {
@@ -266,7 +266,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         }
 
         ReadOnlyStringProperty city(){
-            return city.getReadOnlyProperty();
+            return city;
         }
 
         public String getCountry() {
@@ -274,7 +274,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         }
 
         ReadOnlyStringProperty country(){
-            return country.getReadOnlyProperty();
+            return country;
         }
 
         public String getPhone() {
@@ -282,7 +282,7 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         }
 
         ReadOnlyStringProperty phone(){
-            return phone.getReadOnlyProperty();
+            return phone;
         }
 
         public String getPostalCode() {
@@ -296,36 +296,36 @@ public class CustomerViewProperty extends SimpleObjectProperty<CustomerViewPrope
         }
 
         public ReadOnlyStringProperty postalCode(){
-            return postalCode.getReadOnlyProperty();
+            return postalCode;
         }
 
 
         public ReadOnlyBooleanProperty active() {
-            return active.getReadOnlyProperty();
+            return active;
         }
 
         public ReadOnlyStringProperty lastUpdateByProperty() {
             return lastUpdateBy;
         }
 
-        public ReadOnlyProperty<ZonedDateTime> lastUpdateProperty() {
+        public ReadOnlyObjectProperty<ZonedDateTime> lastUpdateProperty() {
             return lastUpdate;
         }
 
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("CustomerView{\n");
-            sb.append("\tcustomerName=").append(customerName);
-            sb.append("\n\t address=").append(address);
-            sb.append("\n\t address2=").append(address2);
-            sb.append("\n\t city=").append(city);
-            sb.append("\n\t postalCode=").append(postalCode);
-            sb.append("\n\t country=").append(country);
-            sb.append("\n\t phone=").append(phone);
-            sb.append("\n\t active=").append(active);
+            sb.append("\tcustomerName=").append(customerName.getValueSafe());
+            sb.append("\n\t address=").append(address.getValueSafe());
+            sb.append("\n\t address2=").append(address2.getValueSafe());
+            sb.append("\n\t city=").append(city.getValueSafe());
+            sb.append("\n\t postalCode=").append(postalCode.getValueSafe());
+            sb.append("\n\t country=").append(country.getValueSafe());
+            sb.append("\n\t phone=").append(phone.getValueSafe());
+            sb.append("\n\t active=").append(active.getValue());
             sb.append("\n\t createDate=").append(createDate);
             sb.append("\n\t createdBy='").append(createdBy).append('\'');
-            sb.append("\n\t lastUpdateBy=").append(lastUpdateBy);
+            sb.append("\n\t lastUpdateBy=").append(lastUpdateBy.getValueSafe());
             sb.append("\n\t lastUpdate=").append(getLastUpdate());
             sb.append("\n}");
             return sb.toString();
