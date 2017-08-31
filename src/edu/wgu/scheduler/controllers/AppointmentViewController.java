@@ -3,27 +3,25 @@ package edu.wgu.scheduler.controllers;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
 import edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.sql.Date;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static edu.wgu.scheduler.MainApp.*;
+import static edu.wgu.scheduler.MainApp.dataSource;
+import static edu.wgu.scheduler.MainApp.user;
 import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
 
 /**
@@ -38,17 +36,6 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     private ToggleButton tbAppointmentEditor;
     private Button btnNewAppointment;
     private GridPane gpAppointmentEditor;
-    private Label lblTitle;
-    private Label lblDescription;
-    private Label lblLocation;
-    private Label lblContact;
-    private Label lblUrl;
-    private Label lblCustomerName;
-    private Label lblStart;
-    private Label lblEnd;
-    private Label lblCreatedDate;
-    private Label lblCreatedBy;
-    private Label lblLastUpdated;
     private TextField txtTitle;
     private TextField txtDescription;
     private TextField txtLocation;
@@ -67,11 +54,8 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     private TextField txtCreatedBy;
     private TextField txtLastUpdated;
     private Button btnAppointmentSave;
-    private Label lblViewScope;
+    private Label lblViewScope = new Label("Choose View:");
     private HBox hbViewScope;
-    private RadioButton rdoWeekly;
-    private RadioButton rdoMonthly;
-    private ButtonBar buttonbarAppointmentEditor;
     private Button btnAppointmentReset;
     private TableView<AppointmentViewProperty> tvAppointments = new TableView<AppointmentViewProperty>();
     private TableColumn<AppointmentView, String> tcTitle = new TableColumn<>("Title");
@@ -154,8 +138,8 @@ public class AppointmentViewController extends AnchorPane implements Initializab
 
         this.btnNewAppointment = new Button("New Appointment");
         this.tbAppointmentEditor = new ToggleButton("Edit Appointment");
-        this.rdoWeekly = new RadioButton("Weekly");
-        this.rdoMonthly = new RadioButton("Monthly");
+        RadioButton rdoWeekly = new RadioButton("Weekly");
+        RadioButton rdoMonthly = new RadioButton("Monthly");
 
         this.datePickerStartTime = new DatePicker(LocalDate.now());
         this.datePickerStartTime.setShowWeekNumbers(true);
@@ -216,17 +200,17 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     private void setupGridPane() {
         this.gpAppointmentEditor = new GridPane();
         this.lblViewScope = new Label("Choose View:");
-        this.lblTitle = new Label("Title:");
-        this.lblDescription = new Label("Description:");
-        this.lblLocation = new Label("Location:");
-        this.lblContact = new Label("Contact:");
-        this.lblUrl = new Label("Url:");
-        this.lblCustomerName = new Label("Customer Name:");
-        this.lblStart = new Label("Start Time:");
-        this.lblEnd = new Label("End Time:");
-        this.lblCreatedDate = new Label("Created Date:");
-        this.lblCreatedBy = new Label("Created By:");
-        this.lblLastUpdated = new Label("Last Updated:");
+        Label lblTitle = new Label("Title:");
+        Label lblDescription = new Label("Description:");
+        Label lblLocation = new Label("Location:");
+        Label lblContact = new Label("Contact:");
+        Label lblUrl = new Label("Url:");
+        Label lblCustomerName = new Label("Customer Name:");
+        Label lblStart = new Label("Start Time:");
+        Label lblEnd = new Label("End Time:");
+        Label lblCreatedDate = new Label("Created Date:");
+        Label lblCreatedBy = new Label("Created By:");
+        Label lblLastUpdated = new Label("Last Updated:");
         this.txtTitle = new TextField();
         this.txtDescription = new TextField();
         this.txtLocation = new TextField();
@@ -236,21 +220,21 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         this.txtCreatedDate = new TextField();
         this.txtCreatedBy = new TextField();
         this.txtLastUpdated = new TextField();
-        this.buttonbarAppointmentEditor = new ButtonBar();
+        ButtonBar buttonbarAppointmentEditor = new ButtonBar();
         this.btnAppointmentSave = new Button("Save");
         this.btnAppointmentReset = new Button("Reset");
 
-        this.lblTitle.setLabelFor(this.txtTitle);
-        this.lblDescription.setLabelFor(this.txtDescription);
-        this.lblLocation.setLabelFor(this.txtLocation);
-        this.lblContact.setLabelFor(this.txtContact);
-        this.lblUrl.setLabelFor(this.txtUrl);
-        this.lblCustomerName.setLabelFor(this.txtCustomerName);
-        this.lblStart.setLabelFor(this.hbStartTime);
-        this.lblEnd.setLabelFor(this.hbEndTime);
-        this.lblCreatedDate.setLabelFor(this.txtCreatedDate);
-        this.lblCreatedBy.setLabelFor(this.txtCreatedBy);
-        this.lblLastUpdated.setLabelFor(this.txtLastUpdated);
+        lblTitle.setLabelFor(this.txtTitle);
+        lblDescription.setLabelFor(this.txtDescription);
+        lblLocation.setLabelFor(this.txtLocation);
+        lblContact.setLabelFor(this.txtContact);
+        lblUrl.setLabelFor(this.txtUrl);
+        lblCustomerName.setLabelFor(this.txtCustomerName);
+        lblStart.setLabelFor(this.hbStartTime);
+        lblEnd.setLabelFor(this.hbEndTime);
+        lblCreatedDate.setLabelFor(this.txtCreatedDate);
+        lblCreatedBy.setLabelFor(this.txtCreatedBy);
+        lblLastUpdated.setLabelFor(this.txtLastUpdated);
 
         buttonbarAppointmentEditor.getButtons().addAll(btnAppointmentSave, btnAppointmentReset);
 
@@ -291,7 +275,16 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private void setupTextFields(Boolean disabled) {
-        this.gpAppointmentEditor.getChildren().filtered(node -> toggleTextFields(node, disabled));
+        this.gpAppointmentEditor.getChildren().filtered(node -> {
+            if(toggleTextFields(node, disabled)) {
+                if (node.hashCode() == txtLastUpdated.hashCode()) {
+                    ((TextField) node).setEditable(false);
+                    return true;
+                }
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupCollections() {
@@ -327,7 +320,19 @@ public class AppointmentViewController extends AnchorPane implements Initializab
 
         this.tbAppointmentEditor.setOnAction(event -> toggleEditable());
         this.btnNewAppointment.setOnAction(event -> createNewAppointment());
-        this.btnAppointmentSave.setOnAction(event -> saveAppointment());
+        this.btnAppointmentSave.setOnAction(event -> {
+            try {
+                saveAppointment();
+            } catch (InvalidCustomerException ice){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid Customer Exception");
+                alert.setContentText(ice.getMessage());
+                alert.showAndWait().ifPresent(buttonType -> {
+                    Platform.runLater(() -> txtCustomerName.requestFocus());
+                });
+            }
+
+        });
         this.btnAppointmentReset.setOnAction(event -> clearForm());
 
         this.datePickerStartTime.setOnAction(event -> {
@@ -339,21 +344,28 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                 alert.setContentText("Please select a valid date!");
                 alert.show();
             }
+            else if (selectedDate.isAfter(LocalDate.now())){
+                this.datePickerStartTime.setValue(selectedDate);
+                return;
+            }
             this.datePickerStartTime.setValue(LocalDate.now());
         });
 
         this.datePickerEndTime.setOnAction(event -> {
-            if(datePickerEndTime.getValue().isBefore(datePickerStartTime.getValue())){
+            LocalDate selectedDate = datePickerEndTime.getValue();
+            if(selectedDate.isBefore(datePickerStartTime.getValue())){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Date!");
                 alert.setHeaderText("End date before Start date!");
                 alert.setContentText("Please select a valid date and try again!");
                 alert.show();
             }
+            else if(selectedDate.isAfter(datePickerStartTime.getValue()) | selectedDate.equals(datePickerStartTime.getValue())){
+                this.datePickerEndTime.setValue(selectedDate);
+                return;
+            }
             this.datePickerEndTime.setValue(LocalDate.now());
         });
-
-
 
         createListeners();
     }
@@ -457,6 +469,11 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                     ((TextField) node).setEditable(false);
                     return true;
             }
+            else if (node.hashCode() == txtLastUpdated.hashCode()){
+                ((TextField) node).setEditable(false);
+                node.setDisable(true);
+                return true;
+            }
             return false;
         });
 
@@ -477,7 +494,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         });
 
         txtDescription.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.trim().length() < 10) {
+            if (newValue.trim().length() < 10 | txtCustomerName.getText().trim().length() < 5) {
                 btnAppointmentSave.setDisable(true);
             } else {
                 btnAppointmentSave.setDisable(false);
@@ -486,7 +503,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         });
 
         txtTitle.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.trim().length() < 4) {
+            if (newValue.trim().length() < 4 | txtCustomerName.getText().trim().length() < 5) {
                 btnAppointmentSave.setDisable(true);
             } else {
                 btnAppointmentReset.setDisable(false);
@@ -574,21 +591,26 @@ public class AppointmentViewController extends AnchorPane implements Initializab
 
         this.txtCreatedBy.setText(MainApp.user.getUsername());
         this.txtCreatedBy.setEditable(false);
-        this.txtCreatedDate.setText(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+        this.txtCreatedDate.setText(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_DATE));
         this.txtCreatedDate.setEditable(false);
+        this.txtLastUpdated.setDisable(true);
+        this.txtLastUpdated.setEditable(false);
     }
 
     /**
      * @return
      */
     
-    private boolean saveAppointment() {
+    private boolean saveAppointment() throws InvalidCustomerException {
         int customerId = 0;
         int x = 0;
         for (CustomerProperty customer : customers) {
-            if (customer.getCustomerName().equals(txtCustomerName.getText())) {
+            if (customer.getCustomerName().toLowerCase().equals(txtCustomerName.getText().toLowerCase().trim())) {
                 customerId = customer.getCustomerId();
                 break;
+            }
+            else if (txtCustomerName.getText().trim().isEmpty()){
+                throw new InvalidCustomerException("The customer name cannot be blank!");
             }
             x++;
         }
@@ -656,7 +678,8 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                 txtLocation.getText(),
                 startDateTime,
                 txtTitle.getText(),
-                txtUrl.getText()
+                txtUrl.getText(),
+                txtContact.getText()
         );
 
         try (Connection connection = dataSource.getConnection()){
@@ -677,19 +700,17 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         PreparedStatement statement =
                 connection.prepareStatement("INSERT INTO appointment (customerId, title, description, " +
                                                     "location, contact, url, start, end, createDate, createdBy, lastUpdate, lastUpdatedBy)" +
-                                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, UTC_DATE, ?, UTC_TIMESTAMP, ?)");
         statement.setInt(1, app.getCustomerId());
         statement.setString(2, app.getTitle());
         statement.setString(3, app.getDescription());
         statement.setString(4, app.getLocation());
         statement.setString(5, app.getContact());
         statement.setString(6, app.getUrl());
-        statement.setTimestamp(7, new Timestamp(app.getStart().toEpochSecond() * 1000));
-        statement.setTimestamp(8, new Timestamp(app.getEnd().toEpochSecond() * 1000));
-        statement.setTimestamp(9, new Timestamp(app.getCreateDate().toEpochSecond() * 1000));
-        statement.setString(10, app.getCreatedBy());
-        statement.setTimestamp(11, new Timestamp(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond() * 1000));
-        statement.setString(12, app.getLastUpdateBy());
+        statement.setTimestamp(7, new Timestamp(app.getStart().withZoneSameInstant(ZoneId.of("UTC")).toEpochSecond() * 1000));
+        statement.setTimestamp(8, new Timestamp(app.getEnd().withZoneSameInstant(ZoneId.of("UTC")).toEpochSecond() * 1000));
+        statement.setString(9, app.getCreatedBy());
+        statement.setString(10, app.getLastUpdateBy());
 
         boolean insertSucceeded = statement.execute();
         if(insertSucceeded){
@@ -789,6 +810,12 @@ public class AppointmentViewController extends AnchorPane implements Initializab
          */
         public AppointmentTimeException(String message, Throwable cause) {
             super(message, cause);
+        }
+    }
+
+    private class InvalidCustomerException extends RuntimeException {
+        public InvalidCustomerException(String message) {
+            super(message);
         }
     }
 }
