@@ -135,6 +135,16 @@ public class AppViewController extends BorderPane implements Initializable {
         });
 
         this.closeMenuItem.setOnAction(event -> quitApp());
+
+        this.tpAppPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.getText().toLowerCase().equals("Customer".toLowerCase())){
+                MainApp.setDataViewController(CustomerViewController.getInstance().getDataViewController());
+            }
+
+            if (newValue.getText().toLowerCase().equals("Appointments".toLowerCase())){
+                MainApp.setDataViewController(AppointmentViewController.getInstance().getDataViewController());
+            }
+        });
     }
 
     private void setCustomerView() {
