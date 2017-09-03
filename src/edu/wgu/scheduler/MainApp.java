@@ -51,7 +51,7 @@ public class MainApp extends Application {
     private static AppViewController appViewController;
     private static AppointmentViewController appointmentViewController;
     private static CustomerViewController customerViewController;
-    private static DataViewController dataViewController;
+    private DataViewController dataViewController;
     private Parent appView;
     private static Parent appointmentView;
     private static Parent customerView;
@@ -194,28 +194,36 @@ public class MainApp extends Application {
     }
 
     private void initLayout() {
-        rootPane = new BorderPane();
+//        rootPane = new BorderPane();
+
+
         
         appointmentViewController = AppointmentViewController.getInstance();
         appointmentView = appointmentViewController.apAppointmentView;
         appointmentViewController.setMainApp(this);
 
+        dataViewController = appointmentViewController.getDataViewController();
+        dataView = dataViewController.tabPane;
+        dataViewController.setMainApp(this);
 
         customerViewController = CustomerViewController.getInstance();
         customerView = customerViewController.apCustomerView;
         customerViewController.setMainApp(this);
-        
-        dataViewController = new DataViewController();
-        dataView = dataViewController.tabPane;
-        dataViewController.setMainApp(this);
-        
+
         appViewController = AppViewController.getInstance();
         appView = appViewController.getBorderPane();
         appViewController.setMainApp(this);
 
-        setDataViewController(appointmentViewController.getDataViewController());
+        appViewController.setDataViewController(appointmentViewController.getDataViewController());
+
+        System.out.println(this.dataViewController);
+        System.out.println(this.dataView);
+        System.out.println(appointmentViewController.toString());
+        System.out.println(customerViewController.toString());
+        System.out.println(appViewController.toString());
 
         rootPane = (BorderPane) appView;
+
 
         scene = new Scene(rootPane);
         scene.getStylesheets().add("/styles/Styles.css");
@@ -225,12 +233,12 @@ public class MainApp extends Application {
     }
 
 
-    public static DataViewController getDataViewController() {
+    public DataViewController getDataViewController() {
         return dataViewController;
     }
 
-    public static void setDataViewController(DataViewController dataViewController) {
-        MainApp.dataViewController = dataViewController;
+    public void setDataViewController(DataViewController dataViewController) {
+        this.dataViewController = dataViewController;
     }
 
     public Parent getAppView() {
@@ -320,6 +328,7 @@ public class MainApp extends Application {
     public static void setCustomerList(ObservableList<ICustomerView> customerList) {
         MainApp.customerList = customerList;
     }
+
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
