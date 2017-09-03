@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
@@ -17,7 +18,7 @@ import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.MainApp.*;
 
-public class AppViewController extends BorderPane implements Initializable {
+public class AppViewController extends BorderPane {
 
 
     private BorderPane rootPane;
@@ -40,10 +41,12 @@ public class AppViewController extends BorderPane implements Initializable {
     private ScrollPane spAppointmentEditor;
     private MainApp mainApp;
     private static AppViewController instance;
-
+    private static AppointmentViewController appointmentViewController = AppointmentViewController.getInstance();
+    private static CustomerViewController customerViewController = CustomerViewController.getInstance();
+    private static DataViewController dataViewController;
 
     private AppViewController() {
-        initialize(MainApp.class.getResource("/fxml/AppView.fxml"), null);
+        initialize();
     }
 
     public static AppViewController getInstance() {
@@ -58,7 +61,7 @@ public class AppViewController extends BorderPane implements Initializable {
      * completely processed.
      **/
 
-    public void initialize(URL location, ResourceBundle resourceBundle) {
+    public void initialize() {
         instance = this;
         this.rootPane = new BorderPane();
         this.menuBar = new MenuBar();
@@ -110,7 +113,7 @@ public class AppViewController extends BorderPane implements Initializable {
         this.rootPane.setCenter(vbAppView);
 
         // add data view to bottom pane
-        this.rootPane.setBottom(getDataView());
+        this.rootPane.setBottom(AppointmentViewController.getDataView());
 
         setupEventHandlers(this);
     }
@@ -138,25 +141,25 @@ public class AppViewController extends BorderPane implements Initializable {
 
         this.tpAppPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.getText().toLowerCase().equals("Customer".toLowerCase())){
-                MainApp.setDataViewController(CustomerViewController.getInstance().getDataViewController());
+                setCustomerView();
             }
 
             if (newValue.getText().toLowerCase().equals("Appointments".toLowerCase())){
-                MainApp.setDataViewController(AppointmentViewController.getInstance().getDataViewController());
+                setAppointmentView();
             }
         });
     }
 
     private void setCustomerView() {
         CustomerViewController customerViewController = CustomerViewController.getInstance();
-        setDataViewController(customerViewController.getDataViewController());
+        setDataView(customerViewController.getDataViewController().tabPane);
         customerViewController.getGpCustomerEditor().getChildren().filtered(node -> toggleTextFields(node, true));
 
     }
 
     private void setAppointmentView() {
         AppointmentViewController controller = AppointmentViewController.getInstance();
-        setDataViewController(controller.getDataViewController());
+        setDataView(controller.getDataViewController().tabPane);
         controller.getGpAppointmentEditor().getChildren().filtered(node -> toggleTextFields(node, true));
     }
 
@@ -199,5 +202,39 @@ public class AppViewController extends BorderPane implements Initializable {
 
     public Tab getTabAppointments() {
         return tabAppointments;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("AppViewController{");
+        sb.append("\nrootPane=").append(rootPane);
+        sb.append(",\n menuBar=").append(menuBar);
+        sb.append(",\n fileMenu=").append(fileMenu);
+        sb.append(",\n editMenu=").append(editMenu);
+        sb.append(",\n reportMenu=").append(reportMenu);
+        sb.append(",\n helpMenu=").append(helpMenu);
+        sb.append(",\n closeMenuItem=").append(closeMenuItem);
+        sb.append(",\n copyMenuItem=").append(copyMenuItem);
+        sb.append(",\n monthlyAppointmentReportMenuItem=").append(monthlyAppointmentReportMenuItem);
+        sb.append(",\n consultantScheduleMenuItem=").append(consultantScheduleMenuItem);
+        sb.append(",\n customersByCountryMenuItem=").append(customersByCountryMenuItem);
+        sb.append(",\n aboutMenuItem=").append(aboutMenuItem);
+        sb.append(",\n vbAppView=").append(vbAppView);
+        sb.append(",\n tpAppPane=").append(tpAppPane);
+        sb.append(",\n tabCustomers=").append(tabCustomers);
+        sb.append(",\n spCustomerEditor=").append(spCustomerEditor);
+        sb.append(",\n tabAppointments=").append(tabAppointments);
+        sb.append(",\n spAppointmentEditor=").append(spAppointmentEditor);
+        sb.append(",\n dataViewController=").append(dataViewController);
+        sb.append("\n}");
+        return sb.toString();
+    }
+
+    public void setDataViewController(DataViewController dataViewController) {
+        this.dataViewController = dataViewController;
+    }
+
+    public DataViewController getDataViewController() {
+        return dataViewController;
     }
 }
