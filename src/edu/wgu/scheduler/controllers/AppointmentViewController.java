@@ -2,26 +2,24 @@ package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
-import edu.wgu.scheduler.models.AppointmentViewProperty.AppointmentView;
+import edu.wgu.scheduler.models.AppointmentView;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 
-import java.net.URL;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static edu.wgu.scheduler.MainApp.dataSource;
-import static edu.wgu.scheduler.MainApp.user;
+import static edu.wgu.scheduler.MainApp.*;
 import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
 
 /**
@@ -30,7 +28,7 @@ import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
  * <p>
  * Student ID: 000292065
  */
-public class AppointmentViewController extends AnchorPane implements Initializable {
+public class AppointmentViewController extends AnchorPane {
     private VBox vbAppointmentEditor;
     private HBox hbEditorBar;
     private ToggleButton tbAppointmentEditor;
@@ -57,7 +55,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     private Label lblViewScope = new Label("Choose View:");
     private HBox hbViewScope;
     private Button btnAppointmentReset;
-    private TableView<AppointmentViewProperty> tvAppointments = new TableView<AppointmentViewProperty>();
+    private TableView<AppointmentView> tvAppointments = new TableView<>();
     private TableColumn<AppointmentView, String> tcTitle = new TableColumn<>("Title");
     private TableColumn<AppointmentView, String> tcDescription = new TableColumn<>("Description");
     private TableColumn<AppointmentView, String> tcLocation = new TableColumn<>("Location");
@@ -70,19 +68,19 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     private TableColumn<AppointmentView, String> tcCreatedBy = new TableColumn<>("Created By");
     private TableColumn<AppointmentView, Timestamp> tcLastUpdate = new TableColumn<>("Last Updated");
     private MainApp mainApp;
-    private DataViewController dataViewController;
     private boolean isNewAppointment;
+    private DataViewController dataViewController;
+    private static Parent dataView;
     private static AppointmentViewController instance;
-    private static ObservableList<ZonedDateTime> hours;
-    private static ObservableList<ZonedDateTime> minutes;
-    protected static ObservableList<CustomerProperty> customers;
-    protected static ObservableList<AppointmentProperty> appointments;
-    protected static ObservableList<AppointmentViewProperty> appointmentViews;
-    protected static ObservableList<ReminderProperty> reminders;
+    protected static ObservableList<ICustomer> customers;
+    protected static ObservableList<Appointment> appointments;
+    protected static ObservableList<AppointmentView> appointmentViews;
+    protected static ObservableList<Reminder> reminders;
     public AnchorPane apAppointmentView;
+    private ListView<AppointmentView> lvListView;
 
     private AppointmentViewController() {
-        initialize(MainApp.class.getResource("/fxml/AppointmentView.fxml"), null);
+        initialize();
     }
 
     public static AppointmentViewController getInstance() {
@@ -92,14 +90,8 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         return instance;
     }
 
-    public void initialize(URL location, ResourceBundle resourceBundle) {
+    public void initialize() {
         instance = this;
-        appointmentViews = FXCollections.observableArrayList();
-        appointments = FXCollections.observableArrayList();
-        customers = FXCollections.observableArrayList();
-        reminders = FXCollections.observableArrayList();
-        hours = FXCollections.observableList(new LinkedList<>());
-        minutes = FXCollections.observableList(new LinkedList<>());
         this.apAppointmentView = new AnchorPane();
         this.apAppointmentView.setPrefHeight(580.0);
         this.vbAppointmentEditor = new VBox();
@@ -107,6 +99,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
         this.vbAppointmentEditor.setOpaqueInsets(new Insets(10.0));
         this.vbAppointmentEditor.setPadding(new Insets(5.0));
         this.dataViewController = new DataViewController();
+        this.dataView = dataViewController.tabPane;
         this.lblViewScope = new Label("Choose View:");
 
         setupHBoxes();
@@ -117,15 +110,88 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                 this.hbViewScope,
                 this.hbEditorBar,
                 this.gpAppointmentEditor
+//                this.dataViewController.tabPane
         );
 
         this.apAppointmentView.getChildren().add(vbAppointmentEditor);
 
         setupCollections();
-        getAppointments();
         setupDataView();
+        getAppointments();
         setupEventHandlers();
         setupTextFields(true);
+
+
+
+        this.tcTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        this.tcTitle.setVisible(true);
+        this.tcTitle.setMinWidth(50);
+        
+        this.tcCustomerName.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+        this.tcCustomerName.setVisible(true);
+        this.tcCustomerName.setMinWidth(40);
+        
+        this.tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        this.tcDescription.setVisible(true);
+        this.tcDescription.setMinWidth(100);
+        
+        this.tcLocation.setCellValueFactory(new PropertyValueFactory<>("location"));
+        this.tcLocation.setVisible(true);
+        this.tcLocation.setMinWidth(40);
+
+        this.tcContact.setCellValueFactory(new PropertyValueFactory<>("contact"));
+        this.tcContact.setVisible(true);
+        this.tcContact.setMinWidth(40);
+
+        this.tcUrl.setCellValueFactory(new PropertyValueFactory<>("url".toUpperCase()));
+        this.tcUrl.setVisible(true);
+        this.tcUrl.setMinWidth(40);
+
+        this.tcStart.setCellValueFactory(new PropertyValueFactory<>("start"));
+        this.tcStart.setVisible(true);
+        this.tcStart.setMinWidth(40);
+
+        this.tcEnd.setCellValueFactory(new PropertyValueFactory<>("end"));
+        this.tcEnd.setVisible(true);
+        this.tcEnd.setMinWidth(40);
+
+        this.tcCreateDate.setCellValueFactory(new PropertyValueFactory<>("createDate"));
+        this.tcCreateDate.setVisible(true);
+        this.tcCreateDate.setMinWidth(40);
+
+        this.tcCreatedBy.setCellValueFactory(new PropertyValueFactory<>("createdBy"));
+        this.tcCreatedBy.setVisible(true);
+        this.tcCreatedBy.setMinWidth(40);
+
+        this.tcLastUpdate.setCellValueFactory(new PropertyValueFactory<>("lastUpdate"));
+        this.tcLastUpdate.setVisible(true);
+        this.tcLastUpdate.setMinWidth(40);
+        
+        this.tvAppointments = new TableView<>();
+        this.tvAppointments.setItems(appointmentViews);
+        this.tvAppointments.getColumns().addAll(
+                tcTitle,
+                tcDescription,
+                tcLocation,
+                tcContact,
+                tcUrl,
+                tcCustomerName,
+                tcStart,
+                tcEnd,
+                tcCreateDate,
+                tcCreatedBy,
+                tcLastUpdate);
+
+
+        this.lvListView = new ListView<>();
+        this.lvListView.setItems(appointmentViews);
+
+        this.dataViewController.setTableView(this.tvAppointments);
+        this.dataViewController.setLblListView(new Label("Appointment List"));
+        this.dataViewController.setListView(this.lvListView);
+        this.dataViewController.setLblTableView(new Label("Appointments"));
+
+//        System.out.println(this.dataViewController);
 
     }
 
@@ -178,7 +244,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private void setupChoiceBoxes() {
-        LinkedList<Integer> hourList = new LinkedList();
+        LinkedList<Integer> hourList = new LinkedList<>();
         LinkedList<Integer> minuteList = new LinkedList<>();
         
         for (int i = 0; i < 24; i++){
@@ -288,20 +354,22 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private void setupCollections() {
-        appointments = FXCollections.observableList(new LinkedList<>(), (AppointmentProperty ap) -> new Observable[]{
-                ap.titleProperty(),
-                ap.descriptionProperty(),
-                ap.locationProperty(),
-                ap.contactProperty(),
-                ap.urlProperty(),
-                ap.startProperty(),
-                ap.endProperty(),
-                ap.customerIdProperty()
+        appointments = FXCollections.observableList(new LinkedList<>(), (Appointment ap) -> {
+            return new Observable[]{
+                    ap.titleProperty(),
+                    ap.descriptionProperty(),
+                    ap.locationProperty(),
+                    ap.contactProperty(),
+                    ap.urlProperty(),
+                    ap.startProperty(),
+                    ap.endProperty(),
+                    ap.customerIdProperty()
+            };
         });
 
         reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
                 re.remindercolProperty(),
-                re.reminderDate(),
+                re.reminderDateProperty(),
                 re.snoozeIncrementProperty(),
                 re.snoozeIncrementTypeIdProperty()
         });
@@ -311,9 +379,73 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private void setupDataView() {
-        this.tvAppointments.getItems().addAll(appointmentViews);
-        dataViewController.setTableView(this.tvAppointments);
-        dataViewController.setLblListView(new Label("Appointments"));
+        List<Appointment> appointmentList = new LinkedList<>();
+        List<Reminder> reminderList = new LinkedList<>();
+        List<AppointmentView> appointmentViewList = new LinkedList<>();
+
+        try(Connection connection = dataSource.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * from appointment");
+            ResultSet rs = statement.executeQuery();
+
+            while(rs.next()){
+                Appointment property = new Appointment(
+                                rs.getTimestamp("createDate"),
+                                rs.getInt("appointmentId"),
+                                rs.getString("contact"),
+                                rs.getString("createdBy"),
+                                rs.getInt("customerId"),
+                                rs.getString("description"),
+                                rs.getTimestamp("end"),
+                                rs.getTimestamp("lastUpdate"),
+                                rs.getString("lastUpdateBy"),
+                                rs.getString("location"),
+                                rs.getTimestamp("start"),
+                                rs.getString("title"),
+                                rs.getString("url")
+                );
+                appointmentList.add(property);
+            }
+            appointments = FXCollections.observableList(appointmentList);
+
+            statement = connection.prepareStatement("SELECT * FROM reminder");
+            rs = statement.executeQuery();
+            while (rs.next()){
+                Reminder reminderProperty = new Reminder(
+                        rs.getInt("reminderId"),
+                        rs.getInt("appointmentId"),
+                        rs.getString("createdBy"),
+                        rs.getTimestamp("createdDate"),
+                        rs.getTimestamp("reminderDate"),
+                        rs.getString("remindercol"),
+                        rs.getInt("snoozeIncrement"),
+                        rs.getInt("snoozeIncrementTypeId")
+                );
+                reminderList.add(reminderProperty);
+            }
+            reminders = FXCollections.observableList(reminderList);
+
+            statement = connection.prepareStatement("SELECT * from Appointments");
+            rs = statement.executeQuery();
+            while (rs.next()){
+                AppointmentView avp = new AppointmentView(
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getString("location"),
+                        rs.getString("contact"),
+                        rs.getString("url"),
+                        rs.getString("customerName"),
+                        rs.getTimestamp("start"),
+                        rs.getTimestamp("end"),
+                        rs.getTimestamp("createDate"),
+                        rs.getString("createdBy"),
+                        rs.getTimestamp("lastUpdate")
+                );
+                appointmentViewList.add(avp);
+            }
+            appointmentViews = FXCollections.observableList(appointmentViewList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupEventHandlers(){
@@ -329,6 +461,10 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                 alert.setContentText(ice.getMessage());
                 alert.showAndWait().ifPresent(buttonType -> {
                     Platform.runLater(() -> txtCustomerName.requestFocus());
+                    CustomerViewController customerViewController = CustomerViewController.getInstance();
+                    customerViewController.setTxtCustomerName(new TextField(txtCustomerName.getText()));
+                    AppViewController appViewController = AppViewController.getInstance();
+                    appViewController.getTpAppPane().getSelectionModel().select(appViewController.getTabCustomers());
                 });
             }
 
@@ -378,6 +514,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
      *  Get list of appointments and customers and populate their respective lists
      */
     private void getAppointments(){
+        customers = FXCollections.observableArrayList();
         try(Connection connection = dataSource.getConnection()){
             // Get Views first
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments");
@@ -395,7 +532,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                                           rs.getTimestamp("createDate"),
                                           rs.getString("createdBy"),
                                           rs.getTimestamp("lastUpdate"));
-                appointmentViews.add(new AppointmentViewProperty(app));
+                appointmentViews.add(app);
             }
 
             statement = connection.prepareStatement("SELECT * FROM customer");
@@ -411,13 +548,13 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                         rs.getString("lastUpdateBy"),
                         rs.getTimestamp("lastUpdate")
                 );
-                customers.add(new CustomerProperty(cu));
+                customers.add(cu);
             }
 
             statement = connection.prepareStatement("SELECT * FROM appointment");
             rs = statement.executeQuery();
             while (rs.next()){
-                Appointment ap = new Appointment(
+                Appointment appointment = new Appointment(
                         rs.getTimestamp("createDate"),
                         rs.getInt("appointmentId"),
                         rs.getString("contact"),
@@ -426,13 +563,13 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                         rs.getString("description"),
                         rs.getTimestamp("end"),
                         rs.getTimestamp("lastUpdate"),
-                        rs.getString("lastUpdatedBy"),
+                        rs.getString("lastUpdateBy"),
                         rs.getString("location"),
                         rs.getTimestamp("start"),
                         rs.getString("title"),
                         rs.getString("url")
                 );
-                appointments.add(new AppointmentProperty(ap));
+                appointments.add(appointment);
             }
 
             statement = connection.prepareStatement("SELECT * FROM reminder");
@@ -447,7 +584,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                         rs.getString("remindercol"),
                         rs.getInt("snoozeIncrement"),
                         rs.getInt("snoozeIncrementTypeId"));
-                reminders.add(new ReminderProperty(re));
+                reminders.add(re);
             }
 
         } catch (SQLException e) {
@@ -604,7 +741,7 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     private boolean saveAppointment() throws InvalidCustomerException {
         int customerId = 0;
         int x = 0;
-        for (CustomerProperty customer : customers) {
+        for (ICustomer customer : customers) {
             if (customer.getCustomerName().toLowerCase().equals(txtCustomerName.getText().toLowerCase().trim())) {
                 customerId = customer.getCustomerId();
                 break;
@@ -697,28 +834,61 @@ public class AppointmentViewController extends AnchorPane implements Initializab
     }
 
     private boolean saveNewAppointment(Connection connection, Appointment app) throws SQLException {
+        ZonedDateTime startTime = app.getStart().withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime endTime = app.getEnd().withZoneSameInstant(ZoneId.of("UTC"));
         PreparedStatement statement =
                 connection.prepareStatement("INSERT INTO appointment (customerId, title, description, " +
-                                                    "location, contact, url, start, end, createDate, createdBy, lastUpdate, lastUpdatedBy)" +
-                                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, UTC_DATE, ?, UTC_TIMESTAMP, ?)");
+                                                    "location, contact, url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy)" +
+                                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, UTC_DATE, ?, UTC_TIMESTAMP, ?);");
         statement.setInt(1, app.getCustomerId());
         statement.setString(2, app.getTitle());
         statement.setString(3, app.getDescription());
         statement.setString(4, app.getLocation());
         statement.setString(5, app.getContact());
         statement.setString(6, app.getUrl());
-        statement.setTimestamp(7, new Timestamp(app.getStart().withZoneSameInstant(ZoneId.of("UTC")).toEpochSecond() * 1000));
-        statement.setTimestamp(8, new Timestamp(app.getEnd().withZoneSameInstant(ZoneId.of("UTC")).toEpochSecond() * 1000));
+        statement.setTimestamp(7, Timestamp.from(startTime.toInstant()));
+        statement.setTimestamp(8, Timestamp.from(endTime.toInstant()));
         statement.setString(9, app.getCreatedBy());
         statement.setString(10, app.getLastUpdateBy());
 
-        boolean insertSucceeded = statement.execute();
-        if(insertSucceeded){
+        // Since execute can return boolean (true if it has ResultSet, expect false)
+        boolean failed = statement.execute();
+        System.out.println(statement.getUpdateCount());
+        if(!failed){
+            statement = connection.prepareStatement("SELECT * FROM appointment " +
+                                                            "WHERE customerId = ? AND title = ? AND start = ? AND end = ?" +
+                                                            "AND url = ? AND description = ?");
+            statement.setInt(1, app.getCustomerId());
+            statement.setString(2, app.getTitle());
+            statement.setTimestamp(3, Timestamp.from(startTime.toInstant()));
+            statement.setTimestamp(4, Timestamp.from(endTime.toInstant()));
+            statement.setString(5, app.getUrl());
+            statement.setString(6, app.getDescription());
+            ResultSet executeQuery = statement.executeQuery();
+
+            if (executeQuery.next()){
+                app = new Appointment(
+                        executeQuery.getTimestamp("createDate"),
+                        executeQuery.getInt("appointmentId"),
+                        executeQuery.getString("contact"),
+                        executeQuery.getString("createdBy"),
+                        executeQuery.getInt("customerId"),
+                        executeQuery.getString("description"),
+                        executeQuery.getTimestamp("end"),
+                        executeQuery.getTimestamp("lastUpdate"),
+                        executeQuery.getString("lastUpdateBy"),
+                        executeQuery.getString("location"),
+                        executeQuery.getTimestamp("start"),
+                        executeQuery.getString("title"),
+                        executeQuery.getString("url")
+                );
+            }
+            boolean reminderSaved = saveNewReminder(connection, app);
             PreparedStatement updateAppointments = connection.prepareStatement("SELECT * FROM appointment");
             PreparedStatement updateAppointmentViews = connection.prepareStatement("SELECT * FROM Appointments");
 
             ResultSet rs = updateAppointments.executeQuery();
-            List<AppointmentProperty> appointmentProperties = new ArrayList<>();
+            List<Appointment> appointmentProperties = new ArrayList<>();
             while(rs.next()){
                 Appointment appointment = new Appointment(
                         rs.getTimestamp("createDate"),
@@ -735,15 +905,18 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                         rs.getString("title"),
                         rs.getString("url")
                 );
-                appointmentProperties.add(new AppointmentProperty(appointment));
+                appointmentProperties.add(appointment);
             }
+            updateAppointments.close();
 
-            appointments = new SortedList<>(FXCollections.observableList(appointmentProperties),
-                                            Comparator.comparing(AppointmentProperty::getStart)
-                                                      .thenComparing(AppointmentProperty::getCreateDate));
+            appointments = new SortedList<>(
+                    FXCollections.observableList(appointmentProperties),
+                    Comparator.comparing(Appointment::getStart)
+                              .thenComparing(Appointment::getCreateDate)
+            );
 
             rs = updateAppointmentViews.executeQuery();
-            List<AppointmentViewProperty> appointmentViewProperties = new ArrayList<>();
+            List<AppointmentView> appointmentViewProperties = new ArrayList<>();
             while(rs.next()){
                 AppointmentView appointmentView = new AppointmentView(
                        rs.getString("title"),
@@ -758,20 +931,45 @@ public class AppointmentViewController extends AnchorPane implements Initializab
                        rs.getString("createdBy"),
                        rs.getTimestamp("lastUpdate")
                 );
-                appointmentViewProperties.add(new AppointmentViewProperty(appointmentView));
+                appointmentViewProperties.add(appointmentView);
             }
+            updateAppointmentViews.close();
             appointmentViews = new SortedList<>(FXCollections.observableList(appointmentViewProperties),
-                                                Comparator.comparing(AppointmentViewProperty::getStart)
-                                                          .thenComparing(AppointmentViewProperty::getCreateDate));
+                                                                Comparator.comparing(AppointmentView::getStart)
+                                                          .thenComparing(AppointmentView::getCreateDate));
         }
-        return insertSucceeded;
+        // since a successful insert results in a false statement, we need to return the opposite.
+        return !failed;
+    }
+
+    private boolean saveNewReminder(Connection connection, Appointment app) throws SQLException {
+        ZonedDateTime reminderTime = app.getStart().minusMinutes(15);
+        PreparedStatement statement =
+                connection.prepareStatement("INSERT INTO reminder (reminderDate, snoozeIncrement, snoozeIncrementTypeId, appointmentId, createdBy, createdDate, remindercol) \n" +
+                                                    "VALUES (?, ?, ?, ?, ?, UTC_DATE, ?);");
+        statement.setTimestamp(1, new Timestamp(reminderTime.toInstant().toEpochMilli()));
+        statement.setInt(2, 5);
+        statement.setInt(3, 1);
+        statement.setInt(4, app.getAppointmentId());
+        statement.setString(5, app.getCreatedBy());
+        statement.setString(6, "Reminder Text");
+        boolean failedInsert = statement.execute();
+        if(failedInsert){
+            throw new SQLException("Failed to insert reminder! Received ResultSet instead");
+        }
+        return !failedInsert;
     }
 
 
     private void clearForm() {
-        this.vbAppointmentEditor.getChildren().filtered(node -> {
+        this.gpAppointmentEditor.getChildren().filtered(node -> {
             if (node instanceof TextField) {
-                ((TextField) node).setText(null);
+                ((TextField) node).clear();
+                node.setDisable(true);
+                return true;
+            }
+            else if (node instanceof ChoiceBox){
+                ((ChoiceBox) node).setDisable(true);
                 return true;
             }
             return false;
@@ -779,14 +977,115 @@ public class AppointmentViewController extends AnchorPane implements Initializab
 
         this.btnAppointmentSave.setDisable(true);
         this.btnAppointmentReset.setDisable(true);
+        isNewAppointment = false;
     }
 
     public DataViewController getDataViewController() {
         return dataViewController;
     }
 
+    public static Parent getDataView() {
+        return dataView;
+    }
+
+    public static void setDataView(Parent dataView) {
+        AppointmentViewController.dataView = dataView;
+    }
+
     public GridPane getGpAppointmentEditor() {
         return gpAppointmentEditor;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("AppointmentViewController{")
+                .append("\nvbAppointmentEditor=")
+                .append(vbAppointmentEditor)
+                .append(",\n hbEditorBar=")
+                .append(hbEditorBar)
+                .append(",\n tbAppointmentEditor=")
+                .append(tbAppointmentEditor)
+                .append(",\n btnNewAppointment=")
+                .append(btnNewAppointment)
+                .append(",\n gpAppointmentEditor=")
+                .append(gpAppointmentEditor)
+                .append(",\n txtTitle=")
+                .append(txtTitle)
+                .append(",\n txtDescription=")
+                .append(txtDescription)
+                .append(",\n txtLocation=")
+                .append(txtLocation)
+                .append(",\n txtContact=")
+                .append(txtContact)
+                .append(",\n txtUrl=")
+                .append(txtUrl)
+                .append(",\n txtCustomerName=")
+                .append(txtCustomerName)
+                .append(",\n hbEndTime=")
+                .append(hbEndTime)
+                .append(",\n datePickerStartTime=")
+                .append(datePickerStartTime)
+                .append(",\n choiceBoxStartHour=")
+                .append(choiceBoxStartHour)
+                .append(",\n choiceBoxStartMinute=")
+                .append(choiceBoxStartMinute)
+                .append(",\n hbStartTime=")
+                .append(hbStartTime)
+                .append(",\n datePickerEndTime=")
+                .append(datePickerEndTime)
+                .append(",\n choiceBoxEndHour=")
+                .append(choiceBoxEndHour)
+                .append(",\n choiceBoxEndMinute=")
+                .append(choiceBoxEndMinute)
+                .append(",\n txtCreatedDate=")
+                .append(txtCreatedDate)
+                .append(",\n txtCreatedBy=")
+                .append(txtCreatedBy)
+                .append(",\n txtLastUpdated=")
+                .append(txtLastUpdated)
+                .append(",\n btnAppointmentSave=")
+                .append(btnAppointmentSave)
+                .append(",\n lblViewScope=")
+                .append(lblViewScope)
+                .append(",\n hbViewScope=")
+                .append(hbViewScope)
+                .append(",\n btnAppointmentReset=")
+                .append(btnAppointmentReset)
+                .append(",\n tvAppointments=")
+                .append(tvAppointments.getColumns() + "\n" + tvAppointments.getItems())
+                .append(",\n tcTitle=")
+                .append(tcTitle)
+                .append(",\n tcDescription=")
+                .append(tcDescription)
+                .append(",\n tcLocation=")
+                .append(tcLocation)
+                .append(",\n tcContact=")
+                .append(tcContact)
+                .append(",\n tcUrl=")
+                .append(tcUrl)
+                .append(",\n tcCustomerName=")
+                .append(tcCustomerName)
+                .append(",\n tcStart=")
+                .append(tcStart)
+                .append(",\n tcEnd=")
+                .append(tcEnd)
+                .append(",\n tcCreateDate=")
+                .append(tcCreateDate)
+                .append(",\n tcCreatedBy=")
+                .append(tcCreatedBy)
+                .append(",\n tcLastUpdate=")
+                .append(tcLastUpdate)
+                .append(",\n isNewAppointment=")
+                .append(isNewAppointment)
+                .append(",\n dataViewController=")
+                .append(dataViewController)
+                .append(",\n apAppointmentView=")
+                .append(apAppointmentView)
+                .append(",\n lvListView=")
+                .append(lvListView)
+                .append("\n}")
+                .toString();
     }
 
     private class AppointmentTimeException extends DateTimeException {
