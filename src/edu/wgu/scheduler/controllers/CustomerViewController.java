@@ -22,7 +22,6 @@ import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.MainApp.*;
 import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
-import static edu.wgu.scheduler.models.CustomerViewProperty.CustomerView;
 
 /**
  * Created by Ian Cornett - icornet@wgu.edu on 7/16/2017 at 21:21.
@@ -30,10 +29,9 @@ import static edu.wgu.scheduler.models.CustomerViewProperty.CustomerView;
  * <p>
  * Student ID: 000292065
  */
-public class CustomerViewController implements Initializable {
+public class CustomerViewController extends AnchorPane {
     
-    public
-    AnchorPane apCustomerView;
+    public AnchorPane apCustomerView;
     private VBox vbCustomerEditor;
     private ToggleButton tbCustomerEditMode;
     private GridPane gpCustomerEditor;
@@ -84,7 +82,7 @@ public class CustomerViewController implements Initializable {
     private boolean isCustomerUpdate;
 
     private CustomerViewController() {
-        initialize(MainApp.class.getResource("/fxml/CustomerView.fxml"), null);
+        initialize();
     }
 
     public static CustomerViewController getInstance() {
@@ -99,7 +97,7 @@ public class CustomerViewController implements Initializable {
      * completely processed.
      *
      */
-    public void initialize(URL location, ResourceBundle resourceBundle) {
+    public void initialize() {
         instance = this;
         dataViewController = new DataViewController();
         this.apCustomerView = new AnchorPane();
@@ -118,11 +116,12 @@ public class CustomerViewController implements Initializable {
         setupGridPane();
 
         // Add gpCustomerEditor and add it to vbCustomerEditor and apCustomerEditor to complete view
-        this.vbCustomerEditor.getChildren().addAll(hbCustomerEditor, gpCustomerEditor);
+        this.vbCustomerEditor.getChildren().addAll(hbCustomerEditor, gpCustomerEditor /*, this.dataViewController.tabPane */);
         this.apCustomerView.getChildren().add(vbCustomerEditor);
 
         setupDataView();
         setupEventHandlers();
+
     }
 
     private void getCustomerViewData() throws SQLException {
@@ -143,8 +142,7 @@ public class CustomerViewController implements Initializable {
                         break;
                 }
 
-                CustomerViewProperty view = new CustomerViewProperty(
-                        new CustomerView(
+                CustomerView view = new CustomerView(
                         rs.getString("customerName"),
                         rs.getString("address"),
                         rs.getString("address2"),
@@ -157,7 +155,7 @@ public class CustomerViewController implements Initializable {
                         rs.getString("createdBy"),
                         rs.getString("lastUpdateBy"),
                         rs.getTimestamp("lastUpdate")
-                ));
+                );
 
                 customerViews.add(view);
             }
@@ -172,13 +170,13 @@ public class CustomerViewController implements Initializable {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM country");
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
-                CountryProperty country = new CountryProperty(
+                Country country = new Country(
                 rs.getInt("countryId"),
                 rs.getString("country"),
-                rs.getString("createBy"),
+                rs.getString("createdBy"),
                 rs.getTimestamp("createDate"),
                 rs.getTimestamp("lastUpdate"),
-                rs.getString("lastUpdatedBy")
+                rs.getString("lastUpdateBy")
                 );
 
                 countryHashMap.put(country.hashCode(), country);
@@ -194,7 +192,7 @@ public class CustomerViewController implements Initializable {
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()){
-                CityProperty city = new CityProperty(
+                City city = new City(
                         rs.getInt("cityId"),
                         rs.getString("city"),
                         rs.getInt("countryId"),
@@ -218,13 +216,13 @@ public class CustomerViewController implements Initializable {
             ResultSet rs = statement.executeQuery();
 
             while(rs.next()){
-                AddressProperty address = new AddressProperty(
+                Address address = new Address(
                         rs.getInt("cityId"),
                         rs.getString("address"),
                         rs.getString("address2"),
                         rs.getString("postalCode"),
                         rs.getString("phone"),
-                        rs.getString("createBy"),
+                        rs.getString("createdBy"),
                         rs.getTimestamp("lastUpdate"),
                         rs.getTimestamp("createDate")
                 );
@@ -240,7 +238,7 @@ public class CustomerViewController implements Initializable {
             PreparedStatement statement = connection.prepareStatement("SELECT * from customer");
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
-                CustomerProperty customer = new CustomerProperty(
+                Customer customer = new Customer(
                         resultSet.getTimestamp("createDate"),
                         resultSet.getInt("customerId"),
                         resultSet.getByte("active"),
@@ -390,7 +388,6 @@ public class CustomerViewController implements Initializable {
     private void setupDataView() {
         dataViewController.setLblListView(new Label("Customer List View"));
         dataViewController.setLblTableView(new Label("Customer Table View"));
-        dataViewController.setListView(new ListView<ICustomerView>());
 
         try {
             getCustomerData();
@@ -433,8 +430,8 @@ public class CustomerViewController implements Initializable {
 
         dataViewController.setLblTableView(new Label("Customers"));
         dataViewController.setLblListView(new Label("Customer List"));
-        this.tvCustomerView = new TableView<>();
-        this.tvCustomerView.setItems(getCustomerList());
+        dataViewController.setListView(new ListView<>(getCustomerList()));
+        this.tvCustomerView = new TableView<>(getCustomerList());
         tvCustomerView.getColumns().addAll(
                 tcCustomerName,
                 tcAddress,
@@ -560,13 +557,14 @@ public class CustomerViewController implements Initializable {
 
             if(isNewCustomer){
                 statement = connection.prepareStatement("INSERT INTO customer (customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy)" +
-                                                                "VALUES (?, ?, ?, UTC_DATE, ?, UTC_TIMESTAMP, ?);");
+                                                                "VALUES (?, ?, ?, UTC_TIMESTAMP, ?, UTC_TIMESTAMP, ?);");
                 statement.setString(1, txtCustomerName.getText().trim());
                 statement.setInt(2, addressId);
                 statement.setBoolean(3, true);
                 statement.setString(4, user.getUsername());
                 statement.setString(5, user.getUsername());
-                if(statement.execute()){
+                boolean failed = statement.execute();
+                if(!failed){
                     statement = connection.prepareStatement("SELECT customerId FROM customer WHERE LCASE(customerName) LIKE LCASE(?)" +
                                                                                       "AND addressId = ?");
                     statement.setString(1, name);
@@ -574,12 +572,17 @@ public class CustomerViewController implements Initializable {
                     rs = statement.executeQuery();
                     if(rs.next()){
                         customerId = rs.getInt(1);
-                        statement.close();
-                        getCustomerData();
-                        getCustomerViewData();
                         this.isNewCustomer = false;
-                        return customerId;
                     }
+                    statement.close();
+                    getCustomerData();
+                    getCustomerViewData();
+                    this.dataViewController.setListView(this.lvCustomerView);
+                    this.dataViewController.setTableView(this.tvCustomerView);
+                    rootPane.setBottom(this.dataViewController);
+                    this.txtPhone.clear();
+                    this.gpCustomerEditor.getChildren().filtered(node -> toggleTextFields(node, true));
+                    return customerId;
                 }
             } else if(isCustomerUpdate && customerId != 0) {
                 statement = connection.prepareStatement("UPDATE customer\n" +
@@ -639,8 +642,10 @@ public class CustomerViewController implements Initializable {
                 return addressId;
             }
 
-            statement = connection.prepareStatement("INSERT INTO address (address, address2, cityId, postalCode, phone, createBy, createDate, lastUpdate, lastUpdatedBy)\n" +
-                                                            "    VALUES (?, ?, ?, ?, ?, ?, UTC_DATE, UTC_TIMESTAMP, ?);");
+            statement = connection.prepareStatement("INSERT INTO address " +
+                                                            "(address, address2, cityId, postalCode, phone, createdBy, " +
+                                                            "createDate, lastUpdate, lastUpdateBy)\n" +
+                                                            "    VALUES (?, ?, ?, ?, ?, ?, UTC_TIMESTAMP, UTC_TIMESTAMP, ?);");
             statement.setString(1, addr);
             statement.setString(2, addr2);
             statement.setInt(3, cityId);
@@ -650,11 +655,12 @@ public class CustomerViewController implements Initializable {
             statement.setString(7, user.getUsername());
             boolean failed = statement.execute();
             if (!failed){
-                statement = connection.prepareStatement("SELECT addressId FROM address WHERE LCASE(address) = LCASE(?)" +
-                                                                "AND LCASE(address2) = LCASE(?) " +
-                                                                "AND LCASE(postalCode) = LCASE(?)" +
-                                                                "AND LCASE(phone) = LCASE(?) " +
-                                                                "AND cityId = ?;");
+                statement = connection.prepareStatement("SELECT addressId FROM address \n" +
+                                                                "WHERE LCASE(address) = LCASE(?)\n" +
+                                                                "      AND LCASE(address2) = LCASE(?) \n" +
+                                                                "      AND LCASE(postalCode) = LCASE(?)\n" +
+                                                                "      AND LCASE(phone) = LCASE(?) \n" +
+                                                                "      AND cityId = ?;");
                 statement.setString(1, addr);
                 statement.setString(2, addr2);
                 statement.setString(3, postal);
@@ -696,8 +702,8 @@ public class CustomerViewController implements Initializable {
             }
             else {
                 statement = connection.prepareStatement(
-                        "INSERT INTO country (country, createBy, createDate, lastUpdate, lastUpdatedBy)\n" +
-                                "    VALUES (?, ?, UTC_DATE, UTC_TIMESTAMP, ?);");
+                        "INSERT INTO country (country, createdBy, createDate, lastUpdate, lastUpdateBy)\n" +
+                                "    VALUES (?, ?, UTC_TIMESTAMP, UTC_TIMESTAMP, ?);");
                 statement.setString(1, country);
                 statement.setString(2, user.getUsername());
                 statement.setString(3, user.getUsername());
@@ -749,7 +755,7 @@ public class CustomerViewController implements Initializable {
             }
             else {
                 statement = connection.prepareStatement("INSERT INTO city (city, countryId, createDate, createdBy, lastUpdateBy, lastUpdate)" +
-                                                                "VALUES (?, ?, UTC_DATE, ?, ?, UTC_TIMESTAMP);");
+                                                                "VALUES (?, ?, UTC_TIMESTAMP, ?, ?, UTC_TIMESTAMP);");
                 statement.setString(1, city);
                 statement.setInt(2, countryId);
                 statement.setString(3, user.getUsername());
@@ -870,4 +876,99 @@ public class CustomerViewController implements Initializable {
         this.mainApp = mainApp;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("CustomerViewController{")
+                .append("\napCustomerView=")
+                .append(apCustomerView)
+                .append(",\n vbCustomerEditor=")
+                .append(vbCustomerEditor)
+                .append(",\n tbCustomerEditMode=")
+                .append(tbCustomerEditMode)
+                .append(",\n gpCustomerEditor=")
+                .append(gpCustomerEditor)
+                .append(",\n lblAddress=")
+                .append(lblAddress)
+                .append(",\n lblCustomerName=")
+                .append(lblCustomerName)
+                .append(",\n lblAddress2=")
+                .append(lblAddress2)
+                .append(",\n lblCity=")
+                .append(lblCity)
+                .append(",\n lblState=")
+                .append(lblState)
+                .append(",\n lblPostalCode=")
+                .append(lblPostalCode)
+                .append(",\n lblCountry=")
+                .append(lblCountry)
+                .append(",\n lblCustomerSince=")
+                .append(lblCustomerSince)
+                .append(",\n lblCustomerCreatedDate=")
+                .append(lblCustomerCreatedDate)
+                .append(",\n lblPhone=")
+                .append(lblPhone)
+                .append(",\n lblPrefix=")
+                .append(lblPrefix)
+                .append(",\n btnbarCustomerEditor=")
+                .append(btnbarCustomerEditor)
+                .append(",\n btnCustomerOk=")
+                .append(btnCustomerOk)
+                .append(",\n btnCustomerCancel=")
+                .append(btnCustomerCancel)
+                .append(",\n txtCustomerName=")
+                .append(txtCustomerName)
+                .append(",\n txtAddress=")
+                .append(txtAddress)
+                .append(",\n txtAddress2=")
+                .append(txtAddress2)
+                .append(",\n txtCity=")
+                .append(txtCity)
+                .append(",\n txtState=")
+                .append(txtState)
+                .append(",\n txtPostalCode=")
+                .append(txtPostalCode)
+                .append(",\n txtCountry=")
+                .append(txtCountry)
+                .append(",\n txtPhone=")
+                .append(txtPhone)
+                .append(",\n hbPhone=")
+                .append(hbPhone)
+                .append(",\n cbActive=")
+                .append(cbActive)
+                .append(",\n hbCustomerEditor=")
+                .append(hbCustomerEditor)
+                .append(",\n btnNewCustomer=")
+                .append(btnNewCustomer)
+                .append(",\n isNewCustomer=")
+                .append(isNewCustomer)
+                .append(",\n lvCustomerView=")
+                .append(lvCustomerView)
+                .append(",\n tvCustomerView=")
+                .append(tvCustomerView)
+                .append(",\n tcCustomerName=")
+                .append(tcCustomerName)
+                .append(",\n tcAddress=")
+                .append(tcAddress)
+                .append(",\n tcAddress2=")
+                .append(tcAddress2)
+                .append(",\n tcCity=")
+                .append(tcCity)
+                .append(",\n tcPostalCode=")
+                .append(tcPostalCode)
+                .append(",\n tcCountry=")
+                .append(tcCountry)
+                .append(",\n tcPhone=")
+                .append(tcPhone)
+                .append(",\n tcActive=")
+                .append(tcActive)
+                .append(",\n omCustomerView=")
+                .append(omCustomerView)
+                .append(",\n dataViewController=")
+                .append(dataViewController)
+                .append(",\n isCustomerUpdate=")
+                .append(isCustomerUpdate)
+                .append("\n}")
+                .toString();
+    }
 }
