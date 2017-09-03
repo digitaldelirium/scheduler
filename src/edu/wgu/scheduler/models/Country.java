@@ -55,6 +55,15 @@ public class Country implements ICountry {
         this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
     }
 
+    public Country(int countryId, String country, String createdBy, Timestamp createDate, Timestamp lastUpdate, String lastUpdateBy) {
+        this.countryId = countryId;
+        this.country = new SimpleStringProperty(country);
+        this.createdBy = createdBy;
+        this.createdDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.systemDefault());
+        this.lastUpdate = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
+        this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
+    }
+
     @Override
     public int getCountryId() {
         return countryId;

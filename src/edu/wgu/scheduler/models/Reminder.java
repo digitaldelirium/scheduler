@@ -34,6 +34,17 @@ public class Reminder implements IReminder {
     @NotNull
     private SimpleIntegerProperty snoozeIncrementTypeId;
 
+    /***
+     *
+     * @param reminderId
+     * @param appointmentId
+     * @param createdBy
+     * @param createdDate
+     * @param reminderDate
+     * @param remindercol
+     * @param snoozeIncrement
+     * @param snoozeIncrementTypeId
+     */
     public Reminder(int reminderId, int appointmentId, String createdBy, Timestamp createdDate, Timestamp reminderDate, String remindercol, int snoozeIncrement, int snoozeIncrementTypeId) {
         this.reminderId = reminderId;
         this.appointmentId = appointmentId;
@@ -45,6 +56,15 @@ public class Reminder implements IReminder {
         this.snoozeIncrementTypeId = new SimpleIntegerProperty(snoozeIncrementTypeId);
     }
 
+    /***
+     *
+     * @param appointmentId
+     * @param createdBy
+     * @param createdDate
+     * @param reminderDate
+     * @param snoozeIncrement
+     * @param snoozeIncrementTypeId
+     */
     public Reminder(int appointmentId, String createdBy, ZonedDateTime createdDate, ZonedDateTime reminderDate, int snoozeIncrement, int snoozeIncrementTypeId) {
         this.appointmentId = appointmentId;
         this.createdBy = createdBy;
