@@ -47,20 +47,19 @@ public class AppointmentView implements IAppointmentView {
         this.location = new SimpleStringProperty(location);
         this.contact = new SimpleStringProperty(contact);
         this.customerName = new SimpleStringProperty(customerName);
-        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.systemDefault()));
-        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault()));
-        this.lastUpdated = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.systemDefault()));
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.of("UTC")));
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC")));
+        this.lastUpdated = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.of("UTC")));
         this.url = new SimpleStringProperty(url);
-        this.createdDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.systemDefault());
+        this.createdDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.of("UTC"));
         this.createdBy = createdBy;
-
     }
 
     public String getTitle() {
         return title.getValue();
     }
 
-    ReadOnlyStringProperty titleProperty() {
+    public ReadOnlyStringProperty titleProperty() {
         return title;
     }
 
@@ -68,7 +67,7 @@ public class AppointmentView implements IAppointmentView {
         return description.getValue();
     }
 
-    ReadOnlyStringProperty descriptionProperty() {
+    public ReadOnlyStringProperty descriptionProperty() {
         return description;
     }
 
@@ -76,7 +75,7 @@ public class AppointmentView implements IAppointmentView {
         return location.getValue();
     }
 
-    ReadOnlyStringProperty locationProperty() {
+    public ReadOnlyStringProperty locationProperty() {
         return location;
     }
 
@@ -84,7 +83,7 @@ public class AppointmentView implements IAppointmentView {
         return contact.getValue();
     }
 
-    ReadOnlyStringProperty contactProperty() {
+    public ReadOnlyStringProperty contactProperty() {
         return contact;
     }
 
@@ -92,7 +91,7 @@ public class AppointmentView implements IAppointmentView {
         return url.getValueSafe();
     }
 
-    ReadOnlyStringProperty urlProperty() {
+    public ReadOnlyStringProperty urlProperty() {
         return url;
     }
 
@@ -100,23 +99,23 @@ public class AppointmentView implements IAppointmentView {
         return customerName.getValue();
     }
 
-    ReadOnlyStringProperty customerNameProperty() {
+    public ReadOnlyStringProperty customerNameProperty() {
         return customerName;
     }
 
     public ZonedDateTime getStart() {
-        return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.of("UTC"));
     }
 
-    ReadOnlyProperty<ZonedDateTime> startProperty() {
+    public ReadOnlyProperty<ZonedDateTime> startProperty() {
         return start;
     }
 
     public ZonedDateTime getEnd() {
-        return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.of("UTC"));
     }
 
-    ReadOnlyProperty<ZonedDateTime> endProperty() {
+    public ReadOnlyProperty<ZonedDateTime> endProperty() {
         return end;
     }
 
@@ -129,10 +128,10 @@ public class AppointmentView implements IAppointmentView {
     }
 
     public ZonedDateTime getLastUpdate() {
-        return ZonedDateTime.ofInstant(lastUpdated.getValue().toInstant(), ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(lastUpdated.getValue().toInstant(), ZoneId.of("UTC"));
     }
 
-    ReadOnlyProperty<ZonedDateTime> lastUpdatedProperty() {
+    public ReadOnlyProperty<ZonedDateTime> lastUpdatedProperty() {
         return lastUpdated;
     }
 

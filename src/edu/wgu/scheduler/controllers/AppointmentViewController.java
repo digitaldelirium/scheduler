@@ -45,7 +45,7 @@ public class AppointmentViewController extends AnchorPane {
     private ChoiceBox<Integer> choiceBoxStartHour;
     private ChoiceBox<Integer> choiceBoxStartMinute;
     private HBox hbStartTime;
-    private DatePicker datePickerEndTime;
+    private DatePicker datePickerEndDate;
     private ChoiceBox<Integer> choiceBoxEndHour;
     private ChoiceBox<Integer> choiceBoxEndMinute;
     private TextField txtCreatedDate;
@@ -77,7 +77,7 @@ public class AppointmentViewController extends AnchorPane {
     protected static ObservableList<AppointmentView> appointmentViews;
     protected static ObservableList<Reminder> reminders;
     public AnchorPane apAppointmentView;
-    private ListView<AppointmentView> lvListView;
+    private ListView<AppointmentView> lvAppointments;
 
     private AppointmentViewController() {
         initialize();
@@ -98,8 +98,6 @@ public class AppointmentViewController extends AnchorPane {
         this.vbAppointmentEditor.setPrefWidth(985.0);
         this.vbAppointmentEditor.setOpaqueInsets(new Insets(10.0));
         this.vbAppointmentEditor.setPadding(new Insets(5.0));
-        this.dataViewController = new DataViewController();
-        this.dataView = dataViewController.tabPane;
         this.lblViewScope = new Label("Choose View:");
 
         setupHBoxes();
@@ -118,10 +116,6 @@ public class AppointmentViewController extends AnchorPane {
         setupCollections();
         setupDataView();
         getAppointments();
-        setupEventHandlers();
-        setupTextFields(true);
-
-
 
         this.tcTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         this.tcTitle.setVisible(true);
@@ -133,7 +127,7 @@ public class AppointmentViewController extends AnchorPane {
         
         this.tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         this.tcDescription.setVisible(true);
-        this.tcDescription.setMinWidth(100);
+        this.tcDescription.setMinWidth(200);
         
         this.tcLocation.setCellValueFactory(new PropertyValueFactory<>("location"));
         this.tcLocation.setVisible(true);
@@ -169,6 +163,8 @@ public class AppointmentViewController extends AnchorPane {
         
         this.tvAppointments = new TableView<>();
         this.tvAppointments.setItems(appointmentViews);
+        this.tvAppointments.setMaxWidth(Integer.MAX_VALUE);
+        this.tvAppointments.setPrefWidth(2000.0);
         this.tvAppointments.getColumns().addAll(
                 tcTitle,
                 tcDescription,
@@ -183,15 +179,19 @@ public class AppointmentViewController extends AnchorPane {
                 tcLastUpdate);
 
 
-        this.lvListView = new ListView<>();
-        this.lvListView.setItems(appointmentViews);
+        this.lvAppointments = new ListView<>();
+        this.lvAppointments.setPrefWidth(1080.0);
+        this.lvAppointments.setItems(appointmentViews);
+        this.lvAppointments.setMaxWidth(Integer.MAX_VALUE);
 
-        this.dataViewController.setTableView(this.tvAppointments);
-        this.dataViewController.setLblListView(new Label("Appointment List"));
-        this.dataViewController.setListView(this.lvListView);
-        this.dataViewController.setLblTableView(new Label("Appointments"));
+        this.dataViewController = new DataViewController(
+                new Label("Appointment List"),
+                new Label("Appointments"),
+                this.lvAppointments,
+                this.tvAppointments);
 
-//        System.out.println(this.dataViewController);
+        setupEventHandlers();
+        setupTextFields(true);
 
     }
 
@@ -215,12 +215,12 @@ public class AppointmentViewController extends AnchorPane {
         this.hbStartTime.getChildren().addAll(datePickerStartTime, choiceBoxStartHour, choiceBoxStartMinute);
         this.hbStartTime.setSpacing(5.0);
 
-        this.datePickerEndTime = new DatePicker(LocalDate.now());
-        this.datePickerEndTime.setShowWeekNumbers(true);
-        this.datePickerEndTime.setTooltip(new Tooltip("Please select an end date for the appointment!"));
+        this.datePickerEndDate = new DatePicker(LocalDate.now());
+        this.datePickerEndDate.setShowWeekNumbers(true);
+        this.datePickerEndDate.setTooltip(new Tooltip("Please select an end date for the appointment!"));
         this.choiceBoxEndHour = new ChoiceBox<>();
         this.choiceBoxEndMinute = new ChoiceBox<>();
-        this.hbEndTime.getChildren().addAll(datePickerEndTime, choiceBoxEndHour, choiceBoxEndMinute);
+        this.hbEndTime.getChildren().addAll(datePickerEndDate, choiceBoxEndHour, choiceBoxEndMinute);
         this.hbEndTime.setSpacing(5.0);
         this.hbEndTime.setPadding(new Insets(5.0));
         setupChoiceBoxes();
@@ -374,7 +374,17 @@ public class AppointmentViewController extends AnchorPane {
                 re.snoozeIncrementTypeIdProperty()
         });
 
-
+        appointmentViews = FXCollections.observableList(new LinkedList<>(), av -> new Observable[]{
+                av.titleProperty(),
+                av.descriptionProperty(),
+                av.locationProperty(),
+                av.contactProperty(),
+                av.urlProperty(),
+                av.customerNameProperty(),
+                av.startProperty(),
+                av.endProperty(),
+                av.lastUpdatedProperty()
+        });
 
     }
 
@@ -487,8 +497,8 @@ public class AppointmentViewController extends AnchorPane {
             this.datePickerStartTime.setValue(LocalDate.now());
         });
 
-        this.datePickerEndTime.setOnAction(event -> {
-            LocalDate selectedDate = datePickerEndTime.getValue();
+        this.datePickerEndDate.setOnAction(event -> {
+            LocalDate selectedDate = datePickerEndDate.getValue();
             if(selectedDate.isBefore(datePickerStartTime.getValue())){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Date!");
@@ -497,10 +507,10 @@ public class AppointmentViewController extends AnchorPane {
                 alert.show();
             }
             else if(selectedDate.isAfter(datePickerStartTime.getValue()) | selectedDate.equals(datePickerStartTime.getValue())){
-                this.datePickerEndTime.setValue(selectedDate);
+                this.datePickerEndDate.setValue(selectedDate);
                 return;
             }
-            this.datePickerEndTime.setValue(LocalDate.now());
+            this.datePickerEndDate.setValue(LocalDate.now());
         });
 
         createListeners();
@@ -515,6 +525,7 @@ public class AppointmentViewController extends AnchorPane {
      */
     private void getAppointments(){
         customers = FXCollections.observableArrayList();
+        appointmentViews = FXCollections.observableArrayList();
         try(Connection connection = dataSource.getConnection()){
             // Get Views first
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments");
@@ -647,7 +658,7 @@ public class AppointmentViewController extends AnchorPane {
                 if (txtDescription.getText().trim().length() >= 10) {
                     if (datePickerStartTime.getValue() != null) {
                         if (choiceBoxStartHour != null && choiceBoxStartMinute != null){
-                            if (datePickerEndTime.getValue() != null){
+                            if (datePickerEndDate.getValue() != null){
                                 if (choiceBoxEndHour != null && choiceBoxEndMinute != null){
                                     this.btnAppointmentSave.setDisable(false);
                                 }
@@ -666,6 +677,42 @@ public class AppointmentViewController extends AnchorPane {
                 tbAppointmentEditor.setText("Enable Edit Mode");
             }
         });
+
+        this.dataViewController
+                .getTableView()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> showAppointmentDetails((AppointmentView) newValue));
+
+        this.dataViewController
+                .getListView()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> showAppointmentDetails((AppointmentView) newValue));
+
+
+    }
+
+    private void showAppointmentDetails(AppointmentView appointmentView) {
+        if (appointmentView != null){
+            ZonedDateTime startTime = appointmentView.getStart().withZoneSameInstant(ZoneId.systemDefault());
+            ZonedDateTime endTime = appointmentView.getEnd().withZoneSameInstant(ZoneId.systemDefault());
+            this.txtCustomerName.setText(appointmentView.getCustomerName());
+            this.txtTitle.setText(appointmentView.getTitle());
+            this.txtDescription.setText(appointmentView.getDescription());
+            this.txtCreatedDate.setText(appointmentView.getCreateDate().format(DateTimeFormatter.ISO_DATE));
+            this.txtLastUpdated.setText(appointmentView.getLastUpdate().withZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            this.txtLocation.setText(appointmentView.getLocation());
+            this.txtUrl.setText(appointmentView.getUrl());
+            this.txtContact.setText(appointmentView.getContact());
+            this.txtCreatedBy.setText(appointmentView.getCreatedBy());
+            this.datePickerEndDate.setValue(endTime.toLocalDate());
+            this.datePickerStartTime.setValue(startTime.toLocalDate());
+            this.choiceBoxStartHour.setValue(startTime.getHour());
+            this.choiceBoxStartMinute.setValue(startTime.getMinute());
+            this.choiceBoxEndHour.setValue(endTime.getHour());
+            this.choiceBoxEndMinute.setValue(endTime.getMinute());
+        }
     }
 
     // TODO: Implement Update Appointment method
@@ -769,12 +816,12 @@ public class AppointmentViewController extends AnchorPane {
         LocalDate startDate = datePickerStartTime.getValue();
         LocalTime startTime = LocalTime.of(
                 choiceBoxStartHour.getValue().intValue(), choiceBoxStartMinute.getValue().intValue());
-        ZonedDateTime startDateTime = ZonedDateTime.of(startDate, startTime, ZoneId.systemDefault());
+        ZonedDateTime startDateTime = ZonedDateTime.of(startDate, startTime, ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
 
-        LocalDate endDate = datePickerEndTime.getValue();
+        LocalDate endDate = datePickerEndDate.getValue();
         LocalTime endTime = LocalTime.of(
                 choiceBoxEndHour.getValue().intValue(), choiceBoxEndMinute.getValue().intValue());
-        ZonedDateTime endDateTime = ZonedDateTime.of(endDate, endTime, ZoneId.systemDefault());
+        ZonedDateTime endDateTime = ZonedDateTime.of(endDate, endTime, ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
 
         try {
             if ((startDateTime.getHour() < 8) || (startDateTime.getHour() >= 18)) {
@@ -1032,8 +1079,8 @@ public class AppointmentViewController extends AnchorPane {
                 .append(choiceBoxStartMinute)
                 .append(",\n hbStartTime=")
                 .append(hbStartTime)
-                .append(",\n datePickerEndTime=")
-                .append(datePickerEndTime)
+                .append(",\n datePickerEndDate=")
+                .append(datePickerEndDate)
                 .append(",\n choiceBoxEndHour=")
                 .append(choiceBoxEndHour)
                 .append(",\n choiceBoxEndMinute=")
@@ -1082,8 +1129,8 @@ public class AppointmentViewController extends AnchorPane {
                 .append(dataViewController)
                 .append(",\n apAppointmentView=")
                 .append(apAppointmentView)
-                .append(",\n lvListView=")
-                .append(lvListView)
+                .append(",\n lvAppointments=")
+                .append(lvAppointments)
                 .append("\n}")
                 .toString();
     }

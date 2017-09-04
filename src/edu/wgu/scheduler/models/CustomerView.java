@@ -50,7 +50,7 @@ public class CustomerView implements ICustomerView {
         return active.get();
     }
 
-    ReadOnlyStringProperty customerName(){
+    ReadOnlyStringProperty customerNameProperty(){
         return customerName;
     }
 
@@ -120,7 +120,7 @@ public class CustomerView implements ICustomerView {
     }
 
     public String getCustomerName() {
-        return customerName().getName();
+        return customerName.getValue();
     }
 
     public String getLastUpdateBy() {
@@ -131,7 +131,7 @@ public class CustomerView implements ICustomerView {
         return this.address.getValue();
     }
 
-    ReadOnlyStringProperty address(){
+    ReadOnlyStringProperty addressProperty(){
         return address;
     }
 
@@ -139,7 +139,7 @@ public class CustomerView implements ICustomerView {
         return address2.getValueSafe();
     }
 
-    ReadOnlyStringProperty address2(){
+    ReadOnlyStringProperty address2Property(){
         return address2;
     }
 
@@ -147,7 +147,7 @@ public class CustomerView implements ICustomerView {
         return city.getValue();
     }
 
-    ReadOnlyStringProperty city(){
+    ReadOnlyStringProperty cityProperty(){
         return city;
     }
 
@@ -155,7 +155,7 @@ public class CustomerView implements ICustomerView {
         return country.getValue();
     }
 
-    ReadOnlyStringProperty country(){
+    ReadOnlyStringProperty countryProperty(){
         return country;
     }
 
@@ -163,7 +163,7 @@ public class CustomerView implements ICustomerView {
         return phone.getValue();
     }
 
-    ReadOnlyStringProperty phone(){
+    ReadOnlyStringProperty phoneProperty(){
         return phone;
     }
 
@@ -177,12 +177,12 @@ public class CustomerView implements ICustomerView {
         return zdt.withZoneSameInstant(ZoneId.systemDefault());
     }
 
-    public ReadOnlyStringProperty postalCode(){
+    public ReadOnlyStringProperty postalCodeProperty(){
         return postalCode;
     }
 
 
-    public ReadOnlyBooleanProperty active() {
+    public ReadOnlyBooleanProperty activeProperty() {
         return active;
     }
 

@@ -196,15 +196,9 @@ public class MainApp extends Application {
     private void initLayout() {
 //        rootPane = new BorderPane();
 
-
-        
         appointmentViewController = AppointmentViewController.getInstance();
         appointmentView = appointmentViewController.apAppointmentView;
         appointmentViewController.setMainApp(this);
-
-        dataViewController = appointmentViewController.getDataViewController();
-        dataView = dataViewController.tabPane;
-        dataViewController.setMainApp(this);
 
         customerViewController = CustomerViewController.getInstance();
         customerView = customerViewController.apCustomerView;
@@ -216,14 +210,18 @@ public class MainApp extends Application {
 
         appViewController.setDataViewController(appointmentViewController.getDataViewController());
 
-        System.out.println(this.dataViewController);
+        dataViewController = appointmentViewController.getDataViewController();
+        dataView = dataViewController.tabPane;
+        dataViewController.setMainApp(this);
+
+/*        System.out.println(this.dataViewController);
         System.out.println(this.dataView);
-        System.out.println(appointmentViewController.toString());
+        System.out.println(appointmentViewController.toString());*/
         System.out.println(customerViewController.toString());
-        System.out.println(appViewController.toString());
+//        System.out.println(appViewController.toString());*/
 
         rootPane = (BorderPane) appView;
-
+        rootPane.setBottom(dataViewController.tabPane);
 
         scene = new Scene(rootPane);
         scene.getStylesheets().add("/styles/Styles.css");
@@ -271,6 +269,7 @@ public class MainApp extends Application {
 
     public static void setDataView(Parent dataView) {
         MainApp.dataView = dataView;
+        rootPane.setBottom(MainApp.dataView);
     }
 
     public static ObservableMap<Integer, ICustomer> getCustomers() {
