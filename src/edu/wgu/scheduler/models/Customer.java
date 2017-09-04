@@ -25,10 +25,22 @@ public class Customer implements ICustomer {
     private StringProperty lastUpdateBy = new SimpleStringProperty();
     private ObjectProperty<ZonedDateTime> lastUpdate = new SimpleObjectProperty<>();
 
+
+    /***
+     *
+     * @param addressId
+     * @param customerName
+     */
     public Customer(int addressId, String customerName) {
         this(addressId, customerName, null);
     }
 
+    /***
+     *
+     * @param addressId
+     * @param customerName
+     * @param createdBy
+     */
     public Customer(int addressId, String customerName, String createdBy) {
         this.addressId.setValue(addressId);
         this.customerName.setValue(customerName);
@@ -39,6 +51,17 @@ public class Customer implements ICustomer {
         this.createdBy = createdBy;
     }
 
+    /***
+     *
+     * @param createDate
+     * @param customerId
+     * @param active
+     * @param addressId
+     * @param createdBy
+     * @param customerName
+     * @param lastUpdateBy
+     * @param lastUpdate
+     */
     public Customer(Timestamp createDate, int customerId, Byte active, int addressId, String createdBy, String customerName, String lastUpdateBy, Timestamp lastUpdate) {
         this.createDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.of("UTC"));
         this.customerId = customerId;

@@ -50,7 +50,7 @@ public class CustomerView implements ICustomerView {
         return active.get();
     }
 
-    ReadOnlyStringProperty customerNameProperty(){
+    public ReadOnlyStringProperty customerNameProperty(){
         return customerName;
     }
 
@@ -131,7 +131,7 @@ public class CustomerView implements ICustomerView {
         return this.address.getValue();
     }
 
-    ReadOnlyStringProperty addressProperty(){
+    public ReadOnlyStringProperty addressProperty(){
         return address;
     }
 
@@ -139,7 +139,7 @@ public class CustomerView implements ICustomerView {
         return address2.getValueSafe();
     }
 
-    ReadOnlyStringProperty address2Property(){
+    public ReadOnlyStringProperty address2Property(){
         return address2;
     }
 
@@ -147,7 +147,7 @@ public class CustomerView implements ICustomerView {
         return city.getValue();
     }
 
-    ReadOnlyStringProperty cityProperty(){
+    public ReadOnlyStringProperty cityProperty(){
         return city;
     }
 
@@ -155,7 +155,7 @@ public class CustomerView implements ICustomerView {
         return country.getValue();
     }
 
-    ReadOnlyStringProperty countryProperty(){
+    public ReadOnlyStringProperty countryProperty(){
         return country;
     }
 
@@ -163,7 +163,7 @@ public class CustomerView implements ICustomerView {
         return phone.getValue();
     }
 
-    ReadOnlyStringProperty phoneProperty(){
+    public ReadOnlyStringProperty phoneProperty(){
         return phone;
     }
 
