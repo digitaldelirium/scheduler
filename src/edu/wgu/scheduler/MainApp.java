@@ -216,9 +216,9 @@ public class MainApp extends Application {
 
 /*        System.out.println(this.dataViewController);
         System.out.println(this.dataView);
-        System.out.println(appointmentViewController.toString());*/
+        System.out.println(appointmentViewController.toString());
         System.out.println(customerViewController.toString());
-//        System.out.println(appViewController.toString());*/
+        System.out.println(appViewController.toString());*/
 
         rootPane = (BorderPane) appView;
         rootPane.setBottom(dataViewController.tabPane);
