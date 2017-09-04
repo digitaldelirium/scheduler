@@ -21,9 +21,9 @@ public class Customer implements ICustomer {
     private SimpleBooleanProperty active = new SimpleBooleanProperty();
     private SimpleIntegerProperty addressId = new SimpleIntegerProperty();
     private final String createdBy;
-    private StringProperty customerName = new SimpleStringProperty();
-    private StringProperty lastUpdateBy = new SimpleStringProperty();
-    private ObjectProperty<ZonedDateTime> lastUpdate = new SimpleObjectProperty<>();
+    private SimpleStringProperty customerName = new SimpleStringProperty();
+    private SimpleStringProperty lastUpdateBy = new SimpleStringProperty();
+    private SimpleObjectProperty<ZonedDateTime> lastUpdate = new SimpleObjectProperty<>();
 
 
     /***
@@ -98,12 +98,22 @@ public class Customer implements ICustomer {
         return;
     }
 
+    public SimpleBooleanProperty activeProperty() {
+        return active;
+    }
 
     @Override
     public int getAddressId() {
         return addressId.get();
     }
 
+    public void setAddressId(int addressId) {
+        this.addressId.set(addressId);
+    }
+
+    public SimpleIntegerProperty addressIdProperty() {
+        return addressId;
+    }
 
     @Override
     public ZonedDateTime getCreateDate() {
@@ -122,6 +132,9 @@ public class Customer implements ICustomer {
         return customerName.getValue();
     }
 
+    public SimpleStringProperty customerNameProperty(){
+        return customerName;
+    }
 
     @Override
     public void setCustomerName(String customerName) {
@@ -138,6 +151,22 @@ public class Customer implements ICustomer {
     @Override
     public void setLastUpdateBy(String lastUpdateBy) {
         this.lastUpdateBy.setValue(lastUpdateBy);
+    }
+
+    public SimpleStringProperty lastUpdateByProperty() {
+        return lastUpdateBy;
+    }
+
+    public ZonedDateTime getLastUpdate() {
+        return lastUpdate.get();
+    }
+
+    public SimpleObjectProperty<ZonedDateTime> lastUpdateProperty() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(ZonedDateTime lastUpdate) {
+        this.lastUpdate.set(lastUpdate);
     }
 
     @Override
