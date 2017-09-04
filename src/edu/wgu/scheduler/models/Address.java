@@ -69,96 +69,112 @@ public class Address implements IAddress {
         this.lastUpdate = new SimpleObjectProperty<>(lastUpdate);
     }
 
-
-    @Override
-    public String getPostalCode() {
-        return postalCode.getValueSafe();
-    }
-
-    public StringProperty postalCodeProperty() {
-        return postalCode;
-    }
-
-    @Override
-    public void setPostalCode(String postalCode) {
-        this.postalCode = new SimpleStringProperty(postalCode);
-    }
-
-
-    @Override
-    public String getPhone() {
-        return phone.getValueSafe();
-    }
-
-    public StringProperty phoneProperty() {
-        return phone;
-    }
-
-    @Override
-    public void setPhone(String phone) {
-        this.phone = new SimpleStringProperty(phone);
-    }
-
-
-    @Override
-    public String getLastUpdateBy() {
-        return lastUpdateBy.getValueSafe();
-    }
-
-    public StringProperty lastUpdateByProperty() {
-        return lastUpdateBy;
-    }
-
-    @Override
-    public void setLastUpdateBy(String lastUpdateBy) {
-        this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
-    }
-
-
     @Override
     public ZonedDateTime getCreatedDate() {
         return createdDate;
     }
 
     @Override
-    public String getCreatedBy() {
-        return createdBy.getValueSafe();
+    public int getAddressId() {
+        return addressId;
     }
 
+    @Override
+    public String getCreatedBy() {
+        return createdBy.get();
+    }
+
+    public StringProperty createdByProperty() {
+        return createdBy;
+    }
 
     @Override
     public String getAddress() {
-        return address.getValue();
+        return address.get();
     }
 
     public StringProperty addressProperty() {
         return address;
     }
 
-    @Override
     public void setAddress(String address) {
-        this.address = new SimpleStringProperty(address);
+        this.address.set(address);
     }
-
 
     @Override
     public String getAddress2() {
-        return address2.getValueSafe();
+        return address2.get();
     }
 
     public StringProperty address2Property() {
         return address2;
     }
 
-    @Override
     public void setAddress2(String address2) {
-        this.address2 = new SimpleStringProperty(address2);
+        this.address2.set(address2);
     }
 
+    public int getCityId() {
+        return cityId.get();
+    }
+
+    public SimpleIntegerProperty cityIdProperty() {
+        return cityId;
+    }
+
+    public void setCityId(int cityId) {
+        this.cityId.set(cityId);
+    }
+
+    public Timestamp getLastUpdate() {
+        return lastUpdate.get();
+    }
+
+    public ObjectProperty<Timestamp> lastUpdateProperty() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Timestamp lastUpdate) {
+        this.lastUpdate.set(lastUpdate);
+    }
 
     @Override
-    public int getAddressId() {
-        return addressId;
+    public String getLastUpdateBy() {
+        return lastUpdateBy.get();
+    }
+
+    public StringProperty lastUpdateByProperty() {
+        return lastUpdateBy;
+    }
+
+    public void setLastUpdateBy(String lastUpdateBy) {
+        this.lastUpdateBy.set(lastUpdateBy);
+    }
+
+    @Override
+    public String getPhone() {
+        return phone.get();
+    }
+
+    public StringProperty phoneProperty() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone.set(phone);
+    }
+
+    @Override
+    public String getPostalCode() {
+        return postalCode.get();
+    }
+
+    public StringProperty postalCodeProperty() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode.set(postalCode);
     }
 
     @Override

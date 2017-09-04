@@ -65,23 +65,13 @@ public class Country implements ICountry {
     }
 
     @Override
+    public ZonedDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    @Override
     public int getCountryId() {
         return countryId;
-    }
-
-
-    @Override
-    public String getCountry() {
-        return country.getValue();
-    }
-
-    @Override
-    public void setCountry(String country) {
-            this.country.setValue(country);
-    }
-
-    public StringProperty getCountryProperty(){
-        return country;
     }
 
     @Override
@@ -90,18 +80,41 @@ public class Country implements ICountry {
     }
 
     @Override
-    public ZonedDateTime getCreatedDate() {
-        return createdDate;
+    public String getCountry() {
+        return country.get();
+    }
+
+    public SimpleStringProperty countryProperty() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country.set(country);
+    }
+
+    public ZonedDateTime getLastUpdate() {
+        return lastUpdate.get();
+    }
+
+    public SimpleObjectProperty<ZonedDateTime> lastUpdateProperty() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(ZonedDateTime lastUpdate) {
+        this.lastUpdate.set(lastUpdate);
     }
 
     @Override
     public String getLastUpdateBy() {
-        return lastUpdateBy.getValueSafe();
+        return lastUpdateBy.get();
     }
 
-    @Override
+    public SimpleStringProperty lastUpdateByProperty() {
+        return lastUpdateBy;
+    }
+
     public void setLastUpdateBy(String lastUpdateBy) {
-        this.lastUpdateBy.setValue(lastUpdateBy);
+        this.lastUpdateBy.set(lastUpdateBy);
     }
 
     public SimpleObjectProperty<ZonedDateTime> getLastUpdateProperty(){
