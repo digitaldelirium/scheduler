@@ -8,6 +8,7 @@ import javafx.collections.ObservableMap;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 
 import java.net.URL;
@@ -99,7 +100,6 @@ public class CustomerViewController extends AnchorPane {
      */
     public void initialize() {
         instance = this;
-        dataViewController = new DataViewController();
         this.apCustomerView = new AnchorPane();
         this.vbCustomerEditor = new VBox();
         this.vbCustomerEditor.setPrefHeight(475.0);
@@ -386,9 +386,6 @@ public class CustomerViewController extends AnchorPane {
     }
 
     private void setupDataView() {
-        dataViewController.setLblListView(new Label("Customer List View"));
-        dataViewController.setLblTableView(new Label("Customer Table View"));
-
         try {
             getCustomerData();
         } catch (SQLException e) {
@@ -428,10 +425,31 @@ public class CustomerViewController extends AnchorPane {
             System.out.println(e.getLocalizedMessage());
         }
 
-        dataViewController.setLblTableView(new Label("Customers"));
-        dataViewController.setLblListView(new Label("Customer List"));
-        dataViewController.setListView(new ListView<>(getCustomerList()));
-        this.tvCustomerView = new TableView<>(getCustomerList());
+        this.tvCustomerView = new TableView<>();
+        this.tcActive.setCellValueFactory(new PropertyValueFactory<>("active"));
+        this.tcActive.setMinWidth(20.0);
+
+        this.tcAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
+        this.tcAddress.setMinWidth(40.0);
+
+        this.tcAddress2.setCellValueFactory(new PropertyValueFactory<>("address2"));
+        this.tcAddress2.setMinWidth(40.0);
+
+        this.tcCity.setCellValueFactory(new PropertyValueFactory<>("city"));
+        this.tcCity.setMinWidth(40.0);
+
+        this.tcCountry.setCellValueFactory(new PropertyValueFactory<>("country"));
+        this.tcCountry.setMinWidth(40.0);
+
+        this.tcCustomerName.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+        this.tcCustomerName.setMinWidth(40.0);
+
+        this.tcPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        this.tcPhone.setMinWidth(40.0);
+
+        this.tcPostalCode.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
+        this.tcPostalCode.setMinWidth(40.0);
+
         tvCustomerView.getColumns().addAll(
                 tcCustomerName,
                 tcAddress,
@@ -440,12 +458,14 @@ public class CustomerViewController extends AnchorPane {
                 tcPostalCode,
                 tcCountry,
                 tcPhone,
-                tcActive
-                                          );
+                tcActive);
 
-        dataViewController.setTableView(this.tvCustomerView);
+        this.tvCustomerView.setItems(getCustomerList());
+        this.tvCustomerView.setPrefWidth(2000.0);
+
         this.lvCustomerView = new ListView<>(getCustomerList());
-        dataViewController.setListView(this.lvCustomerView);
+        this.dataViewController =
+                new DataViewController(new Label("Customer List"), new Label("Customers"), this.lvCustomerView, this.tvCustomerView);
     }
 
     private void setupEventHandlers(){
@@ -460,6 +480,18 @@ public class CustomerViewController extends AnchorPane {
                 e.printStackTrace();
             }
         });
+
+        this.dataViewController
+                .getTableView()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> showCustomerDetails((CustomerView) newValue));
+
+        this.dataViewController
+                .getListView()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> showCustomerDetails((CustomerView) newValue));
     }
 
     /***
@@ -534,6 +566,11 @@ public class CustomerViewController extends AnchorPane {
             }
             else if(node instanceof Button){
                 node.setDisable(true);
+                return true;
+            }
+            else if (node instanceof ChoiceBox){
+                ((ChoiceBox) node).setValue(0);
+                return true;
             }
             return false;
         });
@@ -579,7 +616,7 @@ public class CustomerViewController extends AnchorPane {
                     getCustomerViewData();
                     this.dataViewController.setListView(this.lvCustomerView);
                     this.dataViewController.setTableView(this.tvCustomerView);
-                    rootPane.setBottom(this.dataViewController);
+                    rootPane.setBottom(this.dataViewController.tabPane);
                     this.txtPhone.clear();
                     this.gpCustomerEditor.getChildren().filtered(node -> toggleTextFields(node, true));
                     return customerId;
@@ -794,6 +831,31 @@ public class CustomerViewController extends AnchorPane {
             alert.show();
         }
         return 0;
+    }
+
+    public void showCustomerDetails(CustomerView customer){
+        if(customer != null){
+            txtCustomerName.setText(customer.getCustomerName());
+            txtAddress.setText(customer.getAddress());
+            txtAddress2.setText(customer.getAddress2());
+            txtCity.setText(customer.getCity());
+            txtState.setText("Use external service to get state/province from postal code");
+            txtPostalCode.setText(customer.getPostalCode());
+            txtCountry.setText(customer.getCountry());
+            txtPhone.setText(customer.getPhone());
+            cbActive.setSelected(customer.isActive());
+        }
+        else {
+            txtCustomerName.setText("");
+            txtAddress.setText("");
+            txtAddress2.setText("");
+            txtCity.setText("");
+            txtState.setText("");
+            txtPostalCode.setText("");
+            txtCountry.setText("");
+            txtPhone.setText("");
+            cbActive.setSelected(false);
+        }
     }
 
     public Label getLblPrefix() {

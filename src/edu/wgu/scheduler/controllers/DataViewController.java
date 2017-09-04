@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
  * <p>
  * Student ID: 000292065
  */
-    public class DataViewController extends TabPane {
+    public class DataViewController {
 
     //    private static DataViewController instance;
         public TabPane tabPane;
@@ -26,11 +26,22 @@ import javafx.scene.layout.VBox;
         private TableView<?> tableView;
         private MainApp mainApp;
 
-        public DataViewController() {
-            initialize();
-        }
+    /***
+     *
+     * @param lblListView
+     * @param lblTableView
+     * @param listView
+     * @param tableView
+     */
+    public DataViewController(Label lblListView, Label lblTableView, ListView<?> listView, TableView<?> tableView) {
+        this.lblListView = lblListView;
+        this.lblTableView = lblTableView;
+        this.listView = listView;
+        this.tableView = tableView;
+        initialize();
+    }
 
-    /*    public static DataViewController getInstance(){
+        /*    public static DataViewController getInstance(){
             if(instance == null){
                 new DataViewController();
             }
@@ -54,12 +65,8 @@ import javafx.scene.layout.VBox;
             this.tabListView.setClosable(false);
             this.spListView = new ScrollPane();
             this.spTableView = new ScrollPane();
-            this.lblListView = new Label("List View");
-            this.lblTableView = new Label("Table View");
             this.vbListView = new VBox();
             this.vbTableView = new VBox();
-            this.listView = new ListView<>();
-            this.tableView = new TableView<>();
 
             this.vbListView.getChildren().setAll(this.lblListView, this.listView);
             this.spListView.setContent(this.listView);
