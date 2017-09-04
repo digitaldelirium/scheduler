@@ -3,23 +3,19 @@ package edu.wgu.scheduler.controllers;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 
-import java.net.URL;
 import java.sql.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.MainApp.*;
 import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
@@ -48,8 +44,8 @@ public class CustomerViewController extends AnchorPane {
     private Label lblPhone;
     private Label lblPrefix;
     private ButtonBar btnbarCustomerEditor;
-    private Button btnCustomerOk;
-    private Button btnCustomerCancel;
+    private Button btnCustomerSave;
+    private Button btnCustomerReset;
     private TextField txtCustomerName;
     private TextField txtAddress;
     private TextField txtAddress2;
@@ -67,20 +63,21 @@ public class CustomerViewController extends AnchorPane {
     private Button btnNewCustomer;
     private MainApp mainApp;
     private boolean isNewCustomer;
-    private ListView<ICustomerView> lvCustomerView;
-    private TableView<ICustomerView> tvCustomerView;
-    private TableColumn<ICustomerView, String> tcCustomerName = new TableColumn<>("Customer Name");
-    private TableColumn<ICustomerView, String> tcAddress = new TableColumn<>("Address");
-    private TableColumn<ICustomerView, String> tcAddress2 = new TableColumn<>("Address 2");
-    private TableColumn<ICustomerView, String> tcCity = new TableColumn<>("City");
-    private TableColumn<ICustomerView, String> tcPostalCode = new TableColumn<>("Postal Code");
-    private TableColumn<ICustomerView, String> tcCountry = new TableColumn<>("Country");
-    private TableColumn<ICustomerView, String> tcPhone = new TableColumn<>("Phone");
-    private TableColumn<ICustomerView, Byte> tcActive = new TableColumn<>("Active");
+    private ListView<CustomerView> lvCustomerView;
+    private TableView<CustomerView> tvCustomerView;
+    private TableColumn<CustomerView, String> tcCustomerName = new TableColumn<>("Customer Name");
+    private TableColumn<CustomerView, String> tcAddress = new TableColumn<>("Address");
+    private TableColumn<CustomerView, String> tcAddress2 = new TableColumn<>("Address 2");
+    private TableColumn<CustomerView, String> tcCity = new TableColumn<>("City");
+    private TableColumn<CustomerView, String> tcPostalCode = new TableColumn<>("Postal Code");
+    private TableColumn<CustomerView, String> tcCountry = new TableColumn<>("Country");
+    private TableColumn<CustomerView, String> tcPhone = new TableColumn<>("Phone");
+    private TableColumn<CustomerView, Byte> tcActive = new TableColumn<>("Active");
     private ObservableMap<ZonedDateTime, ICustomerView> omCustomerView;
     private DataViewController dataViewController;
     private static CustomerViewController instance;
     private boolean isCustomerUpdate;
+    private static Customer customer;
 
     private CustomerViewController() {
         initialize();
@@ -125,7 +122,7 @@ public class CustomerViewController extends AnchorPane {
     }
 
     private void getCustomerViewData() throws SQLException {
-        List<ICustomerView> customerViews = new LinkedList<>();
+        List<CustomerView> customerViews = new LinkedList<>();
         try (Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement("SELECT * from Customers");
             ResultSet rs = statement.executeQuery();
@@ -160,12 +157,12 @@ public class CustomerViewController extends AnchorPane {
                 customerViews.add(view);
             }
             // Populate MainApp collection customerList
-            setCustomerList(FXCollections.observableList(customerViews));
+            setCustomerList(customerViews);
         }
     }
 
     private void getCountryData() throws  SQLException {
-        HashMap<Integer, ICountry> countryHashMap = new HashMap<>();
+        List<Country> countryList = new LinkedList<>();
         try (Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM country");
             ResultSet rs = statement.executeQuery();
@@ -179,14 +176,14 @@ public class CustomerViewController extends AnchorPane {
                 rs.getString("lastUpdateBy")
                 );
 
-                countryHashMap.put(country.hashCode(), country);
+                countryList.add(country);
             }
-            setCountries(FXCollections.observableMap(countryHashMap));
+            setCountries(countryList);
         }
     }
 
     private void getCityData() throws SQLException {
-        HashMap<Integer, ICity> cityHashMap = new HashMap<>();
+        List cityList = new LinkedList();
         try (Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM city");
             ResultSet rs = statement.executeQuery();
@@ -202,15 +199,15 @@ public class CustomerViewController extends AnchorPane {
                         rs.getTimestamp("createDate")
                 );
 
-                cityHashMap.put(city.hashCode(), city);
+                cityList.add(city);
             }
-            setCities(FXCollections.observableMap(cityHashMap));
+            setCities(cityList);
         }
 
     }
 
     private void getAddressData() throws SQLException {
-        HashMap<Integer, IAddress> addressHashMap = new HashMap<>();
+        List<Address> addressList = new LinkedList<>();
         try(Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM address");
             ResultSet rs = statement.executeQuery();
@@ -226,14 +223,14 @@ public class CustomerViewController extends AnchorPane {
                         rs.getTimestamp("lastUpdate"),
                         rs.getTimestamp("createDate")
                 );
-                addressHashMap.put(address.hashCode(), address);
+                addressList.add(address);
             }
-            setAddresses(addressHashMap);
+            setAddresses(addressList);
         }
     }
 
     private void getCustomerData() throws SQLException {
-        HashMap<Integer, ICustomer> customerHashMap = new HashMap<>();
+        List<Customer> customerList = new LinkedList<>();
         try(Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement("SELECT * from customer");
             ResultSet resultSet = statement.executeQuery();
@@ -249,9 +246,9 @@ public class CustomerViewController extends AnchorPane {
                         resultSet.getTimestamp("lastUpdate")
                 );
 
-                customerHashMap.put(customer.hashCode(), customer);
+                customerList.add(customer);
             }
-            setCustomers(customerHashMap);
+            setCustomers(customerList);
         }
     }
 
@@ -281,6 +278,7 @@ public class CustomerViewController extends AnchorPane {
     public void enableEditing() {
         if(tbCustomerEditMode.isSelected()){
             this.tbCustomerEditMode.setText("Read Only Mode");
+            isCustomerUpdate = true;
             this.gpCustomerEditor.getChildren().filtered(n -> {
                 if (n instanceof TextField){
                     if (n.isDisabled())
@@ -291,8 +289,25 @@ public class CustomerViewController extends AnchorPane {
 
                     return true;
                 }
+                else if(n instanceof Button){
+                    n.setDisable(false);
+                    return true;
+                }
+                else if (n instanceof CheckBox){
+                    n.setDisable(false);
+                }
                 return false;
             });
+
+            this.btnbarCustomerEditor.getButtons().filtered(node -> {
+                if (node instanceof Button){
+                    node.setDisable(false);
+                    return true;
+                }
+                return false;
+            });
+
+            this.txtPhone.setDisable(false);
         }
         else {
             this.tbCustomerEditMode.setText("Edit Mode");
@@ -302,6 +317,18 @@ public class CustomerViewController extends AnchorPane {
                     System.out.println(String.format("%s is disabled:\t%s", n.getClass().getName(), n.isDisabled()));
                     ((TextField) n).setEditable(false);
                     System.out.println(String.format("%s is editable:\t%s", n.getClass().getName(), ((TextField) n).isEditable()));
+                    return true;
+                }
+                else if(n.hashCode() == btnCustomerSave.hashCode()){
+                    n.setDisable(true);
+                    return true;
+                }
+                else if(n.hashCode() == btnCustomerReset.hashCode()){
+                    n.setDisable(true);
+                    return true;
+                }
+                else if (n instanceof CheckBox){
+                    n.setDisable(true);
                     return true;
                 }
                 return false;
@@ -325,6 +352,7 @@ public class CustomerViewController extends AnchorPane {
         this.lblCustomerCreatedDate = new Label();
         this.cbActive = new CheckBox("Active");
         this.cbActive.setSelected(false);
+        this.cbActive.setDisable(true);
         this.lblPrefix = new Label("Prefix");
         this.txtCustomerName = new TextField();
         this.txtAddress = new TextField();
@@ -334,12 +362,15 @@ public class CustomerViewController extends AnchorPane {
         this.txtPostalCode = new TextField();
         this.txtCountry = new TextField();
         this.txtPhone = new TextField();
+        this.txtPhone.setDisable(true);
         this.hbPhone = new HBox(5.0, lblPrefix, txtPhone);
         this.btnbarCustomerEditor = new ButtonBar();
-        this.btnCustomerCancel = new Button("Cancel");
-        this.btnCustomerCancel.setCancelButton(true);
-        this.btnCustomerOk = new Button("Save");
-        this.btnCustomerOk.setDefaultButton(true);
+        this.btnCustomerReset = new Button("Cancel");
+        this.btnCustomerReset.setCancelButton(true);
+        this.btnCustomerReset.setDisable(true);
+        this.btnCustomerSave = new Button("Save");
+        this.btnCustomerSave.setDefaultButton(true);
+        this.btnCustomerSave.setDisable(true);
 
         this.lblCustomerName.setLabelFor(txtCustomerName);
         this.lblAddress.setLabelFor(txtAddress);
@@ -353,7 +384,7 @@ public class CustomerViewController extends AnchorPane {
         this.lblCustomerSince.setLabelFor(lblCustomerCreatedDate);
 
         // Setup child containers of gpCustomerEditor
-        this.btnbarCustomerEditor.getButtons().addAll(btnCustomerOk, btnCustomerCancel);
+        this.btnbarCustomerEditor.getButtons().addAll(btnCustomerSave, btnCustomerReset);
 
         this.gpCustomerEditor.add(lblCustomerName, 0, 0);
         this.gpCustomerEditor.add(txtCustomerName, 1, 0);
@@ -425,7 +456,7 @@ public class CustomerViewController extends AnchorPane {
             System.out.println(e.getLocalizedMessage());
         }
 
-        this.tvCustomerView = new TableView<>();
+        this.tvCustomerView = new TableView<CustomerView>();
         this.tcActive.setCellValueFactory(new PropertyValueFactory<>("active"));
         this.tcActive.setMinWidth(20.0);
 
@@ -473,7 +504,7 @@ public class CustomerViewController extends AnchorPane {
 
         this.btnNewCustomer.setOnAction(event -> createNewCustomer());
 
-        this.btnCustomerOk.setOnAction(event -> {
+        this.btnCustomerSave.setOnAction(event -> {
             try {
                 saveCustomer();
             } catch (SQLException e) {
@@ -494,6 +525,44 @@ public class CustomerViewController extends AnchorPane {
                 .addListener((observable, oldValue, newValue) -> showCustomerDetails((CustomerView) newValue));
     }
 
+    /**
+     * @param cv
+     *
+     * @return
+     */
+    private Customer getCustomerFromView(CustomerView cv) {
+        int addressId = cv.getAddressId();
+        assert addressId != -1;
+        int customerId = cv.getCustomerId();
+        assert customerId != -1;
+
+        try(Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM customer" +
+                                                                              "    WHERE customerId = ?" +
+                                                                              "    AND addressId = ?");
+            statement.setInt(1, cv.getCustomerId());
+            statement.setInt(2, cv.getAddressId());
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()){
+                Customer customer = new Customer(
+                        rs.getTimestamp("createDate"),
+                        rs.getInt("customerId"),
+                        rs.getByte("active"),
+                        rs.getInt("addressId"),
+                        rs.getString("createdBy"),
+                        rs.getString("customerName"),
+                        rs.getString("lastUpdateBy"),
+                        rs.getTimestamp("lastUpdate")
+                );
+                return customer;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /***
      * Sets whether text fields are enabled or disabled
      * true = disable Text Fields
@@ -507,8 +576,13 @@ public class CustomerViewController extends AnchorPane {
     private boolean saveCustomer() throws SQLException {
         int countryId;
         int addressId = 0;
+        int newAddressId = 0;
         int cityId = 0;
         int customerId = 0;
+        if (customer != null){
+            addressId = customer.getAddressId();
+            customerId = customer.getCustomerId();
+        }
         String name = txtCustomerName.getText().trim();
         String addr = txtAddress.getText().trim();
         String addr2 = txtAddress2.getText().trim();
@@ -518,21 +592,21 @@ public class CustomerViewController extends AnchorPane {
         String country = txtCountry.getText().trim();
         String phone = txtPhone.getText().trim();
 
-        ObservableMap<Integer, ICustomer> customers = getCustomers();
+        ObservableList<Customer> customers = getCustomers();
 
         try(Connection connection = dataSource.getConnection()){
 
             countryId = getCountryId(connection, country);
 
-            if(countryId != 0) {
+            if(countryId != 0 && cityId == 0) {
                 cityId = getCityId(connection, countryId, city);
             }
 
             if(cityId != 0) {
-                addressId = getAddressId(connection, cityId, addr, addr2, postal, phone);
+                newAddressId = getAddressId(connection, cityId, addr, addr2, postal, phone);
             }
 
-            if(addressId != 0) {
+            if(addressId != 0 && customerId == 0) {
                 customerId = getCustomerId(connection, addressId, name, isNewCustomer);
             }
 
@@ -540,16 +614,74 @@ public class CustomerViewController extends AnchorPane {
                 PreparedStatement statement = connection.prepareStatement("SELECT createDate FROM customer WHERE customerId = ?;");
                 ResultSet rs = statement.executeQuery();
                 if(rs.next()){
-                    this.lblCustomerSince.setText(rs.getTimestamp(1).toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_DATE));
+                    this.lblCustomerSince.setText(rs.getTimestamp(1).toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE));
                 }
 
-                this.dataViewController.setListView(new ListView<>(getCustomerList()));
-                this.dataViewController.setTableView(new TableView<>(getCustomerList()));
+                if(isCustomerUpdate == false) {
+                    resetForm();
+                    return true;
+                }
+            }
 
-                resetForm();
-                return true;
+            if (isCustomerUpdate){
+                Byte activeByte;
+                if (cbActive.isSelected()) {
+                    activeByte = 1;
+                } else {
+                    activeByte = 0;
+                }
+
+                if (customer != null && newAddressId == customer.getAddressId()){
+                    addressId = customer.getAddressId();
+                }
+                else {
+                    addressId = newAddressId;
+                }
+
+                PreparedStatement statement;
+                if (customerId == 0) {
+                    statement = connection.prepareStatement("SELECT customerId FROM customer cu\n" +
+                                                                    "  INNER JOIN address ad ON cu.addressId = ad.addressId\n" +
+                                                                    "  INNER JOIN city ci ON ad.cityId = ci.cityId\n" +
+                                                                    "  INNER JOIN country co ON ci.countryId = co.countryId\n" +
+                                                                    "WHERE LCASE(customerName) = LCASE(?)\n" +
+                                                                    "      AND LCASE(address) = LCASE(?)\n" +
+                                                                    "      AND LCASE(address2) = LCASE(?)\n" +
+                                                                    "      AND LCASE(city) = LCASE(?)\n" +
+                                                                    "      AND LCASE(country) = LCASE(?)\n" +
+                                                                    "      AND LCASE(phone) = LCASE(?)\n" +
+                                                                    "      AND LCASE(postalCode) = LCASE(?);");
+                    statement.setString(1, txtCustomerName.getText().trim());
+                    statement.setString(2, txtAddress.getText().trim());
+                    statement.setString(3, txtAddress2.getText().trim());
+                    statement.setString(4, txtCity.getText().trim());
+                    statement.setString(5, txtCountry.getText().trim());
+                    statement.setString(6, txtPhone.getText().trim());
+                    statement.setString(7, txtPostalCode.getText().trim());
+                    ResultSet rs = statement.executeQuery();
+                    if(rs.next()){
+                        customerId = rs.getInt("customerId");
+                    }
+                }
+                statement = connection.prepareStatement("UPDATE customer\n" +
+                                                              "SET\n" +
+                                                              "  addressId = ?,\n" +
+                                                              "  active = ?\n" +
+                                                              "WHERE customerId = ?;");
+                statement.setInt(1, addressId);
+                statement.setByte(2, activeByte);
+                statement.setInt(3, customerId);
+                int rowsUpdated = statement.executeUpdate();
+                if(rowsUpdated > 0){
+                    isCustomerUpdate = false;
+                    tbCustomerEditMode.setSelected(false);
+                    resetForm();
+                    return true;
+                }
+                isCustomerUpdate = false;
             }
         }
+
         resetForm();
         return false;
     }
@@ -574,6 +706,8 @@ public class CustomerViewController extends AnchorPane {
             }
             return false;
         });
+
+        this.txtPhone.clear();
     }
 
     private int getCustomerId(Connection connection, int addressId, String name, boolean isNewCustomer) {
@@ -833,17 +967,17 @@ public class CustomerViewController extends AnchorPane {
         return 0;
     }
 
-    public void showCustomerDetails(CustomerView customer){
-        if(customer != null){
-            txtCustomerName.setText(customer.getCustomerName());
-            txtAddress.setText(customer.getAddress());
-            txtAddress2.setText(customer.getAddress2());
-            txtCity.setText(customer.getCity());
+    public void showCustomerDetails(CustomerView customerView){
+        if(customerView != null){
+            txtCustomerName.setText(customerView.getCustomerName());
+            txtAddress.setText(customerView.getAddress());
+            txtAddress2.setText(customerView.getAddress2());
+            txtCity.setText(customerView.getCity());
             txtState.setText("Use external service to get state/province from postal code");
-            txtPostalCode.setText(customer.getPostalCode());
-            txtCountry.setText(customer.getCountry());
-            txtPhone.setText(customer.getPhone());
-            cbActive.setSelected(customer.isActive());
+            txtPostalCode.setText(customerView.getPostalCode());
+            txtCountry.setText(customerView.getCountry());
+            txtPhone.setText(customerView.getPhone());
+            cbActive.setSelected(customerView.isActive());
         }
         else {
             txtCustomerName.setText("");
@@ -856,6 +990,8 @@ public class CustomerViewController extends AnchorPane {
             txtPhone.setText("");
             cbActive.setSelected(false);
         }
+
+        this.customer = getCustomerFromView(customerView);
     }
 
     public Label getLblPrefix() {
@@ -974,10 +1110,10 @@ public class CustomerViewController extends AnchorPane {
                 .append(lblPrefix)
                 .append(",\n btnbarCustomerEditor=")
                 .append(btnbarCustomerEditor)
-                .append(",\n btnCustomerOk=")
-                .append(btnCustomerOk)
-                .append(",\n btnCustomerCancel=")
-                .append(btnCustomerCancel)
+                .append(",\n btnCustomerSave=")
+                .append(btnCustomerSave)
+                .append(",\n btnCustomerReset=")
+                .append(btnCustomerReset)
                 .append(",\n txtCustomerName=")
                 .append(txtCustomerName)
                 .append(",\n txtAddress=")
