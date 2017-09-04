@@ -157,7 +157,7 @@ public class CustomerViewController extends AnchorPane {
                 customerViews.add(view);
             }
             // Populate MainApp collection customerList
-            setCustomerList(customerViews);
+            MainApp.setCustomerViews(customerViews);
         }
     }
 
@@ -491,10 +491,10 @@ public class CustomerViewController extends AnchorPane {
                 tcPhone,
                 tcActive);
 
-        this.tvCustomerView.setItems(getCustomerList());
+        this.tvCustomerView.setItems(MainApp.getCustomerViews());
         this.tvCustomerView.setPrefWidth(2000.0);
 
-        this.lvCustomerView = new ListView<>(getCustomerList());
+        this.lvCustomerView = new ListView<>(MainApp.getCustomerViews());
         this.dataViewController =
                 new DataViewController(new Label("Customer List"), new Label("Customers"), this.lvCustomerView, this.tvCustomerView);
     }
@@ -646,36 +646,39 @@ public class CustomerViewController extends AnchorPane {
                                                                     "  INNER JOIN country co ON ci.countryId = co.countryId\n" +
                                                                     "WHERE LCASE(customerName) = LCASE(?)\n" +
                                                                     "      AND LCASE(address) = LCASE(?)\n" +
-                                                                    "      AND LCASE(address2) = LCASE(?)\n" +
                                                                     "      AND LCASE(city) = LCASE(?)\n" +
                                                                     "      AND LCASE(country) = LCASE(?)\n" +
                                                                     "      AND LCASE(phone) = LCASE(?)\n" +
                                                                     "      AND LCASE(postalCode) = LCASE(?);");
                     statement.setString(1, txtCustomerName.getText().trim());
                     statement.setString(2, txtAddress.getText().trim());
-                    statement.setString(3, txtAddress2.getText().trim());
-                    statement.setString(4, txtCity.getText().trim());
-                    statement.setString(5, txtCountry.getText().trim());
-                    statement.setString(6, txtPhone.getText().trim());
-                    statement.setString(7, txtPostalCode.getText().trim());
+                    statement.setString(3, txtCity.getText().trim());
+                    statement.setString(4, txtCountry.getText().trim());
+                    statement.setString(5, txtPhone.getText().trim());
+                    statement.setString(6, txtPostalCode.getText().trim());
                     ResultSet rs = statement.executeQuery();
                     if(rs.next()){
                         customerId = rs.getInt("customerId");
                     }
                 }
                 statement = connection.prepareStatement("UPDATE customer\n" +
-                                                              "SET\n" +
-                                                              "  addressId = ?,\n" +
-                                                              "  active = ?\n" +
-                                                              "WHERE customerId = ?;");
+                                                                "SET\n" +
+                                                                "  addressId = ?,\n" +
+                                                                "  active = ?,\n" +
+                                                                "  lastUpdate = UTC_TIMESTAMP,\n" +
+                                                                "  lastUpdateBy = ?\n" +
+                                                                "WHERE customerId = ?;");
                 statement.setInt(1, addressId);
                 statement.setByte(2, activeByte);
-                statement.setInt(3, customerId);
+                statement.setString(3, user.getUsername());
+                statement.setInt(4, customerId);
                 int rowsUpdated = statement.executeUpdate();
                 if(rowsUpdated > 0){
                     isCustomerUpdate = false;
                     tbCustomerEditMode.setSelected(false);
+                    tbCustomerEditMode.setText("Edit Mode");
                     resetForm();
+                    getCustomerViewData();
                     return true;
                 }
                 isCustomerUpdate = false;
@@ -690,10 +693,12 @@ public class CustomerViewController extends AnchorPane {
         this.gpCustomerEditor.getChildren().filtered(node -> {
             if (node instanceof TextField){
                 ((TextField) node).clear();
+                node.setDisable(true);
                 return true;
             }
             else if(node instanceof CheckBox){
                 ((CheckBox) node).setSelected(false);
+                node.setDisable(true);
                 return true;
             }
             else if(node instanceof Button){

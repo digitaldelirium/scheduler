@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -54,6 +55,8 @@ public class AppointmentViewController extends AnchorPane {
     private Button btnAppointmentSave;
     private Label lblViewScope = new Label("Choose View:");
     private HBox hbViewScope;
+    private RadioButton rdoWeekly;
+    private RadioButton rdoMonthly;
     private Button btnAppointmentReset;
     private TableView<AppointmentView> tvAppointments = new TableView<>();
     private TableColumn<AppointmentView, String> tcTitle = new TableColumn<>("Title");
@@ -72,7 +75,7 @@ public class AppointmentViewController extends AnchorPane {
     private DataViewController dataViewController;
     private static Parent dataView;
     private static AppointmentViewController instance;
-    protected static ObservableList<ICustomer> customers;
+    protected static ObservableList<Customer> customers;
     protected static ObservableList<Appointment> appointments;
     protected static ObservableList<AppointmentView> appointmentViews;
     protected static ObservableList<Reminder> reminders;
@@ -115,7 +118,6 @@ public class AppointmentViewController extends AnchorPane {
 
         setupCollections();
         setupDataView();
-        getAppointments();
 
         this.tcTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         this.tcTitle.setVisible(true);
@@ -204,8 +206,8 @@ public class AppointmentViewController extends AnchorPane {
 
         this.btnNewAppointment = new Button("New Appointment");
         this.tbAppointmentEditor = new ToggleButton("Edit Appointment");
-        RadioButton rdoWeekly = new RadioButton("Weekly");
-        RadioButton rdoMonthly = new RadioButton("Monthly");
+        rdoWeekly = new RadioButton("Weekly");
+        rdoMonthly = new RadioButton("Monthly");
 
         this.datePickerStartTime = new DatePicker(LocalDate.now());
         this.datePickerStartTime.setShowWeekNumbers(true);
@@ -385,7 +387,8 @@ public class AppointmentViewController extends AnchorPane {
                 );
                 appointmentList.add(property);
             }
-            appointments = FXCollections.observableList(appointmentList);
+            setAppointments(appointmentList);
+            appointments = MainApp.getAppointments();
 
             statement = connection.prepareStatement("SELECT * FROM reminder");
             rs = statement.executeQuery();
@@ -402,9 +405,17 @@ public class AppointmentViewController extends AnchorPane {
                 );
                 reminderList.add(reminderProperty);
             }
-            reminders = FXCollections.observableList(reminderList);
+            setReminders(reminderList);
+            reminders = getReminders();
 
-            statement = connection.prepareStatement("SELECT * from Appointments");
+            if(rdoMonthly.isSelected()) {
+                statement = connection.prepareStatement("SELECT * FROM Appointments\n" +
+                                                                "WHERE start BETWEEN UTC_DATE AND DATE_ADD(UTC_DATE, INTERVAL 1 MONTH);");
+            }
+            else {
+                statement = connection.prepareStatement("SELECT * from Appointments\n" +
+                                                        "WHERE start BETWEEN UTC_DATE AND DATE_ADD(UTC_DATE, INTERVAL 1 WEEK);");
+            }
             rs = statement.executeQuery();
             while (rs.next()){
                 AppointmentView avp = new AppointmentView(
@@ -422,7 +433,8 @@ public class AppointmentViewController extends AnchorPane {
                 );
                 appointmentViewList.add(avp);
             }
-            appointmentViews = FXCollections.observableList(appointmentViewList);
+            setAppointmentViews(appointmentViewList);
+            appointmentViews = getAppointmentViews();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -483,6 +495,9 @@ public class AppointmentViewController extends AnchorPane {
             this.datePickerEndDate.setValue(LocalDate.now());
         });
 
+        this.rdoWeekly.setOnAction(event -> getAppointments());
+        this.rdoMonthly.setOnAction(event -> getAppointments());
+
         createListeners();
     }
 
@@ -494,11 +509,22 @@ public class AppointmentViewController extends AnchorPane {
      *  Get list of appointments and customers and populate their respective lists
      */
     private void getAppointments(){
-        customers = FXCollections.observableArrayList();
-        appointmentViews = FXCollections.observableArrayList();
+        List<AppointmentView> appointmentViews = new LinkedList<>();
+        List<Appointment> appointmentList = new LinkedList<>();
+        List<Customer> customerList = new LinkedList<>();
+        List<Reminder> reminderList = new LinkedList<>();
+
         try(Connection connection = dataSource.getConnection()){
             // Get Views first
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments");
+            PreparedStatement statement;
+            if(rdoMonthly.isSelected()) {
+                statement = connection.prepareStatement("SELECT * from Appointments\n" +
+                                                                "WHERE start BETWEEN UTC_DATE AND DATE_ADD(UTC_DATE, INTERVAL 1 MONTH);");
+            }
+            else {
+                statement = connection.prepareStatement("SELECT * FROM Appointments \n" +
+                                                                "WHERE start BETWEEN UTC_DATE AND DATE_ADD(UTC_DATE, INTERVAL 1 WEEK);");
+            }
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 AppointmentView app =
@@ -515,6 +541,7 @@ public class AppointmentViewController extends AnchorPane {
                                           rs.getTimestamp("lastUpdate"));
                 appointmentViews.add(app);
             }
+            setAppointmentViews(appointmentViews);
 
             statement = connection.prepareStatement("SELECT * FROM customer");
             rs = statement.executeQuery();
@@ -529,9 +556,10 @@ public class AppointmentViewController extends AnchorPane {
                         rs.getString("lastUpdateBy"),
                         rs.getTimestamp("lastUpdate")
                 );
-                customers.add(cu);
+                customerList.add(cu);
             }
-
+            setCustomers(customerList);
+            customers = getCustomers();
             statement = connection.prepareStatement("SELECT * FROM appointment");
             rs = statement.executeQuery();
             while (rs.next()){
@@ -550,8 +578,10 @@ public class AppointmentViewController extends AnchorPane {
                         rs.getString("title"),
                         rs.getString("url")
                 );
-                appointments.add(appointment);
+                appointmentList.add(appointment);
             }
+            setAppointments(appointmentList);
+            appointments = MainApp.getAppointments();
 
             statement = connection.prepareStatement("SELECT * FROM reminder");
             rs = statement.executeQuery();
@@ -565,8 +595,10 @@ public class AppointmentViewController extends AnchorPane {
                         rs.getString("remindercol"),
                         rs.getInt("snoozeIncrement"),
                         rs.getInt("snoozeIncrementTypeId"));
-                reminders.add(re);
+                reminderList.add(re);
             }
+            setReminders(reminderList);
+            reminders = getReminders();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -693,7 +725,7 @@ public class AppointmentViewController extends AnchorPane {
      */
     private boolean updateAppointment(Connection connection, Appointment app) throws SQLException {
             PreparedStatement statement = connection.prepareStatement("UPDATE appointment\n" +
-                "SET title = ?, description = ?, location = ?, contact = ?, url = ?, start = ?, lastUpdatedBy = ?, end = ? \n" +
+                "SET title = ?, description = ?, location = ?, contact = ?, url = ?, start = ?, lastUpdateBy = ?, end = ? \n" +
                 "WHERE appointmentId = ?");
             statement.setString(1, app.getTitle());
             statement.setString(2, app.getDescription());
@@ -756,6 +788,7 @@ public class AppointmentViewController extends AnchorPane {
      */
     
     private boolean saveAppointment() throws InvalidCustomerException {
+        customers = getCustomers();
         int customerId = 0;
         int x = 0;
         for (ICustomer customer : customers) {
@@ -794,7 +827,7 @@ public class AppointmentViewController extends AnchorPane {
         ZonedDateTime endDateTime = ZonedDateTime.of(endDate, endTime, ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
 
         try {
-            if ((startDateTime.getHour() < 8) || (startDateTime.getHour() >= 18)) {
+            if ((startTime.getHour() < 8) || (startTime.getHour() >= 18)) {
                 throw new AppointmentTimeException("The start time is outside of business hours!");
             } else if ((startDateTime.getDayOfWeek() == DayOfWeek.SATURDAY) || (startDateTime.getDayOfWeek() == DayOfWeek.SUNDAY)) {
                 throw new AppointmentTimeException(
@@ -810,7 +843,7 @@ public class AppointmentViewController extends AnchorPane {
         }
 
         try {
-            if ((endDateTime.getHour() < 8) || (endDateTime.getHour() >= 19)) {
+            if ((endTime.getHour() < 8) || (endTime.getHour() >= 19)) {
                 throw new AppointmentTimeException("The end time is outside of business hours!");
             } else if ((endDateTime.getDayOfWeek() == DayOfWeek.SATURDAY) || (endDateTime.getDayOfWeek() == DayOfWeek.SUNDAY)) {
                 throw new AppointmentTimeException(
@@ -824,30 +857,74 @@ public class AppointmentViewController extends AnchorPane {
             alert.show();
         }
 
-        Appointment app = new Appointment(
-                txtCreatedBy.getText(),
-                customerId,
-                txtDescription.getText(),
-                endDateTime,
-                txtLocation.getText(),
-                startDateTime,
-                txtTitle.getText(),
-                txtUrl.getText(),
-                txtContact.getText()
-        );
+        final Appointment[] app = new Appointment[1];
+        appointments.filtered(appointment -> {
+            if(appointment.getTitle().equals(txtTitle.getText()) || appointment.getDescription().equals(txtDescription.getText())){
+                app[0] = appointment;
+                return true;
+            }
+            return false;
+        });
+
+        try {
+            app[0].getTitle();
+        }
+        catch (NullPointerException npe){
+            Appointment appt = new Appointment(
+                    txtCreatedBy.getText(),
+                    customerId,
+                    txtDescription.getText(),
+                    endDateTime,
+                    txtLocation.getText(),
+                    startDateTime,
+                    txtTitle.getText(),
+                    txtUrl.getText(),
+                    txtContact.getText()
+            );
+            app[0] = appt;
+        }
 
         try (Connection connection = dataSource.getConnection()){
             if (!isNewAppointment){
-                return updateAppointment(connection, app);
+                app[0].setStart(startDateTime);
+                app[0].setEnd(endDateTime);
+                boolean response = updateAppointment(connection, app[0]);
+                if(response){
+                    refreshAppointments(connection);
+                }
             }
             else {
                 isNewAppointment = false;
-                return saveNewAppointment(connection, app);
+                return saveNewAppointment(connection, app[0]);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private void refreshAppointments(Connection connection) throws SQLException {
+        List<AppointmentView> appointmentViewList = new LinkedList<>();
+//        List<Appointment> appointmentList = new LinkedList<>();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments");
+        ResultSet rs = statement.executeQuery();
+        while(rs.next()){
+            AppointmentView av = new AppointmentView(
+              rs.getString("title"),
+              rs.getString("description"),
+              rs.getString("location"),
+              rs.getString("contact"),
+              rs.getString("url"),
+              rs.getString("customerName"),
+              rs.getTimestamp("start"),
+              rs.getTimestamp("end"),
+              rs.getTimestamp("createDate"),
+              rs.getString("createdBy"),
+              rs.getTimestamp("lastUpdate")
+            );
+            appointmentViewList.add(av);
+        }
+        setAppointmentViews(appointmentViewList);
     }
 
     private boolean saveNewAppointment(Connection connection, Appointment app) throws SQLException {

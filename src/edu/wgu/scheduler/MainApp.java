@@ -8,7 +8,6 @@ import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -25,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static edu.wgu.scheduler.controllers.LoginController.*;
@@ -46,7 +47,6 @@ public class MainApp extends Application {
     private static ObservableList<Appointment> appointments;
     private static ObservableList<Country> countries;
     private static ObservableList<Reminder> reminders;
-    private static ObservableList<CustomerView> customerList;
     private static ObservableList<AppointmentView> appointmentViews;
     private static ObservableList<CustomerView> customerViews;
     private static Scene scene;
@@ -64,7 +64,6 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
-        setupCollections();
 
         primaryStage = stage;
         primaryStage.setTitle("Welcome to C195 scheduler!");
@@ -94,10 +93,7 @@ public class MainApp extends Application {
 
         getDataSourceConnection();
         LoginController loginController = new LoginController();
-        // TODO:  uncomment this to enable login
-        user = new User("test1");
-        initLayout();
-/*        loggedIn = showLoginDialog(loginController);
+        loggedIn = showLoginDialog(loginController);
 
         int x = 1;
         while (x < 3) {
@@ -116,23 +112,7 @@ public class MainApp extends Application {
             alert.setContentText(bundle.getString("MaxLoginFailures"));
             alert.showAndWait();
             System.exit(1);
-        }*/
-    }
-
-    private void setupCollections() {
-
-
-
-
-
-
-        reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
-                re.remindercolProperty(),
-                re.reminderDateProperty(),
-                re.snoozeIncrementProperty(),
-                re.snoozeIncrementTypeIdProperty()
-        });
-
+        }
     }
 
     private boolean showLoginDialog(LoginController loginController) {
@@ -144,25 +124,13 @@ public class MainApp extends Application {
         dialog.getDialogPane().setPrefWidth(350.0);
 
         Node loginButton = dialog.getDialogPane().lookupButton(btnLogin);
-        loginButton.setDisable(true);
-
 
         txtUsername.textProperty().addListener(((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             username = txtUsername.getText();
-            if ((txtPassword.textProperty().getValue().trim() != null) && (!username.trim().isEmpty()) && (userCount > 0)) {
-                loginButton.setDisable(false);
-            } else {
-                loginButton.setDisable(true);
-            }
         }));
 
         txtPassword.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             password = txtPassword.getText();
-            if ((txtPassword.textProperty().getValue().trim() != null) && (txtUsername.textProperty().getValue().trim() != null) && (userCount > 0)) {
-                loginButton.setDisable(false);
-            } else {
-                loginButton.setDisable(true);
-            }
         });
 
         loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, LoginController::handleLoginButtonAction);
@@ -250,6 +218,38 @@ public class MainApp extends Application {
         
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        reminders.filtered(reminder -> {
+            if (reminder.getReminderDate().withZoneSameInstant(ZoneId.systemDefault()).isEqual(ZonedDateTime.now().plusMinutes(15))){
+                int minutesTilAppointment = ZonedDateTime.now(ZoneId.systemDefault()).compareTo(reminder.getReminderDate());
+                int appointmentId = reminder.getAppointmentId();
+                final Appointment[] app = new Appointment[1];
+
+                appointments.filtered(appointment -> {
+                    if (appointment.getAppointmentId() == appointmentId){
+                        app[0] = appointment;
+                        return true;
+                    }
+                    return false;
+                });
+
+                final Customer[] cust = new Customer[1];
+                customers.filtered(customer -> {
+                   if (customer.getCustomerId() == app[0].getCustomerId()){
+                       cust[0] = customer;
+                       return true;
+                   }
+                   return false;
+                });
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("You have an appointment!");
+                alert.setHeaderText(String.format("You have an appointment in %d minutes", minutesTilAppointment));
+                alert.setContentText(String.format("Meeting with %s at %s Titled: %s", cust[0].getCustomerName(), app[0].getLocation(), app[0].getTitle() ));
+                alert.show();
+                return true;
+            }
+            return false;
+        });
     }
 
 
@@ -347,16 +347,18 @@ public class MainApp extends Application {
     }
 
     public static void setAppointments(List<Appointment> appointments) {
-        MainApp.appointments = FXCollections.observableList(new LinkedList<>(), appointment -> new Observable[]{
-                appointment.customerIdProperty(),
-                appointment.contactProperty(),
-                appointment.descriptionProperty(),
-                appointment.titleProperty(),
-                appointment.startProperty(),
-                appointment.endProperty(),
-                appointment.lastUpdatedByProperty(),
-                appointment.lastUpdateProperty()
-        });
+        if(MainApp.appointments == null) {
+            MainApp.appointments = FXCollections.observableList(new LinkedList<>(), appointment -> new Observable[]{
+                    appointment.customerIdProperty(),
+                    appointment.contactProperty(),
+                    appointment.descriptionProperty(),
+                    appointment.titleProperty(),
+                    appointment.startProperty(),
+                    appointment.endProperty(),
+                    appointment.lastUpdatedByProperty(),
+                    appointment.lastUpdateProperty()
+            });
+        }
         MainApp.appointments.setAll(appointments);
     }
 
@@ -374,42 +376,24 @@ public class MainApp extends Application {
         MainApp.countries.setAll(countries);
     }
 
-    public static ObservableList<CustomerView> getCustomerList() {
-        return customerList;
-    }
-
-    public static void setCustomerList(List<CustomerView> customerList) {
-        MainApp.customerList = FXCollections.observableList(new LinkedList<>(), customerView -> new Observable[] {
-                customerView.customerNameProperty(),
-                customerView.addressProperty(),
-                customerView.address2Property(),
-                customerView.cityProperty(),
-                customerView.countryProperty(),
-                customerView.postalCodeProperty(),
-                customerView.phoneProperty(),
-                customerView.lastUpdateProperty(),
-                customerView.lastUpdateByProperty(),
-                customerView.activeProperty()
-        });
-        MainApp.customerList.setAll(customerList);
-    }
-
     public static ObservableList<AppointmentView> getAppointmentViews() {
         return appointmentViews;
     }
 
     public static void setAppointmentViews(List<AppointmentView> appointmentViews) {
-        MainApp.appointmentViews = FXCollections.observableList(new LinkedList<>(), av -> new Observable[]{
-                av.titleProperty(),
-                av.descriptionProperty(),
-                av.locationProperty(),
-                av.contactProperty(),
-                av.urlProperty(),
-                av.customerNameProperty(),
-                av.startProperty(),
-                av.endProperty(),
-                av.lastUpdatedProperty()
-        });
+        if(MainApp.appointmentViews == null) {
+            MainApp.appointmentViews = FXCollections.observableList(new LinkedList<>(), av -> new Observable[]{
+                    av.titleProperty(),
+                    av.descriptionProperty(),
+                    av.locationProperty(),
+                    av.contactProperty(),
+                    av.urlProperty(),
+                    av.customerNameProperty(),
+                    av.startProperty(),
+                    av.endProperty(),
+                    av.lastUpdatedProperty()
+            });
+        }
         MainApp.appointmentViews.setAll(appointmentViews);
     }
 
@@ -418,19 +402,37 @@ public class MainApp extends Application {
     }
 
     public static void setCustomerViews(List<CustomerView> customerViews) {
-        MainApp.customerViews = FXCollections.observableList(new LinkedList<>(), customerView -> new Observable[]{
-                customerView.activeProperty(),
-                customerView.lastUpdateByProperty(),
-                customerView.lastUpdateProperty(),
-                customerView.phoneProperty(),
-                customerView.postalCodeProperty(),
-                customerView.cityProperty(),
-                customerView.countryProperty(),
-                customerView.address2Property(),
-                customerView.addressProperty(),
-                customerView.customerNameProperty()
-        });
+        if(MainApp.customerViews == null) {
+            MainApp.customerViews = FXCollections.observableList(new LinkedList<>(), customerView -> new Observable[]{
+                    customerView.activeProperty(),
+                    customerView.lastUpdateByProperty(),
+                    customerView.lastUpdateProperty(),
+                    customerView.phoneProperty(),
+                    customerView.postalCodeProperty(),
+                    customerView.cityProperty(),
+                    customerView.countryProperty(),
+                    customerView.address2Property(),
+                    customerView.addressProperty(),
+                    customerView.customerNameProperty()
+            });
+        }
         MainApp.customerViews.setAll(customerViews);
+    }
+
+    public static ObservableList<Reminder> getReminders() {
+        return reminders;
+    }
+
+    public static void setReminders(List<Reminder> reminders) {
+        if(MainApp.reminders == null) {
+            MainApp.reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
+                    re.remindercolProperty(),
+                    re.reminderDateProperty(),
+                    re.snoozeIncrementProperty(),
+                    re.snoozeIncrementTypeIdProperty()
+            });
+        }
+        MainApp.reminders.setAll(reminders);
     }
 
     /**

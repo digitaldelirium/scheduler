@@ -163,8 +163,8 @@ public class AppViewController extends BorderPane {
     private void createMonthlyAppointmentReport() {
         try(BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File("/tmp/MonthlyAppointmentReport.csv")))) {
             try(Connection connection = dataSource.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments " +
-                                                                                  "WHERE DATE(start) LIKE CURDATE + INTERVAL 30 DAY;");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments\n" +
+                                                                                  "WHERE start BETWEEN UTC_DATE AND DATE_ADD(UTC_DATE, INTERVAL 1 MONTH);");
                 ResultSet rs = statement.executeQuery();
                 StringBuilder builder = new StringBuilder();
                 while (rs.next()){
@@ -189,19 +189,19 @@ public class AppViewController extends BorderPane {
                                      .atZone(ZoneId.of("UTC"))
                                      .withZoneSameInstant(ZoneId.systemDefault())
                                      .toLocalDate()
-                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                                     .format(DateTimeFormatter.ISO_DATE) + ",");
                     builder.append(rs.getString("createdBy") + ",");
                     builder.append(rs.getTimestamp("lastUpdate")
                                      .toInstant()
                                      .atZone(ZoneId.of("UTC"))
                                      .withZoneSameInstant(ZoneId.systemDefault())
-                                     .toLocalTime()
                                      .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
                     builder.append(rs.getString("lastUpdateBy") + "\n");
-                    stream.write(builder.toString().getBytes());
                 }
+                stream.write(builder.toString().getBytes());
             } catch (SQLException e) {
                 e.printStackTrace();
+                stream.flush();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -263,7 +263,7 @@ public class AppViewController extends BorderPane {
         try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(report))){
             StringBuffer buffer = new StringBuffer();
             try(Connection connection = dataSource.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * from Customers GROUP BY country ASC");
+                PreparedStatement statement = connection.prepareStatement("SELECT * from Customers ORDER BY country ASC");
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()){
                     boolean active;
@@ -281,7 +281,7 @@ public class AppViewController extends BorderPane {
                     buffer.append(rs.getString("address2") + ",");
                     buffer.append(rs.getString("city") +"," );
                     buffer.append(rs.getString("postalCode") + ",");
-                    buffer.append(rs.getString("phoneNumber") + ",");
+                    buffer.append(rs.getString("phone") + ",");
                     buffer.append(rs.getTimestamp("createDate")
                                     .toInstant()
                                     .atZone(ZoneId.of("UTC"))
@@ -292,8 +292,8 @@ public class AppViewController extends BorderPane {
                                  .toInstant()
                                  .atZone(ZoneId.of("UTC"))
                                  .withZoneSameInstant(ZoneId.systemDefault())
-                                 .format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
-                    buffer.append(rs.getString("lastUpdateBy"));
+                                 .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    buffer.append(rs.getString("lastUpdateBy") + ",");
                     buffer.append(active);
                     buffer.append("\n");
                 }
