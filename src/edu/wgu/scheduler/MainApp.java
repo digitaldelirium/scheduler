@@ -4,6 +4,7 @@ import edu.wgu.scheduler.controllers.*;
 import edu.wgu.scheduler.models.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,13 +40,15 @@ public class MainApp extends Application {
     public static Locale locale = Locale.getDefault();
     public static ResourceBundle bundle;
 
-    private static ObservableMap<Integer, ICustomer> customers = FXCollections.observableHashMap();
-    private static ObservableMap<Integer, IAddress> addresses = FXCollections.observableHashMap();
-    private static ObservableMap<Integer, ICity> cities = FXCollections.observableHashMap();
-    private static ObservableMap<Integer, IAppointment> appointments = FXCollections.observableHashMap();
-    private static ObservableMap<Integer, ICountry> countries = FXCollections.observableHashMap();
-    private static ObservableMap<Integer, IReminder> reminders = FXCollections.observableHashMap();
-    private static ObservableList<ICustomerView> customerList;
+    private static ObservableList<Customer> customers;
+    private static ObservableList<Address> addresses;
+    private static ObservableList<City> cities;
+    private static ObservableList<Appointment> appointments;
+    private static ObservableList<Country> countries;
+    private static ObservableList<Reminder> reminders;
+    private static ObservableList<CustomerView> customerList;
+    private static ObservableList<AppointmentView> appointmentViews;
+    private static ObservableList<CustomerView> customerViews;
     private static Scene scene;
 
     private static AppViewController appViewController;
@@ -58,8 +61,11 @@ public class MainApp extends Application {
     private static Parent dataView;
 
 
+
     @Override
     public void start(Stage stage) throws IOException, SQLException {
+        setupCollections();
+
         primaryStage = stage;
         primaryStage.setTitle("Welcome to C195 scheduler!");
 
@@ -111,6 +117,22 @@ public class MainApp extends Application {
             alert.showAndWait();
             System.exit(1);
         }*/
+    }
+
+    private void setupCollections() {
+
+
+
+
+
+
+        reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
+                re.remindercolProperty(),
+                re.reminderDateProperty(),
+                re.snoozeIncrementProperty(),
+                re.snoozeIncrementTypeIdProperty()
+        });
+
     }
 
     private boolean showLoginDialog(LoginController loginController) {
@@ -272,62 +294,144 @@ public class MainApp extends Application {
         rootPane.setBottom(MainApp.dataView);
     }
 
-    public static ObservableMap<Integer, ICustomer> getCustomers() {
+    public static ObservableList<Customer> getCustomers() {
         return customers;
     }
 
-    public static void setCustomers(HashMap<Integer, ICustomer> customers) {
-        MainApp.customers.putAll(customers);
+    public static void setCustomers(List<Customer> customers) {
+        MainApp.customers = FXCollections.observableList(new LinkedList<>(), cu -> new Observable[]{
+                cu.customerNameProperty(),
+                cu.addressIdProperty(),
+                cu.lastUpdateByProperty(),
+                cu.lastUpdateProperty(),
+                cu.activeProperty()
+        });
+
+        MainApp.customers.setAll(customers);
     }
 
-    public static ObservableMap<Integer, IAddress> getAddresses() {
+    public static ObservableList<Address> getAddresses() {
         return addresses;
     }
 
-    public static void setAddresses(HashMap<Integer, IAddress> addresses) {
-        MainApp.addresses.putAll(addresses);
+    public static void setAddresses(List<Address> addresses) {
+        MainApp.addresses = FXCollections.observableList(new LinkedList<>(), address -> new Observable[]{
+                address.addressProperty(),
+                address.address2Property(),
+                address.phoneProperty(),
+                address.postalCodeProperty(),
+                address.lastUpdateByProperty(),
+                address.lastUpdateProperty(),
+                address.cityIdProperty()
+        });
+
+        MainApp.addresses.setAll(addresses);
     }
 
-    public static ObservableMap<Integer, ICity> getCities() {
+    public static ObservableList<City> getCities() {
         return cities;
     }
 
-    public static void setCities(ObservableMap<Integer, ICity> cities) {
-        MainApp.cities = cities;
+    public static void setCities(List<City> cities) {
+        MainApp.cities = FXCollections.observableList(new LinkedList<>(), city -> new Observable[]{
+                city.cityProperty(),
+                city.countryIdProperty(),
+                city.lastUpdateByProperty(),
+                city.lastUpdateProperty()
+            });
+        MainApp.cities.setAll(cities);
     }
 
-    public static ObservableMap<Integer, IAppointment> getAppointments() {
+    public static ObservableList<Appointment> getAppointments() {
         return appointments;
     }
 
-    public static void setAppointments(ObservableMap<Integer, IAppointment> appointments) {
-        MainApp.appointments = appointments;
+    public static void setAppointments(List<Appointment> appointments) {
+        MainApp.appointments = FXCollections.observableList(new LinkedList<>(), appointment -> new Observable[]{
+                appointment.customerIdProperty(),
+                appointment.contactProperty(),
+                appointment.descriptionProperty(),
+                appointment.titleProperty(),
+                appointment.startProperty(),
+                appointment.endProperty(),
+                appointment.lastUpdatedByProperty(),
+                appointment.lastUpdateProperty()
+        });
+        MainApp.appointments.setAll(appointments);
     }
 
-    public static ObservableMap<Integer, ICountry> getCountries() {
+    public static ObservableList<Country> getCountries() {
         return countries;
     }
 
-    public static void setCountries(ObservableMap<Integer, ICountry> countries) {
-        MainApp.countries = countries;
+    public static void setCountries(List<Country> countries) {
+        MainApp.countries = FXCollections.observableList(new LinkedList<>(), country -> new Observable[]{
+                country.countryProperty(),
+                country.lastUpdateByProperty(),
+                country.lastUpdateProperty()
+        });
+
+        MainApp.countries.setAll(countries);
     }
 
-    public static ObservableMap<Integer, IReminder> getReminders() {
-        return reminders;
-    }
-
-    public static void setReminders(ObservableMap<Integer, IReminder> reminders) {
-        MainApp.reminders = reminders;
-    }
-
-    public static ObservableList<ICustomerView> getCustomerList() {
+    public static ObservableList<CustomerView> getCustomerList() {
         return customerList;
     }
 
-    public static void setCustomerList(ObservableList<ICustomerView> customerList) {
-        MainApp.customerList = customerList;
+    public static void setCustomerList(List<CustomerView> customerList) {
+        MainApp.customerList = FXCollections.observableList(new LinkedList<>(), customerView -> new Observable[] {
+                customerView.customerNameProperty(),
+                customerView.addressProperty(),
+                customerView.address2Property(),
+                customerView.cityProperty(),
+                customerView.countryProperty(),
+                customerView.postalCodeProperty(),
+                customerView.phoneProperty(),
+                customerView.lastUpdateProperty(),
+                customerView.lastUpdateByProperty(),
+                customerView.activeProperty()
+        });
+        MainApp.customerList.setAll(customerList);
     }
 
+    public static ObservableList<AppointmentView> getAppointmentViews() {
+        return appointmentViews;
+    }
+
+    public static void setAppointmentViews(List<AppointmentView> appointmentViews) {
+        MainApp.appointmentViews = FXCollections.observableList(new LinkedList<>(), av -> new Observable[]{
+                av.titleProperty(),
+                av.descriptionProperty(),
+                av.locationProperty(),
+                av.contactProperty(),
+                av.urlProperty(),
+                av.customerNameProperty(),
+                av.startProperty(),
+                av.endProperty(),
+                av.lastUpdatedProperty()
+        });
+        MainApp.appointmentViews.setAll(appointmentViews);
+    }
+
+    public static ObservableList<CustomerView> getCustomerViews() {
+        return customerViews;
+    }
+
+    public static void setCustomerViews(List<CustomerView> customerViews) {
+        MainApp.customerViews = FXCollections.observableList(new LinkedList<>(), customerView -> new Observable[]{
+                customerView.activeProperty(),
+                customerView.lastUpdateByProperty(),
+                customerView.lastUpdateProperty(),
+                customerView.phoneProperty(),
+                customerView.postalCodeProperty(),
+                customerView.cityProperty(),
+                customerView.countryProperty(),
+                customerView.address2Property(),
+                customerView.addressProperty(),
+                customerView.customerNameProperty()
+        });
+        MainApp.customerViews.setAll(customerViews);
+    }
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application.

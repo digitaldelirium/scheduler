@@ -354,37 +354,7 @@ public class AppointmentViewController extends AnchorPane {
     }
 
     private void setupCollections() {
-        appointments = FXCollections.observableList(new LinkedList<>(), (Appointment ap) -> {
-            return new Observable[]{
-                    ap.titleProperty(),
-                    ap.descriptionProperty(),
-                    ap.locationProperty(),
-                    ap.contactProperty(),
-                    ap.urlProperty(),
-                    ap.startProperty(),
-                    ap.endProperty(),
-                    ap.customerIdProperty()
-            };
-        });
 
-        reminders = FXCollections.observableList(new LinkedList<>(), re -> new Observable[]{
-                re.remindercolProperty(),
-                re.reminderDateProperty(),
-                re.snoozeIncrementProperty(),
-                re.snoozeIncrementTypeIdProperty()
-        });
-
-        appointmentViews = FXCollections.observableList(new LinkedList<>(), av -> new Observable[]{
-                av.titleProperty(),
-                av.descriptionProperty(),
-                av.locationProperty(),
-                av.contactProperty(),
-                av.urlProperty(),
-                av.customerNameProperty(),
-                av.startProperty(),
-                av.endProperty(),
-                av.lastUpdatedProperty()
-        });
 
     }
 
