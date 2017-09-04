@@ -13,7 +13,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+import java.io.*;
 import java.net.URL;
+import java.sql.*;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 import static edu.wgu.scheduler.MainApp.*;
@@ -148,6 +152,161 @@ public class AppViewController extends BorderPane {
                 setAppointmentView();
             }
         });
+
+        this.customersByCountryMenuItem.setOnAction(event -> createCustomersByCountryReport());
+
+        this.consultantScheduleMenuItem.setOnAction(event -> createConsultantScheduleReport());
+
+        this.monthlyAppointmentReportMenuItem.setOnAction(event -> createMonthlyAppointmentReport());
+    }
+
+    private void createMonthlyAppointmentReport() {
+        try(BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File("/tmp/MonthlyAppointmentReport.csv")))) {
+            try(Connection connection = dataSource.getConnection()) {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments " +
+                                                                                  "WHERE DATE(start) LIKE CURDATE + INTERVAL 30 DAY;");
+                ResultSet rs = statement.executeQuery();
+                StringBuilder builder = new StringBuilder();
+                while (rs.next()){
+                    builder.append(rs.getTimestamp("start")
+                                     .toInstant()
+                                     .atZone(ZoneId.of("UTC"))
+                                     .withZoneSameInstant(ZoneId.systemDefault())
+                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    builder.append(rs.getTimestamp("end")
+                                     .toInstant()
+                                     .atZone(ZoneId.of("UTC"))
+                                     .withZoneSameInstant(ZoneId.systemDefault())
+                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)+ ",");
+                    builder.append(rs.getString("title") + ",");
+                    builder.append(rs.getString("description") + ",");
+                    builder.append(rs.getString("location") + ",");
+                    builder.append(rs.getString("contact") + ",");
+                    builder.append(rs.getString("url") + ",");
+                    builder.append(rs.getString("customerName") + ",");
+                    builder.append(rs.getTimestamp("createDate")
+                                     .toInstant()
+                                     .atZone(ZoneId.of("UTC"))
+                                     .withZoneSameInstant(ZoneId.systemDefault())
+                                     .toLocalDate()
+                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    builder.append(rs.getString("createdBy") + ",");
+                    builder.append(rs.getTimestamp("lastUpdate")
+                                     .toInstant()
+                                     .atZone(ZoneId.of("UTC"))
+                                     .withZoneSameInstant(ZoneId.systemDefault())
+                                     .toLocalTime()
+                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    builder.append(rs.getString("lastUpdateBy") + "\n");
+                    stream.write(builder.toString().getBytes());
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createConsultantScheduleReport() {
+        try(BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File("/tmp/ConsultantScheduleReport.csv")))){
+            try(Connection connection = dataSource.getConnection()){
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments ORDER BY createdBy DESC, start DESC");
+                ResultSet rs = statement.executeQuery();
+                StringBuilder builder = new StringBuilder();
+                while (rs.next()){
+                    builder.append(rs.getString("createdBy") + ",");
+                    builder.append(rs.getString("title") + ",");
+                    builder.append(rs.getString("description") + ",");
+                    builder.append(rs.getString("location") + ",");
+                    builder.append(rs.getString("contact") + ",");
+                    builder.append(rs.getString("url") + ",");
+                    builder.append(rs.getTimestamp("start")
+                                     .toInstant()
+                                     .atZone(ZoneId.of("UTC"))
+                                     .withZoneSameInstant(ZoneId.systemDefault())
+                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    builder.append(rs.getTimestamp("end")
+                                     .toInstant()
+                                     .atZone(ZoneId.of("UTC"))
+                                     .withZoneSameInstant(ZoneId.systemDefault())
+                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    builder.append(rs.getString("customerName") + ",");
+                    builder.append(rs.getTimestamp("createDate")
+                                  .toInstant()
+                                  .atZone(ZoneId.of("UTC"))
+                                  .withZoneSameInstant(ZoneId.systemDefault())
+                                  .toLocalDate()
+                                  .format(DateTimeFormatter.ISO_DATE));
+                    builder.append(rs.getTimestamp("lastUpdate")
+                                     .toInstant().atZone(ZoneId.of("UTC"))
+                                     .withZoneSameInstant(ZoneId.systemDefault())
+                                     .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    builder.append(rs.getString("lastUpdateBy") + "\n");
+                    stream.write(builder.toString().getBytes());
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createCustomersByCountryReport() {
+        File report = new File("/tmp/CustomersByCountryReport.csv");
+        try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(report))){
+            StringBuffer buffer = new StringBuffer();
+            try(Connection connection = dataSource.getConnection()) {
+                PreparedStatement statement = connection.prepareStatement("SELECT * from Customers GROUP BY country ASC");
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()){
+                    boolean active;
+                    switch (rs.getByte("active")){
+                        case 0:
+                            active = false;
+                            break;
+                        default:
+                            active = true;
+                            break;
+                    }
+                    buffer.append(rs.getString("country") + ",");
+                    buffer.append(rs.getString("customerName") + ",");
+                    buffer.append(rs.getString("address") + ",");
+                    buffer.append(rs.getString("address2") + ",");
+                    buffer.append(rs.getString("city") +"," );
+                    buffer.append(rs.getString("postalCode") + ",");
+                    buffer.append(rs.getString("phoneNumber") + ",");
+                    buffer.append(rs.getTimestamp("createDate")
+                                    .toInstant()
+                                    .atZone(ZoneId.of("UTC"))
+                                    .withZoneSameInstant(ZoneId.systemDefault())
+                                    .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + ",");
+                    buffer.append(rs.getString("createdBy") + ",");
+                    buffer.append(rs.getTimestamp("lastUpdate")
+                                 .toInstant()
+                                 .atZone(ZoneId.of("UTC"))
+                                 .withZoneSameInstant(ZoneId.systemDefault())
+                                 .format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+                    buffer.append(rs.getString("lastUpdateBy"));
+                    buffer.append(active);
+                    buffer.append("\n");
+                }
+                stream.write(String.valueOf(buffer.toString()).getBytes());
+                return;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setCustomerView() {
