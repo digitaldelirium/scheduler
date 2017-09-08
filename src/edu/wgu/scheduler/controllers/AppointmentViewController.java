@@ -1,5 +1,6 @@
 package edu.wgu.scheduler.controllers;
 
+import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import edu.wgu.scheduler.models.Appointment;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
@@ -459,6 +460,8 @@ public class AppointmentViewController extends AnchorPane {
                     AppViewController appViewController = AppViewController.getInstance();
                     appViewController.getTpAppPane().getSelectionModel().select(appViewController.getTabCustomers());
                 });
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         });
@@ -788,7 +791,7 @@ public class AppointmentViewController extends AnchorPane {
      * @return
      */
     
-    private boolean saveAppointment() throws InvalidCustomerException {
+    private boolean saveAppointment() throws AppointmentConflictException {
         customers = getCustomers();
         int customerId = 0;
         int x = 0;
@@ -826,6 +829,8 @@ public class AppointmentViewController extends AnchorPane {
         LocalTime endTime = LocalTime.of(
                 choiceBoxEndHour.getValue().intValue(), choiceBoxEndMinute.getValue().intValue());
         ZonedDateTime endDateTime = ZonedDateTime.of(endDate, endTime, ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+
+
 
         try {
             if ((startTime.getHour() < 8) || (startTime.getHour() >= 18)) {
@@ -886,6 +891,27 @@ public class AppointmentViewController extends AnchorPane {
         }
 
         try (Connection connection = dataSource.getConnection()){
+
+            try {
+                PreparedStatement checkStatement = connection.prepareStatement("SELECT * FROM appointment WHERE UNIX_TIMESTAMP(appointment.start) BETWEEN UNIX_TIMESTAMP(start)AND UNIX_TIMESTAMP(end)\n" +
+                                                                                       "                                OR UNIX_TIMESTAMP(appointment.end) BETWEEN  UNIX_TIMESTAMP(?) AND UNIX_TIMESTAMP(?);");
+                checkStatement.setLong(1, startDateTime.toInstant().toEpochMilli());
+                checkStatement.setLong(2, endDateTime.toInstant().toEpochMilli());
+                ResultSet rsExistingAppointments = checkStatement.executeQuery();
+                if(rsExistingAppointments.next()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Appointment Conflict");
+                    alert.setHeaderText("Appointment exists at this slot");
+                    alert.setContentText("An appointment exists during this time, please choose another slot!");
+                    alert.showAndWait();
+                }
+                rsExistingAppointments.close();
+            }
+            catch (AppointmentConflictException e){
+                System.out.println(e.getMessage());
+                return false;
+            }
+
             if (!isNewAppointment){
                 app[0].setStart(startDateTime);
                 app[0].setEnd(endDateTime);
@@ -931,6 +957,7 @@ public class AppointmentViewController extends AnchorPane {
     private boolean saveNewAppointment(Connection connection, Appointment app) throws SQLException {
         ZonedDateTime startTime = app.getStart().withZoneSameInstant(ZoneId.of("UTC"));
         ZonedDateTime endTime = app.getEnd().withZoneSameInstant(ZoneId.of("UTC"));
+
         PreparedStatement statement =
                 connection.prepareStatement("INSERT INTO appointment (customerId, title, description, " +
                                                     "location, contact, url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy)" +
@@ -1210,6 +1237,12 @@ public class AppointmentViewController extends AnchorPane {
     private class InvalidCustomerException extends RuntimeException {
         public InvalidCustomerException(String message) {
             super(message);
+        }
+    }
+
+    private class AppointmentConflictException extends RuntimeException {
+        public AppointmentConflictException(String s) {
+            super(s);
         }
     }
 }
