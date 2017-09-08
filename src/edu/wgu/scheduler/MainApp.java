@@ -29,6 +29,8 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static edu.wgu.scheduler.controllers.LoginController.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MainApp extends Application {
@@ -95,7 +97,7 @@ public class MainApp extends Application {
         LoginController loginController = new LoginController();
         loggedIn = showLoginDialog(loginController);
 
-        int x = 1;
+        int x = 0;
         while (x < 3) {
             if (loggedIn) {
                 initLayout();
@@ -214,7 +216,7 @@ public class MainApp extends Application {
         rootPane.setBottom(dataViewController.tabPane);
 
         scene = new Scene(rootPane);
-        scene.getStylesheets().add("/styles/Styles.css");
+        scene.getStylesheets().add("resources/styles/Styles.css");
         
         primaryStage.setScene(scene);
         primaryStage.show();
