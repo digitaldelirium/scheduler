@@ -606,12 +606,13 @@ public class CustomerViewController extends AnchorPane {
                 newAddressId = getAddressId(connection, cityId, addr, addr2, postal, phone);
             }
 
-            if(addressId != 0 && customerId == 0) {
-                customerId = getCustomerId(connection, addressId, name, isNewCustomer);
+            if(newAddressId > 0 && customerId == 0) {
+                customerId = getCustomerId(connection, newAddressId, name, isNewCustomer);
             }
 
             if (customerId != 0){
                 PreparedStatement statement = connection.prepareStatement("SELECT createDate FROM customer WHERE customerId = ?;");
+                statement.setInt(1, customerId);
                 ResultSet rs = statement.executeQuery();
                 if(rs.next()){
                     this.lblCustomerSince.setText(rs.getTimestamp(1).toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE));

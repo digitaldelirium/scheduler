@@ -1,7 +1,6 @@
 package edu.wgu.scheduler.controllers;
 
 import edu.wgu.scheduler.MainApp;
-import edu.wgu.scheduler.models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -15,7 +14,6 @@ import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
 import javax.security.auth.login.FailedLoginException;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -25,8 +23,6 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 

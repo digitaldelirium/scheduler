@@ -1,5 +1,6 @@
 package edu.wgu.scheduler.controllers;
 
+import edu.wgu.scheduler.models.Appointment;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
 import edu.wgu.scheduler.models.AppointmentView;
