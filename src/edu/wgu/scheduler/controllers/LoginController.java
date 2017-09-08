@@ -56,7 +56,7 @@ public class LoginController implements Initializable {
     private static ObservableList<String> userList;
     private static ObservableMap<String, String> userMap;
     private static MainApp mainApp;
-    private static Logger log;
+    public static Logger log;
 
     public LoginController() throws SQLException, IOException {
         try {

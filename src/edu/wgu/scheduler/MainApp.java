@@ -98,12 +98,18 @@ public class MainApp extends Application {
         loggedIn = showLoginDialog(loginController);
 
         int x = 0;
-        while (x < 3) {
+        while (x <= 2) {
             if (loggedIn) {
                 initLayout();
                 break;
-            } else {
+            } else if (x == 2 ){
+                x++;
+                break;
+            }
+            else {
                 loggedIn = showLoginDialog(loginController);
+                if(loggedIn)
+                    break;
             }
             x++;
         }
@@ -113,6 +119,7 @@ public class MainApp extends Application {
             alert.setTitle(bundle.getString("LoginExceededTitle"));
             alert.setContentText(bundle.getString("MaxLoginFailures"));
             alert.showAndWait();
+            log.trace("[SECURITY VIOLATION!!!]\tMaximum login attempts exceeded!\tExiting!");
             System.exit(1);
         }
     }
