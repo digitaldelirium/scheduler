@@ -1,10 +1,8 @@
 package edu.wgu.scheduler.models;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -17,10 +15,9 @@ import java.time.ZonedDateTime;
  * Student ID: 000292065
  */
 public class Country implements ICountry {
-    @NotNull
+    
     private final ZonedDateTime createdDate;
     private int countryId;
-    @NotNull
     private SimpleStringProperty country;
     private String createdBy = new String();
     private SimpleObjectProperty<ZonedDateTime> lastUpdate;

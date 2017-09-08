@@ -1,6 +1,6 @@
 package edu.wgu.scheduler.models;
 
-import com.sun.istack.internal.NotNull;
+
 import javafx.beans.property.*;
 
 import java.sql.Timestamp;
@@ -14,12 +14,12 @@ import java.time.ZonedDateTime;
  * Student ID: 000292065
  */
 public class City implements ICity {
-    @NotNull
+    
     private final ZonedDateTime createDate;
     private int cityId;
-    @NotNull
+    
     private SimpleStringProperty city;
-    @NotNull
+    
     private SimpleIntegerProperty countryId;
     private String createdBy;
     private SimpleObjectProperty<ZonedDateTime> lastUpdate;

@@ -1,9 +1,7 @@
 package edu.wgu.scheduler.models;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.property.*;
 import javafx.beans.property.StringProperty;
-
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,18 +18,12 @@ import static java.lang.String.format;
  */
 public class Reminder implements IReminder {
     private int reminderId;
-    @NotNull
     private int appointmentId;
-    @NotNull
     private final String createdBy;
-    @NotNull
     private final ZonedDateTime createdDate;
-    @NotNull
     private ObjectProperty<ZonedDateTime> reminderDate;
     private StringProperty remindercol;
-    @NotNull
     private SimpleIntegerProperty snoozeIncrement;
-    @NotNull
     private SimpleIntegerProperty snoozeIncrementTypeId;
 
     /***

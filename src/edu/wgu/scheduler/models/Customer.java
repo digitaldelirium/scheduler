@@ -1,8 +1,6 @@
 package edu.wgu.scheduler.models;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.property.*;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -17,7 +15,6 @@ import java.time.ZonedDateTime;
 public class Customer implements ICustomer {
     private final ZonedDateTime createDate;
     private int customerId;
-    @NotNull
     private SimpleBooleanProperty active = new SimpleBooleanProperty();
     private SimpleIntegerProperty addressId = new SimpleIntegerProperty();
     private final String createdBy;

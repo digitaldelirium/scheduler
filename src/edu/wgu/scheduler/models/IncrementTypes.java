@@ -1,6 +1,5 @@
 package edu.wgu.scheduler.models;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.property.StringProperty;
 
 /**
@@ -11,7 +10,6 @@ import javafx.beans.property.StringProperty;
  */
 class IncrementTypes {
     private int incrementTypeId;
-    @NotNull
     private StringProperty incrementTypeDescription;
 
     public IncrementTypes(String incrementTypeDescription) {

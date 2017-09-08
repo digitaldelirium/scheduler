@@ -460,7 +460,7 @@ public class AppointmentViewController extends AnchorPane {
                     AppViewController appViewController = AppViewController.getInstance();
                     appViewController.getTpAppPane().getSelectionModel().select(appViewController.getTabCustomers());
                 });
-            } catch (Exception e) {
+            } catch (AppointmentConflictException e) {
                 e.printStackTrace();
             }
 

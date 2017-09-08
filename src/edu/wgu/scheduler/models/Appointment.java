@@ -1,6 +1,4 @@
 package edu.wgu.scheduler.models;
-
-import com.sun.istack.internal.NotNull;
 import javafx.beans.property.*;
 
 import java.sql.Timestamp;
