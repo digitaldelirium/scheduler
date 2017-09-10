@@ -1,12 +1,10 @@
 package edu.wgu.scheduler.controllers;
 
-import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import edu.wgu.scheduler.models.Appointment;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
 import edu.wgu.scheduler.models.AppointmentView;
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -16,7 +14,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 
-import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;

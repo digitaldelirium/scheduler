@@ -13,25 +13,18 @@ import java.time.ZonedDateTime;
  * Student ID: 000292065
  */
 public class Appointment implements IAppointment {
-    @NotNull
+    
     private final ZonedDateTime createDate;
     private int appointmentId;
-    private StringProperty contact;
-    @NotNull
+    private StringProperty contact;  
     private final String createdBy;
-    @NotNull
     private SimpleIntegerProperty customerId;
-    @NotNull
     private StringProperty description;
-    @NotNull
     private ObjectProperty<ZonedDateTime> end;
     private ObjectProperty<Timestamp> lastUpdate;
     private StringProperty lastUpdateBy;
-    @NotNull
     private StringProperty location;
-    @NotNull
     private ObjectProperty<ZonedDateTime> start;
-    @NotNull
     private StringProperty title;
     private StringProperty url;
 
