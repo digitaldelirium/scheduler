@@ -1,9 +1,7 @@
 package edu.wgu.scheduler.controllers;
 
-import edu.wgu.scheduler.models.Appointment;
 import edu.wgu.scheduler.MainApp;
 import edu.wgu.scheduler.models.*;
-import edu.wgu.scheduler.models.AppointmentView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,7 +15,10 @@ import javafx.scene.layout.*;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
 import static edu.wgu.scheduler.MainApp.*;
 import static edu.wgu.scheduler.controllers.AppViewController.toggleTextFields;
@@ -458,7 +459,11 @@ public class AppointmentViewController extends AnchorPane {
                     appViewController.getTpAppPane().getSelectionModel().select(appViewController.getTabCustomers());
                 });
             } catch (AppointmentConflictException e) {
-                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Appointment Conflict");
+                alert.setHeaderText("Appointment exists at this slot");
+                alert.setContentText("An appointment exists during this time, please choose another slot!");
+                alert.showAndWait();
             }
 
         });
@@ -522,9 +527,12 @@ public class AppointmentViewController extends AnchorPane {
                 statement = connection.prepareStatement("SELECT * from Appointments\n" +
                                                                 "WHERE start BETWEEN UTC_DATE AND DATE_ADD(UTC_DATE, INTERVAL 1 MONTH);");
             }
-            else {
+            else if (rdoWeekly.isSelected()) {
                 statement = connection.prepareStatement("SELECT * FROM Appointments \n" +
                                                                 "WHERE start BETWEEN UTC_DATE AND DATE_ADD(UTC_DATE, INTERVAL 1 WEEK);");
+            }
+            else {
+                statement = connection.prepareStatement("SELECT * FROM Appointments WHERE start >= UTC_TIMESTAMP");
             }
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
@@ -808,7 +816,6 @@ public class AppointmentViewController extends AnchorPane {
             alert.setTitle("Customer does not exist!");
             alert.setContentText(
                     "The customer you're trying to create an appointment for does not exist! You will now be switched to Customer View to create this customer!");
-            alert.getButtonTypes().add(ButtonType.OK);
             alert.showAndWait()
                  .ifPresent(response -> {
                      AppViewController appView = AppViewController.getInstance();
@@ -827,7 +834,15 @@ public class AppointmentViewController extends AnchorPane {
                 choiceBoxEndHour.getValue().intValue(), choiceBoxEndMinute.getValue().intValue());
         ZonedDateTime endDateTime = ZonedDateTime.of(endDate, endTime, ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
 
-
+        if (startDateTime.isBefore(ZonedDateTime.now(ZoneId.systemDefault())) || endDateTime.isBefore(ZonedDateTime.now(ZoneId.systemDefault()))){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Start or End Time Invalid");
+            alert.setHeaderText("Please choose a date and time in the future!");
+            alert.setContentText(String.format("The start or end time is before %s!  Please choose a date and time in the future!",
+                                               ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.RFC_1123_DATE_TIME)));
+            alert.showAndWait().filter(buttonType -> buttonType ==  ButtonType.OK);
+            return false;
+        }
 
         try {
             if ((startTime.getHour() < 8) || (startTime.getHour() >= 18)) {
@@ -841,7 +856,8 @@ public class AppointmentViewController extends AnchorPane {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Start Time");
             alert.setContentText(ate.getMessage());
-            alert.show();
+            alert.showAndWait()
+            .filter(buttonType -> buttonType == ButtonType.OK);
             return false;
         }
 
@@ -857,14 +873,18 @@ public class AppointmentViewController extends AnchorPane {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid End Time");
             alert.setContentText(ate.getMessage());
-            alert.show();
+            alert.showAndWait()
+            .filter(buttonType -> buttonType == ButtonType.OK);
         }
 
         final Appointment[] app = new Appointment[1];
         appointments.filtered(appointment -> {
             if(appointment.getTitle().equals(txtTitle.getText()) || appointment.getDescription().equals(txtDescription.getText())){
-                app[0] = appointment;
-                return true;
+                if (appointment.getStart().equals(startDateTime.withZoneSameInstant(ZoneId.of("UTC")))) {
+                    app[0] = appointment;
+                    return true;
+                }
+                return false;
             }
             return false;
         });
@@ -890,23 +910,21 @@ public class AppointmentViewController extends AnchorPane {
         try (Connection connection = dataSource.getConnection()){
 
             try {
-                PreparedStatement checkStatement = connection.prepareStatement("SELECT * FROM appointment WHERE UNIX_TIMESTAMP(appointment.start) BETWEEN UNIX_TIMESTAMP(start)AND UNIX_TIMESTAMP(end)\n" +
-                                                                                       "                                OR UNIX_TIMESTAMP(appointment.end) BETWEEN  UNIX_TIMESTAMP(?) AND UNIX_TIMESTAMP(?);");
-                checkStatement.setLong(1, startDateTime.toInstant().toEpochMilli());
-                checkStatement.setLong(2, endDateTime.toInstant().toEpochMilli());
+                PreparedStatement checkStatement = connection.prepareStatement("SELECT * FROM appointment WHERE UNIX_TIMESTAMP(appointment.start) BETWEEN UNIX_TIMESTAMP(?)AND UNIX_TIMESTAMP(?)\n" +
+                                                                                       "                                OR UNIX_TIMESTAMP(appointment.end) BETWEEN  ? AND ?;");
+                checkStatement.setTimestamp(1, Timestamp.from(startDateTime.toInstant()));
+                checkStatement.setTimestamp(2, Timestamp.from(endDateTime.toInstant()));
+                checkStatement.setTimestamp(3, Timestamp.from(startDateTime.toInstant()));
+                checkStatement.setTimestamp(4, Timestamp.from(endDateTime.toInstant()));
                 ResultSet rsExistingAppointments = checkStatement.executeQuery();
                 if(rsExistingAppointments.next()){
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Appointment Conflict");
-                    alert.setHeaderText("Appointment exists at this slot");
-                    alert.setContentText("An appointment exists during this time, please choose another slot!");
-                    alert.showAndWait();
+                    throw new AppointmentConflictException("An appointment exists during this time, please choose another slot!");
                 }
                 rsExistingAppointments.close();
             }
             catch (AppointmentConflictException e){
                 System.out.println(e.getMessage());
-                return false;
+                throw new AppointmentConflictException(e.getMessage());
             }
 
             if (!isNewAppointment){
@@ -916,10 +934,15 @@ public class AppointmentViewController extends AnchorPane {
                 if(response){
                     refreshAppointments(connection);
                 }
+                return response;
             }
             else {
                 isNewAppointment = false;
-                return saveNewAppointment(connection, app[0]);
+                boolean response = saveNewAppointment(connection, app[0]);
+                if(response){
+                    refreshAppointments(connection);
+                }
+                return response;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -952,8 +975,8 @@ public class AppointmentViewController extends AnchorPane {
     }
 
     private boolean saveNewAppointment(Connection connection, Appointment app) throws SQLException {
-        ZonedDateTime startTime = app.getStart().withZoneSameInstant(ZoneId.of("UTC"));
-        ZonedDateTime endTime = app.getEnd().withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime startTime = app.getStart().withZoneSameInstant(ZoneId.systemDefault());
+        ZonedDateTime endTime = app.getEnd().withZoneSameInstant(ZoneId.systemDefault());
 
         PreparedStatement statement =
                 connection.prepareStatement("INSERT INTO appointment (customerId, title, description, " +
@@ -974,6 +997,12 @@ public class AppointmentViewController extends AnchorPane {
         boolean failed = statement.execute();
         System.out.println(statement.getUpdateCount());
         if(!failed){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText("INSERT completed");
+            alert.setContentText("Appointment successfully inserted!");
+            alert.show();
+
             statement = connection.prepareStatement("SELECT * FROM appointment " +
                                                             "WHERE customerId = ? AND title = ? AND start = ? AND end = ?" +
                                                             "AND url = ? AND description = ?");
