@@ -101,7 +101,8 @@ public class LoginController implements Initializable {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(bundle.getString("LoginSuccessTitle"));
                     alert.setContentText(bundle.getString("LoginSuccessMessage"));
-                    alert.show();
+                    alert.showAndWait()
+                    .filter(buttonType -> buttonType == ButtonType.OK);
                     return true;
                 }
                 return false;
