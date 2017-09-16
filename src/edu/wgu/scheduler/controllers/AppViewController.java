@@ -213,7 +213,7 @@ public class AppViewController extends BorderPane {
     private void createConsultantScheduleReport() {
         try(BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File("/tmp/ConsultantScheduleReport.csv")))){
             try(Connection connection = dataSource.getConnection()){
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments ORDER BY createdBy DESC, start DESC");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Appointments ORDER BY Appointments.createdBy DESC, Appointments.start DESC");
                 ResultSet rs = statement.executeQuery();
                 StringBuilder builder = new StringBuilder();
                 while (rs.next()){
