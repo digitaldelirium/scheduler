@@ -615,7 +615,7 @@ public class CustomerViewController extends AnchorPane {
                 statement.setInt(1, customerId);
                 ResultSet rs = statement.executeQuery();
                 if(rs.next()){
-                    this.lblCustomerSince.setText(rs.getTimestamp(1).toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE));
+                    this.lblCustomerCreatedDate.setText(rs.getTimestamp(1).toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE));
                 }
 
                 if(isCustomerUpdate == false) {
@@ -983,6 +983,7 @@ public class CustomerViewController extends AnchorPane {
             txtPostalCode.setText(customerView.getPostalCode());
             txtCountry.setText(customerView.getCountry());
             txtPhone.setText(customerView.getPhone());
+            lblCustomerCreatedDate.setText(customerView.getCreateDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
             cbActive.setSelected(customerView.isActive());
         }
         else {
@@ -994,6 +995,7 @@ public class CustomerViewController extends AnchorPane {
             txtPostalCode.setText("");
             txtCountry.setText("");
             txtPhone.setText("");
+            lblCustomerCreatedDate.setText("");
             cbActive.setSelected(false);
         }
 
