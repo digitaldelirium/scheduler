@@ -68,6 +68,7 @@ public class AppViewController extends BorderPane {
     public void initialize() {
         instance = this;
         this.rootPane = new BorderPane();
+        this.rootPane.setPrefWidth(1020.0);
         this.menuBar = new MenuBar();
         this.fileMenu = new Menu("_File");
         this.editMenu = new Menu("_Edit");

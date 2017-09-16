@@ -633,6 +633,15 @@ public class AppointmentViewController extends AnchorPane {
                 node.setDisable(true);
                 return true;
             }
+            else if (node.hashCode() == txtCreatedBy.hashCode()){
+                ((TextField) node).setText(user.getUsername());
+                ((TextField) node).setEditable(false);
+                return true;
+            }
+            else if (node instanceof TextField){
+                ((TextField) node).clear();
+                return true;
+            }
             return false;
         });
 
@@ -712,7 +721,7 @@ public class AppointmentViewController extends AnchorPane {
             this.txtTitle.setText(appointmentView.getTitle());
             this.txtDescription.setText(appointmentView.getDescription());
             this.txtCreatedDate.setText(appointmentView.getCreateDate().format(DateTimeFormatter.ISO_DATE));
-            this.txtLastUpdated.setText(appointmentView.getLastUpdate().withZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            this.txtLastUpdated.setText(appointmentView.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             this.txtLocation.setText(appointmentView.getLocation());
             this.txtUrl.setText(appointmentView.getUrl());
             this.txtContact.setText(appointmentView.getContact());
@@ -912,10 +921,10 @@ public class AppointmentViewController extends AnchorPane {
             try {
                 PreparedStatement checkStatement = connection.prepareStatement("SELECT * FROM appointment WHERE UNIX_TIMESTAMP(appointment.start) BETWEEN UNIX_TIMESTAMP(?)AND UNIX_TIMESTAMP(?)\n" +
                                                                                        "                                OR UNIX_TIMESTAMP(appointment.end) BETWEEN  ? AND ?;");
-                checkStatement.setTimestamp(1, Timestamp.from(startDateTime.toInstant()));
-                checkStatement.setTimestamp(2, Timestamp.from(endDateTime.toInstant()));
-                checkStatement.setTimestamp(3, Timestamp.from(startDateTime.toInstant()));
-                checkStatement.setTimestamp(4, Timestamp.from(endDateTime.toInstant()));
+                checkStatement.setTimestamp(1, Timestamp.valueOf(startDateTime.toLocalDateTime()));
+                checkStatement.setTimestamp(2, Timestamp.valueOf(endDateTime.toLocalDateTime()));
+                checkStatement.setTimestamp(3, Timestamp.valueOf(startDateTime.toLocalDateTime()));
+                checkStatement.setTimestamp(4, Timestamp.valueOf(endDateTime.toLocalDateTime()));
                 ResultSet rsExistingAppointments = checkStatement.executeQuery();
                 if(rsExistingAppointments.next()){
                     throw new AppointmentConflictException("An appointment exists during this time, please choose another slot!");
@@ -975,8 +984,8 @@ public class AppointmentViewController extends AnchorPane {
     }
 
     private boolean saveNewAppointment(Connection connection, Appointment app) throws SQLException {
-        ZonedDateTime startTime = app.getStart().withZoneSameInstant(ZoneId.systemDefault());
-        ZonedDateTime endTime = app.getEnd().withZoneSameInstant(ZoneId.systemDefault());
+        ZonedDateTime startTime = app.getStart().withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime endTime = app.getEnd().withZoneSameInstant(ZoneId.of("UTC"));
 
         PreparedStatement statement =
                 connection.prepareStatement("INSERT INTO appointment (customerId, title, description, " +
@@ -988,8 +997,8 @@ public class AppointmentViewController extends AnchorPane {
         statement.setString(4, app.getLocation());
         statement.setString(5, app.getContact());
         statement.setString(6, app.getUrl());
-        statement.setTimestamp(7, Timestamp.from(startTime.toInstant()));
-        statement.setTimestamp(8, Timestamp.from(endTime.toInstant()));
+        statement.setTimestamp(7, Timestamp.valueOf(startTime.toLocalDateTime()));
+        statement.setTimestamp(8, Timestamp.valueOf(endTime.toLocalDateTime()));
         statement.setString(9, app.getCreatedBy());
         statement.setString(10, app.getLastUpdateBy());
 
@@ -1008,8 +1017,8 @@ public class AppointmentViewController extends AnchorPane {
                                                             "AND url = ? AND description = ?");
             statement.setInt(1, app.getCustomerId());
             statement.setString(2, app.getTitle());
-            statement.setTimestamp(3, Timestamp.from(startTime.toInstant()));
-            statement.setTimestamp(4, Timestamp.from(endTime.toInstant()));
+            statement.setTimestamp(3, Timestamp.valueOf(startTime.toLocalDateTime()));
+            statement.setTimestamp(4, Timestamp.valueOf(endTime.toLocalDateTime()));
             statement.setString(5, app.getUrl());
             statement.setString(6, app.getDescription());
             ResultSet executeQuery = statement.executeQuery();
@@ -1091,11 +1100,11 @@ public class AppointmentViewController extends AnchorPane {
     }
 
     private boolean saveNewReminder(Connection connection, Appointment app) throws SQLException {
-        ZonedDateTime reminderTime = app.getStart().minusMinutes(15);
+        ZonedDateTime reminderTime = app.getStart().minusMinutes(15).withZoneSameInstant(ZoneId.of("UTC"));
         PreparedStatement statement =
                 connection.prepareStatement("INSERT INTO reminder (reminderDate, snoozeIncrement, snoozeIncrementTypeId, appointmentId, createdBy, createdDate, remindercol) \n" +
                                                     "VALUES (?, ?, ?, ?, ?, UTC_DATE, ?);");
-        statement.setTimestamp(1, new Timestamp(reminderTime.toInstant().toEpochMilli()));
+        statement.setTimestamp(1, Timestamp.valueOf(reminderTime.toLocalDateTime()));
         statement.setInt(2, 5);
         statement.setInt(3, 1);
         statement.setInt(4, app.getAppointmentId());

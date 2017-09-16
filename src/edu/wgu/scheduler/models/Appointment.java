@@ -58,10 +58,10 @@ public class Appointment implements IAppointment {
         this.createDate = ZonedDateTime.now(ZoneId.of("UTC"));
         this.customerId = new SimpleIntegerProperty(customerId);
         this.description = new SimpleStringProperty(description);
-        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC")));
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault()));
         this.lastUpdateBy = new SimpleStringProperty(createdBy);
         this.location = new SimpleStringProperty(location);
-        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.of("UTC")));
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.systemDefault()));
         this.title = new SimpleStringProperty(title);
         this.url = new SimpleStringProperty(url);
         this.contact = new SimpleStringProperty(contact);
@@ -85,13 +85,14 @@ public class Appointment implements IAppointment {
      */
     public Appointment(Timestamp createDate, int appointmentId, String contact, String createdBy, int customerId, String description, Timestamp end, Timestamp lastUpdate, String lastUpdateBy, String location, Timestamp start, String title, String url) {
         this.createdBy = createdBy;
-        this.createDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.of("UTC"));
+        this.createDate = ZonedDateTime.from(createDate.toLocalDateTime().atZone(ZoneId.of("UTC")));
         this.customerId = new SimpleIntegerProperty(customerId);
         this.description = new SimpleStringProperty(description);
-        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC")));
-        this.lastUpdateBy = new SimpleStringProperty(createdBy);
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.from(end.toLocalDateTime().atZone(ZoneId.of("UTC"))));
+        this.lastUpdateBy = new SimpleStringProperty(lastUpdateBy);
+        this.lastUpdate = new SimpleObjectProperty<>(lastUpdate);
         this.location = new SimpleStringProperty(location);
-        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.of("UTC")));
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.from(start.toLocalDateTime().atZone(ZoneId.of("UTC"))));
         this.title = new SimpleStringProperty(title);
         this.url = new SimpleStringProperty(url);
         this.appointmentId = appointmentId;

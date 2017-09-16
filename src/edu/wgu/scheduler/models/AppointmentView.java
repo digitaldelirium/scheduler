@@ -47,11 +47,11 @@ public class AppointmentView implements IAppointmentView {
         this.location = new SimpleStringProperty(location);
         this.contact = new SimpleStringProperty(contact);
         this.customerName = new SimpleStringProperty(customerName);
-        this.start = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(start.toInstant(), ZoneId.of("UTC")));
-        this.end = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC")));
-        this.lastUpdated = new SimpleObjectProperty<>(ZonedDateTime.ofInstant(lastUpdate.toInstant(), ZoneId.of("UTC")));
+        this.start = new SimpleObjectProperty<>(ZonedDateTime.from(start.toLocalDateTime().atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault())));
+        this.end = new SimpleObjectProperty<>(ZonedDateTime.from(end.toLocalDateTime().atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault())));
+        this.lastUpdated = new SimpleObjectProperty<>(ZonedDateTime.from(lastUpdate.toLocalDateTime().atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault())));
         this.url = new SimpleStringProperty(url);
-        this.createdDate = ZonedDateTime.ofInstant(createDate.toInstant(), ZoneId.of("UTC"));
+        this.createdDate = ZonedDateTime.from(createDate.toLocalDateTime().atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault()));
         this.createdBy = createdBy;
     }
 
@@ -104,7 +104,7 @@ public class AppointmentView implements IAppointmentView {
     }
 
     public ZonedDateTime getStart() {
-        return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.of("UTC"));
+        return ZonedDateTime.ofInstant(start.getValue().toInstant(), ZoneId.systemDefault());
     }
 
     public ReadOnlyProperty<ZonedDateTime> startProperty() {
@@ -112,7 +112,7 @@ public class AppointmentView implements IAppointmentView {
     }
 
     public ZonedDateTime getEnd() {
-        return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.of("UTC"));
+        return ZonedDateTime.ofInstant(end.getValue().toInstant(), ZoneId.systemDefault());
     }
 
     public ReadOnlyProperty<ZonedDateTime> endProperty() {
@@ -128,7 +128,7 @@ public class AppointmentView implements IAppointmentView {
     }
 
     public ZonedDateTime getLastUpdate() {
-        return ZonedDateTime.ofInstant(lastUpdated.getValue().toInstant(), ZoneId.of("UTC"));
+        return ZonedDateTime.ofInstant(lastUpdated.getValue().toInstant(), ZoneId.systemDefault());
     }
 
     public ReadOnlyProperty<ZonedDateTime> lastUpdatedProperty() {
